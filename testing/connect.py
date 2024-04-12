@@ -16,6 +16,8 @@ import base64
 from datetime import datetime
 import time
 
+import socketio
+
 # load the env file
 load_dotenv("config/.env")
 
@@ -27,8 +29,6 @@ target_id = os.getenv("conversation_id")
 # the device id can be anything --> to login with set device use the id
 device_id = "iofsipi09sefisef0s9f"
 
-print(f"Logging into device {device_id}")
-
 # !! should be expanded
 headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
@@ -39,7 +39,7 @@ data = {
     "email": email,
     "password": password,
     "device_id": device_id,
-    "app_name": "stashconnect:0.1-pre-alpha", # can be anything
+    "app_name": "stashconnect:alpha", # can be anything
     "encrypted": "true", # this is very important
     "callable": "true"
 }
@@ -49,8 +49,9 @@ response = requests.post("https://api.stashcat.com/auth/login", data=data, heade
 
 client_key = response["payload"]["client_key"]
 user_id = response["payload"]["userinfo"]["id"]
+socket_id = response["payload"]["userinfo"]["socket_id"]
 
-print(f"Logged in as {response["payload"]["userinfo"]["first_name"]} {response["payload"]["userinfo"]["last_name"]}")
+print(f"\nLogged in as {response["payload"]["userinfo"]["first_name"]} {response["payload"]["userinfo"]["last_name"]}\n")
 
 def set_status(status):
     data = {
@@ -125,9 +126,49 @@ def send_msg(user, text):
     response = requests.post("https://api.stashcat.com/message/send", data=data, headers=headers).json()
     
 
-send_msg(target_id, str(datetime.now())[:19])
+#send_msg(target_id, str(datetime.now())[:19])
 
 # example for a changing status
 #while True:
 #    set_status(str(datetime.now())[:19])
 #    time.sleep(1)
+
+
+sio = socketio.Client(
+    #logger=True, 
+    #engineio_logger=True
+)
+
+@sio.event
+def connect():
+
+    print("Connected to the server.")
+
+    data = {
+        "hidden_id": socket_id,
+        "device_id": device_id,
+        "client_key": client_key
+    }
+
+    sio.emit("userid", data)
+
+    while True:
+        print("typing")
+        sio.emit("started-typing", (device_id, client_key, "conversation", 55550416))
+        time.sleep(5)
+
+@sio.on("*")
+def event(*args):
+
+    if args[0] == "online_status_change":
+        return
+    elif args[0] == "new_device_connected":
+        print(f"A new device with the IP address {args[1]["ip_address"]} has connected to your account.")
+        return
+    elif args[0] == "message_sync":
+        print(f"MSG SENT!")
+    print(args)
+
+
+sio.connect("https://push.stashcat.com/")
+sio.wait()
