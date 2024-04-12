@@ -133,6 +133,20 @@ def send_msg(user, text):
 #    set_status(str(datetime.now())[:19])
 #    time.sleep(1)
 
+# message decoder
+def decode_message(text, iv, user):
+    conversation_key = get_conversation_key(user)
+
+    # creates a decryptor object with key and converted iv
+    text_decryptor = Crypto.Cipher.AES.new(conversation_key, Crypto.Cipher.AES.MODE_CBC, iv=bytes.fromhex(iv))
+
+    # decrypt converted text and unpadd it
+    decrypted_text = text_decryptor.decrypt(bytes.fromhex(text))
+    unpadded_text = Crypto.Util.Padding.unpad(decrypted_text, Crypto.Cipher.AES.block_size)
+
+    # decode text to utf-8
+    return unpadded_text.decode("utf-8")
+
 
 sio = socketio.Client(
     #logger=True, 
@@ -142,7 +156,7 @@ sio = socketio.Client(
 @sio.event
 def connect():
 
-    print("Connected to the server.")
+    print("Connected to server.")
 
     data = {
         "hidden_id": socket_id,
@@ -154,7 +168,10 @@ def connect():
 
     while True:
         print("typing")
-        sio.emit("started-typing", (device_id, client_key, "conversation", 55550416))
+
+        # sends a websocket event
+        sio.emit("started-typing", (device_id, client_key, "conversation", target_id))
+
         time.sleep(5)
 
 @sio.on("*")
@@ -167,8 +184,14 @@ def event(*args):
         return
     elif args[0] == "message_sync":
         print(f"MSG SENT!")
+        print(decode_message(args[1]["text"], args[1]["iv"], target_id))
+        return
+    
     print(args)
 
+@sio.event
+def disconnect():
+    print("Disconnected from server.")
 
 sio.connect("https://push.stashcat.com/")
 sio.wait()
