@@ -167,8 +167,7 @@ def connect():
     sio.emit("userid", data)
 
     while True:
-        print("typing")
-
+        
         # sends a websocket event
         sio.emit("started-typing", (device_id, client_key, "conversation", target_id))
 
@@ -178,6 +177,8 @@ def connect():
 def event(*args):
 
     if args[0] == "online_status_change":
+        return
+    elif args[0] == "user-started-typing":
         return
     elif args[0] == "new_device_connected":
         print(f"A new device with the IP address {args[1]["ip_address"]} has connected to your account.")
