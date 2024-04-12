@@ -4,3 +4,4 @@ python-dotenv
 python-socketio
 Pillow
 pycryptodome
+websocket-client
