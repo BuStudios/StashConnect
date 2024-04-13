@@ -18,6 +18,9 @@ from datetime import datetime
 import time
 
 import socketio
+from PIL import Image
+import io
+import sys
 
 # load the env file
 load_dotenv("config/.env")
@@ -65,6 +68,37 @@ def set_status(status):
 
     response = requests.post("https://api.stashcat.com/account/change_status", data=data, headers=headers).json()
 
+def set_pfp(*, filepath = None):
+    with Image.open(filepath) as image:
+        aspect_ratio = image.height / image.width
+
+        image = image.resize((512, int(512 * aspect_ratio)), Image.Resampling.LANCZOS)
+
+        # basically saves the file to memory instead of a file
+        buffered = io.BytesIO()
+        image.save(buffered, format="PNG")
+
+        image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+        data = {
+        "client_key": client_key,
+        "device_id": device_id,
+        "imgBase64": f"data:image/png;base64,{image_base64}"
+    }
+        
+    response = requests.post("https://api.stashcat.com/account/store_profile_image", data=data, headers=headers).json()
+
+
+set_pfp(filepath="testing/files/glass.jpeg")
+
+
+sys.exit()
+
+while True:
+    set_pfp(filepath="testing/files/glass.jpeg")
+    time.sleep(2)
+    set_pfp(filepath="testing/files/bee.png")
+    time.sleep(2)
 
 def get_private_key(passphrase):
 
@@ -90,7 +124,7 @@ def get_private_key(passphrase):
         return private_key
 
 # fetch private key at beginning to process text much faster
-get_private_key(os.getenv("pass2"))
+#get_private_key(os.getenv("pass2"))
 
 def get_conversation_key(user, key = None):
 
@@ -166,7 +200,7 @@ def decode_message(text, iv, user, key = None):
     # decode text to utf-8
     return unpadded_text.decode("utf-8")
 
-
+'''
 sio = socketio.Client(
     #logger=True, 
     #engineio_logger=True
@@ -212,6 +246,11 @@ def event(*args):
         return
     
     elif args[0] == "notification":
+
+        if args[1]["message"]["text"] == "":
+            print("empty message received")
+            return
+        
         message = decode_message(args[1]["message"]["text"], args[1]["message"]["iv"], args[1]["message"]["conversation_id"], args[1]["conversation"]["key"])
         print(f"MSG RECEIVED! {message}")
 
@@ -230,3 +269,4 @@ def disconnect():
 
 sio.connect("https://push.stashcat.com/")
 sio.wait()
+'''
