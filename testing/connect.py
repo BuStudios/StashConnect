@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 import os
 import json
 import base64
+import pprint
 
 from datetime import datetime
 import time
@@ -25,6 +26,8 @@ load_dotenv("config/.env")
 email = os.getenv("email")
 password = os.getenv("password")
 target_id = os.getenv("conversation_id")
+
+private_key = None
 
 # the device id can be anything --> to login with set device use the id
 device_id = "iofsipi09sefisef0s9f"
@@ -65,27 +68,43 @@ def set_status(status):
 
 def get_private_key(passphrase):
 
-    data = {
-        "client_key": client_key,
-        "device_id": device_id,  
-    }
+    # save the private key since it takes a long time to process
 
-    response = requests.post("https://api.stashcat.com/security/get_private_key", data=data, headers=headers).json()
-    response = json.loads(response["payload"]["keys"]["private_key"])
+    global private_key
 
-    # imports the RSA key with passphrase for decryption
-    return Crypto.PublicKey.RSA.import_key(response["private"], passphrase=passphrase)
+    if private_key is None:
 
-def get_conversation_key(user):
+        print("fetching private key. please wait...")
+        data = {
+            "client_key": client_key,
+            "device_id": device_id,  
+        }
 
-    data = {
-        "client_key": client_key,
-        "device_id": device_id,
-        "conversation_id": user
-    }
+        response = requests.post("https://api.stashcat.com/security/get_private_key", data=data, headers=headers).json()
+        response = json.loads(response["payload"]["keys"]["private_key"])
 
-    response = requests.post("https://api.stashcat.com/message/conversation", data=data, headers=headers).json()
-    encrypted_key = response["payload"]["conversation"]["key"]
+        # imports the RSA key with passphrase for decryption
+        private_key = Crypto.PublicKey.RSA.import_key(response["private"], passphrase=passphrase)
+        return private_key
+    else:
+        return private_key
+
+# fetch private key at beginning to process text much faster
+get_private_key(os.getenv("pass2"))
+
+def get_conversation_key(user, key = None):
+
+    encrypted_key = key
+
+    if key == None:
+        data = {
+            "client_key": client_key,
+            "device_id": device_id,
+            "conversation_id": user
+        }
+
+        response = requests.post("https://api.stashcat.com/message/conversation", data=data, headers=headers).json()
+        encrypted_key = response["payload"]["conversation"]["key"]
 
     # decrypt the conversation_key with private key
     decryptor = Crypto.Cipher.PKCS1_OAEP.new(get_private_key(os.getenv("pass2")))
@@ -134,8 +153,8 @@ def send_msg(user, text):
 #    time.sleep(1)
 
 # message decoder
-def decode_message(text, iv, user):
-    conversation_key = get_conversation_key(user)
+def decode_message(text, iv, user, key = None):
+    conversation_key = get_conversation_key(user, key=key)
 
     # creates a decryptor object with key and converted iv
     text_decryptor = Crypto.Cipher.AES.new(conversation_key, Crypto.Cipher.AES.MODE_CBC, iv=bytes.fromhex(iv))
@@ -166,29 +185,44 @@ def connect():
 
     sio.emit("userid", data)
 
-    while True:
-        
-        # sends a websocket event
-        sio.emit("started-typing", (device_id, client_key, "conversation", target_id))
+    #while True:
+    #    
+    #    # sends a websocket event
+    #    sio.emit("started-typing", (device_id, client_key, "conversation", target_id))
 
-        time.sleep(5)
+    #    time.sleep(5)
 
 @sio.on("*")
 def event(*args):
+    blacklist = [
+        "online_status_change", "user-started-typing", "message_changed", "object_change"
+    ]
 
-    if args[0] == "online_status_change":
+    if args[0] in blacklist:
         return
-    elif args[0] == "user-started-typing":
-        return
+    
     elif args[0] == "new_device_connected":
         print(f"A new device with the IP address {args[1]["ip_address"]} has connected to your account.")
         return
+    
     elif args[0] == "message_sync":
+        return
         print(f"MSG SENT!")
-        print(decode_message(args[1]["text"], args[1]["iv"], target_id))
+        print(decode_message(args[1]["text"], args[1]["iv"], args[1]["conversation_id"]))
         return
     
-    print(args)
+    elif args[0] == "notification":
+        message = decode_message(args[1]["message"]["text"], args[1]["message"]["iv"], args[1]["message"]["conversation_id"], args[1]["conversation"]["key"])
+        print(f"MSG RECEIVED! {message}")
+
+        if message == "/help":
+            send_msg(args[1]["message"]["conversation_id"], "[automated] in development 🤖 [check github.com/bustudios/stashconnect]")
+        else:
+            send_msg(args[1]["message"]["conversation_id"], "[automated] message recieved 👍")
+
+        return
+    
+    pprint.pprint(args)
 
 @sio.event
 def disconnect():
