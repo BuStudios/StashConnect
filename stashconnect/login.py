@@ -77,6 +77,7 @@ class Login:
         print(f"Logged in as {self.first_name} {self.last_name}!")
 
         self._private_key = None
+        self._ping_target = None
 
         if encryption_password is not None:
             self.get_private_key(encryption_password=encryption_password)
