@@ -91,14 +91,11 @@ def set_pfp(*, filepath = None):
 
 set_pfp(filepath="testing/files/glass.jpeg")
 
-
-sys.exit()
-
-while True:
-    set_pfp(filepath="testing/files/glass.jpeg")
-    time.sleep(2)
-    set_pfp(filepath="testing/files/bee.png")
-    time.sleep(2)
+#while True:
+#    set_pfp(filepath="testing/files/glass.jpeg")
+#    time.sleep(2)
+#    set_pfp(filepath="testing/files/bee.png")
+#    time.sleep(2)
 
 def get_private_key(passphrase):
 
@@ -200,7 +197,7 @@ def decode_message(text, iv, user, key = None):
     # decode text to utf-8
     return unpadded_text.decode("utf-8")
 
-'''
+
 sio = socketio.Client(
     #logger=True, 
     #engineio_logger=True
@@ -269,4 +266,3 @@ def disconnect():
 
 sio.connect("https://push.stashcat.com/")
 sio.wait()
-'''

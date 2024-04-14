@@ -17,6 +17,9 @@ import base64
 from PIL import Image
 import io
 
+import socketio
+import asyncio
+
 headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
     "referer": "https://app.schul.cloud/"
@@ -42,6 +45,7 @@ class Login:
     def __init__(self, *, email, password, device_id=None, encryption_password=None):
 
         self.conversation_keys = {}
+        self.events = {}
 
         self.email = email
         self.password = password
@@ -153,7 +157,19 @@ class Login:
             "is_forwarded": False
         }
 
-        self._post("message/send", data=data)
+        response = self._post("message/send", data=data)
+        return response
+
+
+    def decode_message(self, text, target, iv, key=None):
+
+        conversation_key = self.get_conversation_key(target=target, key=key)
+        text_decryptor = Crypto.Cipher.AES.new(conversation_key, Crypto.Cipher.AES.MODE_CBC, iv=bytes.fromhex(iv))
+
+        decrypted_text = text_decryptor.decrypt(bytes.fromhex(text))
+        unpadded_text = Crypto.Util.Padding.unpad(decrypted_text, Crypto.Cipher.AES.block_size)
+
+        return unpadded_text.decode("utf-8")
     
 
     def change_status(self, status):
@@ -191,3 +207,44 @@ class Login:
 
             response = self._post("account/store_profile_image", data={"imgBase64": f"data:image/png;base64,{image_base64}"})
             return response
+
+
+    def event(self, name):
+
+        def decorator(func):
+            self.events[name] = func
+            return func
+        return decorator
+    
+
+    def _run(self, debug=False):
+
+        self.sio = socketio.Client(logger=debug, engineio_logger=debug)
+
+        @self.sio.event
+        def connect():
+
+            print("Connected to the server.")
+
+            data = {
+                "hidden_id": self.socket_id,
+                "device_id": self.device_id,
+                "client_key": self.client_key
+            }
+
+            self.sio.emit("userid", data)
+
+        @self.sio.event
+        def disconnect():
+            print("Disconnected from the server")
+            self.sio.disconnect()
+
+        for event_name, event_handler in self.events.items():
+            self.sio.on(event_name)(event_handler)
+
+        self.sio.connect(self._push_url)
+        self.sio.wait()
+
+
+    def run(self, debug=False):
+        self._run(debug=debug)
