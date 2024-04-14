@@ -13,12 +13,12 @@ import Crypto.Util.Padding
 import requests
 import json
 import base64
+import time
 
 from PIL import Image
 import io
 
 import socketio
-import asyncio
 
 headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
@@ -239,6 +239,11 @@ class Login:
             print("Disconnected from the server")
             self.sio.disconnect()
 
+        @self.sio.on("user-started-typing")
+        def pong(*args):
+            if str(args[2]) == str(self.user_id) and str(args[1]) == str(self._ping_target):
+                self._end_time = time.perf_counter()
+
         for event_name, event_handler in self.events.items():
             self.sio.on(event_name)(event_handler)
 
@@ -248,3 +253,20 @@ class Login:
 
     def run(self, debug=False):
         self._run(debug=debug)
+
+
+    def ws_latency(self, target):
+
+        start_time = time.perf_counter()
+        self._end_time = None
+        self._ping_target = target
+        self.sio.emit("started-typing", (self.device_id, self.client_key, "conversation", target))
+
+        time.sleep(2)
+
+        if self._end_time is None:
+            self._latency_ws = None
+            return "Error"
+        else:
+            self._latency_ws = (round((self._end_time - start_time) * 100000)) / 100
+            return self._latency_ws
