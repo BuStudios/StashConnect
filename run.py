@@ -12,7 +12,7 @@ password = os.getenv("password")
 encryption_password = os.getenv("pass2")
 target = os.getenv("conversation_id")
 
-client = stashconnect.Login(email=email, password=password, 
+client = stashconnect.Client(email=email, password=password, 
                           encryption_password=encryption_password
                           )
 

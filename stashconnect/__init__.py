@@ -1,7 +1,7 @@
 """
-stashconnect
+StashConnect v.0
 
-an api wrapper for stashcat
+An API wrapper for Stashcat.
 """
 
-from .login import *
+from .client import *
