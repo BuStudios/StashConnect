@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import datetime
 import os
 import time
+import pprint
 
 load_dotenv("config/.env")
 
@@ -26,14 +27,20 @@ client = stashconnect.Login(email=email, password=password,
 @client.event("notification")
 def message_received(data):
 
+    pprint.pprint(data)
+
     message = client.decode_message(text=data["message"]["text"], target=data["message"]["conversation_id"], iv=data["message"]["iv"], key=data["conversation"]["key"])
-    print(message)
+
+    sender = data["message"]["sender"]["first_name"], data["message"]["sender"]["last_name"]
+    timestamp = data["message"]["time"]
+
+    print(f"Message received: {message}. Author: {sender}. UNIX: {timestamp}.")
 
     #client.sio.emit("started-typing", (client.device_id, client.client_key, "conversation", data["message"]["conversation_id"]))
 
     latency = client.ws_latency(data["message"]["conversation_id"])
 
-    client.send_message(target=data["message"]["conversation_id"], text=f"[automated] msg received => websocket_latency = {latency}ms")
+    client.send_message(target=data["message"]["conversation_id"], text=f"[automated] msg received => ↹ websocket_latency = {latency}ms.\nreceived: {message}. author: {sender}. UNIX: {timestamp}.")
 
 
 client.run(debug=False)
