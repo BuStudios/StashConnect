@@ -234,6 +234,12 @@ class Client:
 
             response = self._post("account/store_profile_image", data={"imgBase64": f"data:image/png;base64,{image_base64}"})
             return response
+        
+
+    def reset_profile_picture(self):
+
+        response = self._post("account/reset_profile_image", data={})
+        return response
 
 
     def event(self, name):
