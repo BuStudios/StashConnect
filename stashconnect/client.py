@@ -21,8 +21,13 @@ import io
 import socketio
 
 headers = {
-    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
-    "referer": "https://app.schul.cloud/"
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en",
+    "Cache-Control": "no-cache",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Referer": "https://app.schul.cloud/",
 }
 
 class Client:
@@ -62,7 +67,7 @@ class Client:
 
         .change_status(status): Updates the user's status.
     """
-    
+
     def __init__(self, *, email, password, device_id=None, encryption_password=None):
 
         self.conversation_keys = {}
