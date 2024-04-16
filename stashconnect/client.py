@@ -242,6 +242,29 @@ class Client:
         return response
 
 
+    def archive_conversation(self, conversation_id):
+
+        response = self._post("message/archiveConversation", data={"conversation_id": conversation_id})
+        return response
+    
+
+    def get_notification_count(self) -> int:
+
+        response = self._post("notifications/count", data={})
+        return int(response["count"])
+    
+
+    def get_notifications(self, limit=20, offset=0) -> dict:
+
+        data = {
+            "limit": limit,
+            "offset": offset
+        }
+
+        response = self._post("notifications/get", data=data)
+        return response["notifications"]
+
+
     def event(self, name):
 
         def decorator(func):
