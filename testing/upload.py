@@ -16,6 +16,9 @@ import pprint
 import uuid
 
 import mimetypes
+from PIL import Image
+import base64
+import io
 
 load_dotenv("config/.env")
 
@@ -114,6 +117,7 @@ def upload_file(target, file_path, filename):
         file_content = file.read()
 
     total_chunks = (len(file_content) + max_chunk_size - 1) // max_chunk_size
+    print(f"Total chunks: {total_chunks}")
 
     for i in range(total_chunks):
         data_chunk = file_content[i*max_chunk_size:(i+1)*max_chunk_size]
@@ -147,6 +151,8 @@ def upload_file(target, file_path, filename):
 
         response = requests.post("https://api.stashcat.com/file/upload", data=data, files=files)
         response = response.json()["payload"]["file"]
+        
+    file_id = response["id"]
 
     # uploaded file but cant be decrypted since the server does not know the file_key
     iv = Crypto.Random.get_random_bytes(16)
@@ -162,8 +168,35 @@ def upload_file(target, file_path, filename):
     }
 
     response = requests.post("https://api.stashcat.com/security/set_file_access_key", data=data)
-    print(response.json())
+    #print(response.json())
 
 
+    with Image.open(file_path) as image:
+        image = image.convert('RGB')
+        min_dimension = min(image.width, image.height)
+        scale_factor = 100 / min_dimension
 
-upload_file(target_id, "testing/files/bee.png", "bee")
+        new_width = int(image.width * scale_factor)
+        new_height = int(image.height * scale_factor)
+
+        image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        left, top = (new_width - 100) / 2, (new_height - 100) / 2
+        right, bottom = left + 100, top + 100
+
+        image = image.crop((left, top, right, bottom))
+        buffered = io.BytesIO()
+        image.save(buffered, format="JPEG")
+
+        image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+    data = {
+        "client_key": client_key,
+        "device_id": device_id,
+        "file_id": file_id,
+        "content": str("data:image/jpeg;base64," + image_base64)
+    }
+
+    response = requests.post("https://api.stashcat.com//file/storePreviewImage", data=data)
+
+
+upload_file(target_id, "testing/files/rick.gif", "rick.gif")
