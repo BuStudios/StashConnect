@@ -196,7 +196,7 @@ def upload_file(target, file_path, filename):
         "content": str("data:image/jpeg;base64," + image_base64)
     }
 
-    response = requests.post("https://api.stashcat.com//file/storePreviewImage", data=data)
+    response = requests.post("https://api.stashcat.com/file/storePreviewImage", data=data)
 
 
 upload_file(target_id, "testing/files/rick.gif", "rick.gif")
