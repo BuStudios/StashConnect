@@ -57,7 +57,7 @@ client_key = response["payload"]["client_key"]
 user_id = response["payload"]["userinfo"]["id"]
 socket_id = response["payload"]["userinfo"]["socket_id"]
 
-print(f"\nLogged in as {response["payload"]["userinfo"]["first_name"]} {response["payload"]["userinfo"]["last_name"]}\n")
+print(f"\nLogged in as {response['payload']['userinfo']['first_name']} {response['payload']['userinfo']['last_name']}\n")
 
 def set_status(status):
     data = {
@@ -233,7 +233,7 @@ def event(*args):
         return
     
     elif args[0] == "new_device_connected":
-        print(f"A new device with the IP address {args[1]["ip_address"]} has connected to your account.")
+        print(f"A new device with the IP address {args[1]['ip_address']} has connected to your account.")
         return
     
     elif args[0] == "message_sync":

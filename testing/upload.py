@@ -48,7 +48,7 @@ response = requests.post("https://api.stashcat.com/auth/login", data=data, heade
 
 client_key = response["payload"]["client_key"]
 
-print(f"Logged in as {response["payload"]["userinfo"]["first_name"]} {response["payload"]["userinfo"]["last_name"]}")
+print(f"Logged in as {response['payload']['userinfo']['first_name']} {response['payload']['userinfo']['last_name']}")
 
 
 def get_private_key(passphrase):
@@ -97,11 +97,13 @@ def encrypt_aes(input, key, iv):
     return encryptor.encrypt(padded)
 
 
-def upload_file(target, file_path, filename):
+def upload_file(target, file_path, filename=None):
     '''
     -> Main JS of Stashcat
     https://app.stashcat.com/web/main.81e446835bb28e07.js
     '''
+
+    filename = os.path.basename(file_path)
 
     iv = Crypto.Random.get_random_bytes(16)
     file_key = Crypto.Random.get_random_bytes(32)
@@ -199,4 +201,4 @@ def upload_file(target, file_path, filename):
     response = requests.post("https://api.stashcat.com/file/storePreviewImage", data=data)
 
 
-upload_file(target_id, "testing/files/rick.gif", "rick.gif")
+upload_file(target_id, "testing/files/glass.jpeg")
