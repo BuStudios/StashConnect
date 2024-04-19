@@ -105,23 +105,29 @@ def upload_file(target, file_path, filename=None):
 
     filename = os.path.basename(file_path)
 
+    # generate a random iv and file key
     iv = Crypto.Random.get_random_bytes(16)
     file_key = Crypto.Random.get_random_bytes(32)
 
+    # get the content type from the file extension
+    # set the content type to application/octet-stream if mime could not be identified
     content_type, _ = mimetypes.guess_type(file_path)
     if not content_type: content_type = "application/octet-stream"
 
-    max_chunk_size = 5 * 1024 * 1024  # 5MB per chunk
-    upload_identifier = str(uuid.uuid4())
+    max_chunk_size = 5 * 1024 * 1024  # limit upolad to 5MB per chunk
+    upload_identifier = str(uuid.uuid4())  # generate random upload id
 
-    # open the file in binary mode
+    # open the file in binary mode and read content
     with open(file_path, "rb") as file:
         file_content = file.read()
 
+    # calculate total chunks
     total_chunks = (len(file_content) + max_chunk_size - 1) // max_chunk_size
     print(f"Total chunks: {total_chunks}")
 
+    # post the chunks
     for i in range(total_chunks):
+        print(f"Uploading Chunk {i} ({(i / total_chunks) * 100})")
         data_chunk = file_content[i*max_chunk_size:(i+1)*max_chunk_size]
 
         encrypted_chunk = encrypt_aes(data_chunk, file_key, iv)
@@ -156,11 +162,12 @@ def upload_file(target, file_path, filename=None):
         
     file_id = response["id"]
 
-    # uploaded file but cant be decrypted since the server does not know the file_key
+    # send file key to server to enable decryption
+    # generate new iv
     iv = Crypto.Random.get_random_bytes(16)
 
     data = {
-        "file_id": response["id"],
+        "file_id": file_id,
         "target": "conversation",
         "target_id": target,
         "key": encrypt_aes(file_key, get_conversation_key(user=target), iv).hex(),
@@ -172,33 +179,39 @@ def upload_file(target, file_path, filename=None):
     response = requests.post("https://api.stashcat.com/security/set_file_access_key", data=data)
     #print(response.json())
 
+    try:
+        # if the file is a image it is converted to base64 and stored as a thumbnail
+        with Image.open(file_path) as image:
+            
+            # convert to rgb to convert to jpeg
+            image = image.convert('RGB')
+            min_dimension = min(image.width, image.height)
+            scale_factor = 100 / min_dimension
 
-    with Image.open(file_path) as image:
-        image = image.convert('RGB')
-        min_dimension = min(image.width, image.height)
-        scale_factor = 100 / min_dimension
+            new_width = int(image.width * scale_factor)
+            new_height = int(image.height * scale_factor)
 
-        new_width = int(image.width * scale_factor)
-        new_height = int(image.height * scale_factor)
+            image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+            left, top = (new_width - 100) / 2, (new_height - 100) / 2
+            right, bottom = left + 100, top + 100
 
-        image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
-        left, top = (new_width - 100) / 2, (new_height - 100) / 2
-        right, bottom = left + 100, top + 100
+            image = image.crop((left, top, right, bottom))
+            buffered = io.BytesIO()
+            image.save(buffered, format="JPEG")
 
-        image = image.crop((left, top, right, bottom))
-        buffered = io.BytesIO()
-        image.save(buffered, format="JPEG")
+            image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-        image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
+        data = {
+            "client_key": client_key,
+            "device_id": device_id,
+            "file_id": file_id,
+            "content": str("data:image/jpeg;base64," + image_base64)
+        }
 
-    data = {
-        "client_key": client_key,
-        "device_id": device_id,
-        "file_id": file_id,
-        "content": str("data:image/jpeg;base64," + image_base64)
-    }
-
-    response = requests.post("https://api.stashcat.com/file/storePreviewImage", data=data)
+        response = requests.post("https://api.stashcat.com/file/storePreviewImage", data=data)
+        print("Uploaded image and set thumbnail!")
+    except Exception:
+        print("Uploaded file!")
 
 
 upload_file(target_id, "testing/files/glass.jpeg")
