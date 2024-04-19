@@ -9,15 +9,22 @@ import sys
 load_dotenv("config/.env")
 
 email = os.getenv("email")
+email2 = os.getenv("email2")
 password = os.getenv("password")
 encryption_password = os.getenv("pass2")
 target = os.getenv("conversation_id")
 
-client = stashconnect.Client(email=email, password=password, 
+client = stashconnect.Client(email=email2, password=password, 
                           #encryption_password=encryption_password
                           )
 
-pprint.pprint(client.get_notifications())
+#print(client.get_location())
+#print(client.check_login())
+#print(client.get_active_devices())
+#print(client.get_me())
+#print(client.get_settings())
+#print(client.change_password(password, password))
+#pprint.pprint(client.get_notifications())
 
 sys.exit()
 

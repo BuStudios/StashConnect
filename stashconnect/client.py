@@ -76,6 +76,7 @@ class Client:
         self.email = email
         self.password = password
         self.device_id = "stashconnect123" if device_id is None else device_id
+        self.app_name = "stashconnect:alpha"
 
         self._main_url = "https://api.stashcat.com/"
         self._push_url = "https://push.stashcat.com/"
@@ -85,7 +86,7 @@ class Client:
         data = {
             "email": self.email,
             "password": self.password,
-            "app_name": "stashconnect:alpha",
+            "app_name": self.app_name,
             "encrypted": "true",
             "callable": "true"
         }
@@ -129,6 +130,18 @@ class Client:
             raise Exception(status["message"])
 
         return payload
+    
+
+    def check_login(self):
+
+        data = {
+            "app_name": self.app_name,
+            "encrypted": True,
+            "callable": True
+        }
+
+        response = self._post("/auth/check", data=data)
+        return response
     
 
     def get_private_key(self, *, encryption_password:str):
@@ -199,6 +212,12 @@ class Client:
         return unpadded_text.decode("utf-8")
     
 
+    def get_location(self):
+        
+        response = self._post("/location/get", data={})
+        return response
+    
+
     def change_status(self, status):
 
         response = self._post("account/change_status", data={"status": status})
@@ -263,6 +282,47 @@ class Client:
 
         response = self._post("notifications/get", data=data)
         return response["notifications"]
+    
+
+    def change_email(self, email):
+
+        response = self._post("/account/change_email", data={"email": email})
+        return response
+
+
+    def resend_verification_email(self, email):
+
+        response = self._post("/register/resend_validation_email", data={"email": email})
+        return response
+    
+
+    def change_password(self, new_password, old_password):
+
+        data = {
+            "new_password": new_password,
+            "old_password": old_password
+        }
+
+        response = self._post("/account/change_password", data=data)
+        return response
+
+
+    def get_settings(self):
+
+        response = self._post("/account/settings", data={})
+        return response["settings"]
+    
+
+    def get_me(self):
+
+        response = self._post("/users/me", data={})
+        return response
+    
+
+    def get_active_devices(self):
+
+        response = self._post("/account/list_active_devices", data={})
+        return response["devices"]
 
 
     def event(self, name):
