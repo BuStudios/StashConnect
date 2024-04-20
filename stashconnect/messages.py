@@ -12,9 +12,10 @@ import Crypto.Util.Padding
 
 from .encryption import Encryption
 
+
 class Message:
 
-    def send_message(self, target, text:str):
+    def send_message(self, target, text: str):
 
         iv = Crypto.Random.get_random_bytes(16)
         conversation_key = self.get_conversation_key(target=target)
@@ -32,16 +33,17 @@ class Message:
             "iv": iv.hex(),
             "verification": "",
             "type": "text",
-            "is_forwarded": False
+            "is_forwarded": False,
         }
 
         response = self._post("message/send", data=data)
         return response
-    
-    
+
     def decode_message(self, *, target, text, iv, key=None):
 
         conversation_key = self.get_conversation_key(target=target, key=key)
-        text = Encryption.decrypt_aes(bytes.fromhex(text), conversation_key, bytes.fromhex(iv))
+        text = Encryption.decrypt_aes(
+            bytes.fromhex(text), conversation_key, bytes.fromhex(iv)
+        )
 
         return text.decode("utf-8")

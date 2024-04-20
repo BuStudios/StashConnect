@@ -14,7 +14,7 @@ password = os.getenv("password")
 encryption_password = os.getenv("pass2")
 target = os.getenv("conversation_id")
 
-client = stashconnect.Client(email=email2, password=password,
+client = stashconnect.Client(email=email, password=password,
                           encryption_password=encryption_password
                           )
 
@@ -25,8 +25,11 @@ client = stashconnect.Client(email=email2, password=password,
 #print(client.get_settings())
 #print(client.change_password(password, password))
 #pprint.pprint(client.get_notifications())
+#print(client.change_email(email))
+#time.sleep(5)
+#print(client.resend_verification_email(email))
 
-#sys.exit()
+sys.exit()
 
 #while True:
 #    text = input("Input:\n")

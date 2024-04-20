@@ -24,6 +24,7 @@ from .messages import Message
 from .settings import Settings
 from .users import Users
 from .encryption import Encryption
+from .conversations import Conversations
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
@@ -143,7 +144,7 @@ class Client:
             raise Exception(status["message"])
 
         return payload
-    
+
 
     def verify_login(self):
 
@@ -180,13 +181,15 @@ class Client:
             return self.conversation_keys[target]
         
 
+    # MESSAGES
     def send_message(self, target, text:str):
         return Message.send_message(self, target, text)
 
     def decode_message(self, *, target, text, iv, key=None):
          return Message.decode_message(self, target=target, text=text, iv=iv, key=key)
-    
 
+
+    # USERS
     def get_location(self):
         return Users.get_location(self)
 
@@ -200,19 +203,19 @@ class Client:
         return Users.reset_profile_picture(self)
 
 
+    # CONVERSATIONS
     def archive_conversation(self, conversation_id):
+        return Conversations.archive_conversation(self, conversation_id)
 
-        response = self._post("message/archiveConversation", data={"conversation_id": conversation_id})
-        return response
-    
 
+    # SETTINGS
     def get_notification_count(self) -> int:
         return Settings.get_notification_count(self)
     
     def get_notifications(self, limit:int=20, offset:int=0) -> dict:
         return Settings.get_notifications(self, limit, offset)
     
-
+    
     def change_email(self, email:str):
         return Settings.change_email(self, email)
 
@@ -238,7 +241,7 @@ class Client:
             self.events[name] = func
             return func
         return decorator
-    
+
 
     def _run(self, debug=False):
 
