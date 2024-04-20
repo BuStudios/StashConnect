@@ -10,6 +10,8 @@ import Crypto.Random
 import Crypto.Util
 import Crypto.Util.Padding
 
+from .encryption import Encryption
+
 class Message:
 
     def send_message(self, target, text:str):
@@ -18,15 +20,12 @@ class Message:
         conversation_key = self.get_conversation_key(target=target)
 
         text_bytes = text.encode("utf-8")
-
-        text_encryptor = Crypto.Cipher.AES.new(conversation_key, Crypto.Cipher.AES.MODE_CBC, iv=iv)
-
-        text_padded = Crypto.Util.Padding.pad(text_bytes, Crypto.Cipher.AES.block_size)
+        text = Encryption.encrypt_aes(text_bytes, conversation_key, iv)
 
         data = {
             "target": "conversation",
             "conversation_id": target,
-            "text": text_encryptor.encrypt(text_padded).hex(),
+            "text": text.hex(),
             "files": [],
             "url": [],
             "encrypted": True,
@@ -40,12 +39,9 @@ class Message:
         return response
     
     
-    def decode_message(self, text, target, iv, key=None):
+    def decode_message(self, *, target, text, iv, key=None):
 
         conversation_key = self.get_conversation_key(target=target, key=key)
-        text_decryptor = Crypto.Cipher.AES.new(conversation_key, Crypto.Cipher.AES.MODE_CBC, iv=bytes.fromhex(iv))
+        text = Encryption.decrypt_aes(bytes.fromhex(text), conversation_key, bytes.fromhex(iv))
 
-        decrypted_text = text_decryptor.decrypt(bytes.fromhex(text))
-        unpadded_text = Crypto.Util.Padding.unpad(decrypted_text, Crypto.Cipher.AES.block_size)
-
-        return unpadded_text.decode("utf-8")
+        return text.decode("utf-8")

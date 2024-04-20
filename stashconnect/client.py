@@ -20,8 +20,10 @@ import io
 
 import socketio
 
-from .message import Message
+from .messages import Message
 from .settings import Settings
+from .users import Users
+from .encryption import Encryption
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
@@ -73,11 +75,9 @@ class Client:
 
     def __init__(self, *, email, password, device_id=None, encryption_password=None):
 
-        self.conversation_keys = {}
-        self.events = {}
-
         self.email = email
         self.password = password
+
         self.device_id = "stashconnect123" if device_id is None else device_id
         self.app_name = "stashconnect:alpha"
 
@@ -85,6 +85,20 @@ class Client:
         self._push_url = "https://push.stashcat.com/"
 
         self._headers = headers
+
+        self._login()
+
+        self.conversation_keys = {}
+        self.events = {}
+
+        self._private_key = None
+        self._ping_target = None
+
+        if encryption_password is not None:
+            self.get_private_key(encryption_password=encryption_password)
+
+
+    def _login(self):
 
         data = {
             "email": self.email,
@@ -106,11 +120,7 @@ class Client:
 
         print(f"Logged in as {self.first_name} {self.last_name}!")
 
-        self._private_key = None
-        self._ping_target = None
-
-        if encryption_password is not None:
-            self.get_private_key(encryption_password=encryption_password)
+        return response
 
 
     def _post(self, url, *, data, auth=True):
@@ -129,13 +139,13 @@ class Client:
         payload = response["payload"]
 
         if status["value"] != "OK":
-            # make own exceptions
+            # create custom exceptions
             raise Exception(status["message"])
 
         return payload
     
 
-    def check_login(self):
+    def verify_login(self):
 
         data = {
             "app_name": self.app_name,
@@ -147,14 +157,9 @@ class Client:
         return response
     
 
-    def get_private_key(self, *, encryption_password:str):
-
+    def get_private_key(self, *, encryption_password:str) -> None:
         print("Importing private key. Please wait...")
-
-        response = self._post("security/get_private_key", data={})
-        response = json.loads(response["keys"]["private_key"])
-
-        self._private_key = Crypto.PublicKey.RSA.import_key(response["private"], passphrase=encryption_password)
+        self._private_key = Encryption.load_private_key(self, encryption_password)
 
 
     def get_conversation_key(self, target, key=None):
@@ -169,8 +174,7 @@ class Client:
                 response = self._post("message/conversation", data={"conversation_id": target})
                 encrypted_key = response["conversation"]["key"]
 
-            decryptor = Crypto.Cipher.PKCS1_OAEP.new(self._private_key)
-            decrypted_key = decryptor.decrypt(base64.b64decode(encrypted_key))
+            decrypted_key = Encryption.decrypt_key(encrypted_key, self._private_key)
 
             self.conversation_keys[target] = decrypted_key
             return self.conversation_keys[target]
@@ -179,57 +183,21 @@ class Client:
     def send_message(self, target, text:str):
         return Message.send_message(self, target, text)
 
-    def decode_message(self, text, target, iv, key=None):
-         return Message.decode_message(self, text, target, iv, key)
+    def decode_message(self, *, target, text, iv, key=None):
+         return Message.decode_message(self, target=target, text=text, iv=iv, key=key)
     
 
     def get_location(self):
-        
-        response = self._post("/location/get", data={})
-        return response
+        return Users.get_location(self)
+
+    def change_status(self, status:str):
+        return Users.change_status(self, status)
     
-
-    def change_status(self, status):
-
-        response = self._post("account/change_status", data={"status": status})
-        return response
-    
-
-    def change_profile_picture(self, *, url):
-        
-        response = requests.get(url)
-        response.raise_for_status()
-        
-
-        with Image.open(io.BytesIO(response.content)) as image:
-
-            min_dimension = min(image.width, image.height)
-
-            scale_factor = 512 / min_dimension
-
-            new_width = int(image.width * scale_factor)
-            new_height = int(image.height * scale_factor)
-
-            image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
-
-            left, top = (new_width - 512) / 2, (new_height - 512) / 2
-            right, bottom = left + 512, top + 512
-
-            image = image.crop((left, top, right, bottom))
-
-            buffered = io.BytesIO()
-            image.save(buffered, format="PNG")
-
-            image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
-
-            response = self._post("account/store_profile_image", data={"imgBase64": f"data:image/png;base64,{image_base64}"})
-            return response
-        
+    def change_profile_picture(self, *, url:str):
+        return Users.change_profile_picture(self, url=url)
 
     def reset_profile_picture(self):
-
-        response = self._post("account/reset_profile_image", data={})
-        return response
+        return Users.reset_profile_picture(self)
 
 
     def archive_conversation(self, conversation_id):
@@ -241,17 +209,17 @@ class Client:
     def get_notification_count(self) -> int:
         return Settings.get_notification_count(self)
     
-    def get_notifications(self, limit=20, offset=0) -> dict:
+    def get_notifications(self, limit:int=20, offset:int=0) -> dict:
         return Settings.get_notifications(self, limit, offset)
     
 
-    def change_email(self, email):
+    def change_email(self, email:str):
         return Settings.change_email(self, email)
 
-    def resend_verification_email(self, email):
+    def resend_verification_email(self, email:str):
         return Settings.resend_verification_email(self, email)
     
-    def change_password(self, new_password, old_password):
+    def change_password(self, new_password:str, old_password:str):
         return Settings.change_password(self, new_password, old_password)
 
     def get_settings(self):
