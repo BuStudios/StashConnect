@@ -182,8 +182,8 @@ class Client:
         
 
     # MESSAGES
-    def send_message(self, target, text:str):
-        return Message.send_message(self, target, text)
+    def send_message(self, target, text:str, location:bool|tuple|list=None):
+        return Message.send_message(self, target, text, location=location)
 
     def decode_message(self, *, target, text, iv, key=None):
          return Message.decode_message(self, target=target, text=text, iv=iv, key=key)
@@ -206,6 +206,9 @@ class Client:
     # CONVERSATIONS
     def archive_conversation(self, conversation_id):
         return Conversations.archive_conversation(self, conversation_id)
+    
+    def get_messages(self, conversation_id, limit:int=30, offset:int=0):
+        return Conversations.get_messages(self, conversation_id, limit=limit, offset=offset)
 
 
     # SETTINGS
