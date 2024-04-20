@@ -1,5 +1,5 @@
-# StashConnect
-An API wrapper for [stashcat](https://stashcat.com/) and [schul.cloud](https://schul.cloud).<br> 
+# <img src="assets/icon.png" height="32">StashConnect
+An API wrapper for [stashcat](https://stashcat.com/) and [schul.cloud](https://schul.cloud).<br>
 ```
 unfinished
 ```
