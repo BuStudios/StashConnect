@@ -20,6 +20,9 @@ import io
 
 import socketio
 
+from .message import Message
+from .settings import Settings
+
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
     "Accept": "application/json, text/plain, */*",
@@ -174,42 +177,10 @@ class Client:
         
 
     def send_message(self, target, text:str):
-
-        iv = Crypto.Random.get_random_bytes(16)
-        conversation_key = self.get_conversation_key(target=target)
-
-        text_bytes = text.encode("utf-8")
-
-        text_encryptor = Crypto.Cipher.AES.new(conversation_key, Crypto.Cipher.AES.MODE_CBC, iv=iv)
-
-        text_padded = Crypto.Util.Padding.pad(text_bytes, Crypto.Cipher.AES.block_size)
-
-        data = {
-            "target": "conversation",
-            "conversation_id": target,
-            "text": text_encryptor.encrypt(text_padded).hex(),
-            "files": [],
-            "url": [],
-            "encrypted": True,
-            "iv": iv.hex(),
-            "verification": "",
-            "type": "text",
-            "is_forwarded": False
-        }
-
-        response = self._post("message/send", data=data)
-        return response
-
+        return Message.send_message(self, target, text)
 
     def decode_message(self, text, target, iv, key=None):
-
-        conversation_key = self.get_conversation_key(target=target, key=key)
-        text_decryptor = Crypto.Cipher.AES.new(conversation_key, Crypto.Cipher.AES.MODE_CBC, iv=bytes.fromhex(iv))
-
-        decrypted_text = text_decryptor.decrypt(bytes.fromhex(text))
-        unpadded_text = Crypto.Util.Padding.unpad(decrypted_text, Crypto.Cipher.AES.block_size)
-
-        return unpadded_text.decode("utf-8")
+         return Message.decode_message(self, text, target, iv, key)
     
 
     def get_location(self):
@@ -268,61 +239,29 @@ class Client:
     
 
     def get_notification_count(self) -> int:
-
-        response = self._post("notifications/count", data={})
-        return int(response["count"])
+        return Settings.get_notification_count(self)
     
-
     def get_notifications(self, limit=20, offset=0) -> dict:
-
-        data = {
-            "limit": limit,
-            "offset": offset
-        }
-
-        response = self._post("notifications/get", data=data)
-        return response["notifications"]
+        return Settings.get_notifications(self, limit, offset)
     
 
     def change_email(self, email):
-
-        response = self._post("/account/change_email", data={"email": email})
-        return response
-
+        return Settings.change_email(self, email)
 
     def resend_verification_email(self, email):
-
-        response = self._post("/register/resend_validation_email", data={"email": email})
-        return response
+        return Settings.resend_verification_email(self, email)
     
-
     def change_password(self, new_password, old_password):
-
-        data = {
-            "new_password": new_password,
-            "old_password": old_password
-        }
-
-        response = self._post("/account/change_password", data=data)
-        return response
-
+        return Settings.change_password(self, new_password, old_password)
 
     def get_settings(self):
-
-        response = self._post("/account/settings", data={})
-        return response["settings"]
+        return Settings.get_settings(self)
     
-
     def get_me(self):
-
-        response = self._post("/users/me", data={})
-        return response
+        return Settings.get_me(self)
     
-
     def get_active_devices(self):
-
-        response = self._post("/account/list_active_devices", data={})
-        return response["devices"]
+        return Settings.get_active_devices(self)
 
 
     def event(self, name):

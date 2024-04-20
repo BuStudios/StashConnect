@@ -1,5 +1,5 @@
 """
-StashConnect v.0
+StashConnect v.0.0
 
 An API wrapper for Stashcat.
 """
