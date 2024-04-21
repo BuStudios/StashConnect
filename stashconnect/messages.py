@@ -10,7 +10,7 @@ import Crypto.Random
 import Crypto.Util
 import Crypto.Util.Padding
 
-from .encryption import Encryption
+from .crypto_utils import CryptoUtils
 
 
 class Message:
@@ -21,7 +21,7 @@ class Message:
         conversation_key = self.get_conversation_key(target=target)
 
         text_bytes = text.encode("utf-8")
-        text = Encryption.encrypt_aes(text_bytes, conversation_key, iv)
+        text = CryptoUtils.encrypt_aes(text_bytes, conversation_key, iv)
 
         data = {
             "target": "conversation",
@@ -40,20 +40,20 @@ class Message:
 
             location = self.get_location()["location"]
 
-            data["latitude"] = Encryption.encrypt_aes(
+            data["latitude"] = CryptoUtils.encrypt_aes(
                 str(location["latitude"]).encode("utf-8"), conversation_key, iv=iv
             ).hex()
-            data["longitude"] = Encryption.encrypt_aes(
+            data["longitude"] = CryptoUtils.encrypt_aes(
                 str(location["longitude"]).encode("utf-8"), conversation_key, iv=iv
             ).hex()
 
         elif isinstance(location, tuple | list):
 
-            data["latitude"] = Encryption.encrypt_aes(
+            data["latitude"] = CryptoUtils.encrypt_aes(
                 str(location[0]).encode("utf-8"), conversation_key, iv=iv
             ).hex()
 
-            data["longitude"] = Encryption.encrypt_aes(
+            data["longitude"] = CryptoUtils.encrypt_aes(
                 str(location[1]).encode("utf-8"), conversation_key, iv=iv
             ).hex()
 
@@ -74,7 +74,7 @@ class Message:
                 else:
                     conversation_key = self.get_conversation_key(target=target, key=key)
 
-                    text = Encryption.decrypt_aes(
+                    text = CryptoUtils.decrypt_aes(
                         bytes.fromhex(text), conversation_key, bytes.fromhex(iv)
                     )
                     return text.decode("utf-8")

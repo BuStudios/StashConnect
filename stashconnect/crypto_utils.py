@@ -14,7 +14,7 @@ import base64
 import json
 
 
-class Encryption:
+class CryptoUtils:
 
     def encrypt_aes(plain: bytes, key: bytes, iv: bytes):
         padded = Crypto.Util.Padding.pad(plain, Crypto.Cipher.AES.block_size)

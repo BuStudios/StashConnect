@@ -23,7 +23,7 @@ import socketio
 from .messages import Message
 from .settings import Settings
 from .users import Users
-from .encryption import Encryption
+from .crypto_utils import CryptoUtils
 from .conversations import Conversations
 
 headers = {
@@ -138,7 +138,7 @@ class Client:
 
     def get_private_key(self, *, encryption_password: str) -> None:
         print("Importing private key. Please wait...")
-        self._private_key = Encryption.load_private_key(self, encryption_password)
+        self._private_key = CryptoUtils.load_private_key(self, encryption_password)
 
     def get_conversation_key(self, target, key=None):
 
@@ -154,7 +154,7 @@ class Client:
                 )
                 encrypted_key = response["conversation"]["key"]
 
-            decrypted_key = Encryption.decrypt_key(encrypted_key, self._private_key)
+            decrypted_key = CryptoUtils.decrypt_key(encrypted_key, self._private_key)
 
             self.conversation_keys[target] = decrypted_key
             return self.conversation_keys[target]

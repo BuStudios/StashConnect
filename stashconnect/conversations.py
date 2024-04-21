@@ -1,4 +1,4 @@
-from .encryption import Encryption
+from .crypto_utils import CryptoUtils
 
 
 class Conversations:
@@ -31,13 +31,13 @@ class Conversations:
 
             if message["location"]["encrypted"]:
 
-                longitude = Encryption.decrypt_aes(
+                longitude = CryptoUtils.decrypt_aes(
                     bytes.fromhex(message["location"]["longitude"]),
                     conversation_key,
                     iv=bytes.fromhex(message["location"]["iv"]),
                 ).decode("utf-8")
 
-                latitude = Encryption.decrypt_aes(
+                latitude = CryptoUtils.decrypt_aes(
                     bytes.fromhex(message["location"]["latitude"]),
                     conversation_key,
                     iv=bytes.fromhex(message["location"]["iv"]),
