@@ -137,8 +137,12 @@ class Client:
         return response
 
     def get_private_key(self, *, encryption_password: str) -> None:
+        
         print("Importing private key. Please wait...")
-        self._private_key = CryptoUtils.load_private_key(self, encryption_password)
+        response = self._post("security/get_private_key", data={})
+        encrypted_key = json.loads(response["keys"]["private_key"])
+
+        self._private_key = CryptoUtils.load_private_key(encrypted_key["private"], encryption_password)
 
     def get_conversation_key(self, target, key=None):
 
