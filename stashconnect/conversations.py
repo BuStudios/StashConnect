@@ -102,8 +102,8 @@ class Conversations:
                 "type_id": target,
                 "encrypted": True,
                 "iv": iv.hex(),
-                "media_width": None,
-                "media_height": None,
+                "media_width": 100,  # change this
+                "media_height": 100,  # change this
             }
 
             files = {
@@ -156,7 +156,7 @@ class Conversations:
                 "content": str("data:image/jpeg;base64," + image_base64),
             }
 
-            print(self._post("file/storePreviewImage", data=data))
+            self._post("file/storePreviewImage", data=data)
 
         except Exception:
             pass

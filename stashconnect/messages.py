@@ -10,12 +10,16 @@ import Crypto.Random
 import Crypto.Util
 import Crypto.Util.Padding
 
+import json
+
 from .crypto_utils import CryptoUtils
 
 
 class Message:
 
-    def send_message(self, target, text: str, location: bool | tuple | list = None):
+    def send_message(
+        self, target, text: str, files=None, location: bool | tuple | list = None
+    ):
 
         iv = Crypto.Random.get_random_bytes(16)
         conversation_key = self.get_conversation_key(target=target)
@@ -23,11 +27,17 @@ class Message:
         text_bytes = text.encode("utf-8")
         text = CryptoUtils.encrypt_aes(text_bytes, conversation_key, iv)
 
+        if files is not None:
+            file = self.upload_file(target, files)
+            files = [int(file["id"])]
+        else:
+            files = []
+
         data = {
             "target": "conversation",
             "conversation_id": target,
             "text": text.hex(),
-            "files": [],
+            "files": json.dumps(files),
             "url": [],
             "encrypted": True,
             "iv": iv.hex(),
@@ -56,7 +66,7 @@ class Message:
             data["longitude"] = CryptoUtils.encrypt_aes(
                 str(location[1]).encode("utf-8"), conversation_key, iv=iv
             ).hex()
-
+            
         response = self._post("message/send", data=data)
         return response
 

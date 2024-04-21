@@ -18,7 +18,8 @@ client = stashconnect.Client(
     email=email, password=password, encryption_password=encryption_password
 )
 
-client.upload_file(target, "testing/files/rick.gif")
+#client.upload_file(target, "testing/files/rick.gif")
+print(client.send_message(target, "hi", "testing/files/bee.png"))
 #print(client.get_messages(target, limit=1, offset=1))
 # print(client.get_location())
 # print(client.verify_login())

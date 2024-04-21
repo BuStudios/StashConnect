@@ -164,8 +164,8 @@ class Client:
             return self.conversation_keys[target]
 
     # MESSAGES
-    def send_message(self, target, text: str, location: bool | tuple | list = None):
-        return Message.send_message(self, target, text, location=location)
+    def send_message(self, target, text: str, files=None, location: bool | tuple | list = None):
+        return Message.send_message(self, target, text, files, location=location)
 
     def decode_message(self, *, target, text, iv, key=None):
         return Message.decode_message(self, target=target, text=text, iv=iv, key=key)
