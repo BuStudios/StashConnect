@@ -214,4 +214,4 @@ def upload_file(target, file_path, filename=None):
         print("Uploaded file!")
 
 
-upload_file(target_id, "testing/files/glass.jpeg")
+upload_file(target_id, "testing/files/bee.png")

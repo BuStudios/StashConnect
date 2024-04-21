@@ -108,14 +108,14 @@ class Client:
 
         return response
 
-    def _post(self, url, *, data, auth=True):
+    def _post(self, url, *, data, auth=True, **kwargs):
 
         data["device_id"] = self.device_id
 
         if auth is True:
             data["client_key"] = self.client_key
 
-        response = self._session.post(f"{self._main_url}{url}", data=data)
+        response = self._session.post(f"{self._main_url}{url}", data=data, **kwargs)
 
         response.raise_for_status()
 
@@ -191,6 +191,9 @@ class Client:
         return Conversations.get_messages(
             self, conversation_id, limit=limit, offset=offset
         )
+        
+    def upload_file(self, target, filepath):
+        return Conversations.upload_file(self, target, filepath)
 
     # SETTINGS
     def get_notification_count(self) -> int:
