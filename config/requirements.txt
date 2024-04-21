@@ -1,7 +1,5 @@
-requests
-aiohttp
 python-dotenv
+requests
+pycryptodome
 python-socketio
 Pillow
-pycryptodome
-websocket-client
