@@ -36,8 +36,8 @@ headers = {
     "Referer": "https://app.schul.cloud/",
 }
 
-class Client:
 
+class Client:
     """
     Represents a client connection to Stashcat API.
 
@@ -100,7 +100,6 @@ class Client:
         if encryption_password is not None:
             self.get_private_key(encryption_password=encryption_password)
 
-
     def _login(self):
 
         data = {
@@ -108,7 +107,7 @@ class Client:
             "password": self.password,
             "app_name": self.app_name,
             "encrypted": "true",
-            "callable": "true"
+            "callable": "true",
         }
 
         response = self._post("auth/login", data=data, auth=False)
@@ -125,7 +124,6 @@ class Client:
 
         return response
 
-
     def _post(self, url, *, data, auth=True):
 
         data["device_id"] = self.device_id
@@ -134,9 +132,9 @@ class Client:
             data["client_key"] = self.client_key
 
         response = self._session.post(f"{self._main_url}{url}", data=data)
-        
+
         response.raise_for_status()
-        
+
         response = response.json()
         status = response["status"]
         payload = response["payload"]
@@ -147,23 +145,16 @@ class Client:
 
         return payload
 
-
     def verify_login(self):
 
-        data = {
-            "app_name": self.app_name,
-            "encrypted": True,
-            "callable": True
-        }
+        data = {"app_name": self.app_name, "encrypted": True, "callable": True}
 
         response = self._post("/auth/check", data=data)
         return response
-    
 
-    def get_private_key(self, *, encryption_password:str) -> None:
+    def get_private_key(self, *, encryption_password: str) -> None:
         print("Importing private key. Please wait...")
         self._private_key = Encryption.load_private_key(self, encryption_password)
-
 
     def get_conversation_key(self, target, key=None):
 
@@ -174,79 +165,77 @@ class Client:
 
             if encrypted_key is None:
 
-                response = self._post("message/conversation", data={"conversation_id": target})
+                response = self._post(
+                    "message/conversation", data={"conversation_id": target}
+                )
                 encrypted_key = response["conversation"]["key"]
 
             decrypted_key = Encryption.decrypt_key(encrypted_key, self._private_key)
 
             self.conversation_keys[target] = decrypted_key
             return self.conversation_keys[target]
-        
 
     # MESSAGES
-    def send_message(self, target, text:str, location:bool|tuple|list=None):
+    def send_message(self, target, text: str, location: bool | tuple | list = None):
         return Message.send_message(self, target, text, location=location)
 
     def decode_message(self, *, target, text, iv, key=None):
-         return Message.decode_message(self, target=target, text=text, iv=iv, key=key)
-
+        return Message.decode_message(self, target=target, text=text, iv=iv, key=key)
 
     # USERS
     def get_location(self):
         return Users.get_location(self)
 
-    def change_status(self, status:str):
+    def change_status(self, status: str):
         return Users.change_status(self, status)
-    
-    def change_profile_picture(self, *, url:str):
+
+    def change_profile_picture(self, *, url: str):
         return Users.change_profile_picture(self, url=url)
 
     def reset_profile_picture(self):
         return Users.reset_profile_picture(self)
 
-
     # CONVERSATIONS
     def archive_conversation(self, conversation_id):
         return Conversations.archive_conversation(self, conversation_id)
-    
-    def get_messages(self, conversation_id, limit:int=30, offset:int=0):
-        return Conversations.get_messages(self, conversation_id, limit=limit, offset=offset)
 
+    def get_messages(self, conversation_id, limit: int = 30, offset: int = 0):
+        return Conversations.get_messages(
+            self, conversation_id, limit=limit, offset=offset
+        )
 
     # SETTINGS
     def get_notification_count(self) -> int:
         return Settings.get_notification_count(self)
-    
-    def get_notifications(self, limit:int=20, offset:int=0) -> dict:
+
+    def get_notifications(self, limit: int = 20, offset: int = 0) -> dict:
         return Settings.get_notifications(self, limit, offset)
-    
-    
-    def change_email(self, email:str):
+
+    def change_email(self, email: str):
         return Settings.change_email(self, email)
 
-    def resend_verification_email(self, email:str):
+    def resend_verification_email(self, email: str):
         return Settings.resend_verification_email(self, email)
-    
-    def change_password(self, new_password:str, old_password:str):
+
+    def change_password(self, new_password: str, old_password: str):
         return Settings.change_password(self, new_password, old_password)
 
     def get_settings(self):
         return Settings.get_settings(self)
-    
+
     def get_me(self):
         return Settings.get_me(self)
-    
+
     def get_active_devices(self):
         return Settings.get_active_devices(self)
-
 
     def event(self, name):
 
         def decorator(func):
             self.events[name] = func
             return func
-        return decorator
 
+        return decorator
 
     def _run(self, debug=False):
 
@@ -260,7 +249,7 @@ class Client:
             data = {
                 "hidden_id": self.socket_id,
                 "device_id": self.device_id,
-                "client_key": self.client_key
+                "client_key": self.client_key,
             }
 
             self.sio.emit("userid", data)
@@ -272,7 +261,9 @@ class Client:
 
         @self.sio.on("user-started-typing")
         def pong(*args):
-            if str(args[2]) == str(self.user_id) and str(args[1]) == str(self._ping_target):
+            if str(args[2]) == str(self.user_id) and str(args[1]) == str(
+                self._ping_target
+            ):
                 self._end_time = time.perf_counter()
 
         for event_name, event_handler in self.events.items():
@@ -281,17 +272,17 @@ class Client:
         self.sio.connect(self._push_url)
         self.sio.wait()
 
-
     def run(self, debug=False):
         self._run(debug=debug)
-
 
     def ws_latency(self, target):
 
         start_time = time.perf_counter()
         self._end_time = None
         self._ping_target = target
-        self.sio.emit("started-typing", (self.device_id, self.client_key, "conversation", target))
+        self.sio.emit(
+            "started-typing", (self.device_id, self.client_key, "conversation", target)
+        )
 
         time.sleep(2)
 
