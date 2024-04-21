@@ -86,6 +86,8 @@ class Client:
         self._push_url = "https://push.stashcat.com/"
 
         self._headers = headers
+        self._session = requests.Session()
+        self._session.headers.update(self._headers)
 
         self._login()
 
@@ -131,7 +133,7 @@ class Client:
         if auth is True:
             data["client_key"] = self.client_key
 
-        response = requests.post(f"{self._main_url}{url}", data=data, headers=self._headers)
+        response = self._session.post(f"{self._main_url}{url}", data=data)
         
         response.raise_for_status()
         
