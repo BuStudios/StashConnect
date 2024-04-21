@@ -38,39 +38,23 @@ headers = {
 
 
 class Client:
-    """
-    Represents a client connection to Stashcat API.
+    """Represents a client connection to Stashcat API.
 
     Atrributes:
-
         .email (str): The user's email used for authentication.
-
         .password (str): The user's password.
-
         .device_id (str): The device_id used to login, defaults to "stashconnect123".
-
         .client_key (str): The key used in submitting requests.
-
         .socket_id (str): The ID for the websocket connection.
-
         .user_id (str): The unique ID of the connected user's account.
-
         .image_url (str): URL to the user's profile image.
-
         .first_name (str): User's first name.
-
         .last_name (str): User's last name.
 
-        ._private_key (Crypto.PublicKey.RSA): The RSA private key used to decrypt conversation keys.
-
     Methods:
-
         .send_message(target, text). Encrypts and sends a message to a specific conversation.
-
         .decode_message(text, target, iv, key -> optional): Decrypts an encrypted message.
-
         .change_profile_picture(url): Updates the user's profile image with an image URL.
-
         .change_status(status): Updates the user's status.
     """
 
