@@ -1,7 +1,10 @@
 """
-StashConnect v.0.0
+StashConnect
+~~~~~~~~~~~~
+An API wrapper for [Stashcat](https://stashcat.com/en).
 
-An API wrapper for Stashcat.
+:copyright: (c) 2024-present BuStudios
+:license: MIT, see LICENSE.
 """
 
 from .client import *
