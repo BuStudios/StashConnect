@@ -81,6 +81,14 @@ class Conversations:
         with open(filepath, "rb") as file:
             file_content = file.read()
 
+        try:
+            with Image.open(filepath) as image:
+                image_width = image.width
+                image_height = image.height
+        except Exception:
+            image_width = None
+            image_height = None
+
         total_chunks = (len(file_content) + max_chunk_size - 1) // max_chunk_size
 
         for i in range(total_chunks):
@@ -102,8 +110,8 @@ class Conversations:
                 "type_id": target,
                 "encrypted": True,
                 "iv": iv.hex(),
-                "media_width": 100,  # change this
-                "media_height": 100,  # change this
+                "media_width": image_width,
+                "media_height": image_height,
             }
 
             files = {
