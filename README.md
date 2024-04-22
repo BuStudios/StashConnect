@@ -6,3 +6,5 @@ unfinished
 ## Contributors
 - All code made by [BuStudios](https://github.com/bustudios)
 - Create a pull request to contribute code yourself
+
+StashConnect is not affiliated with Stashcat GmbH or any of its affiliates.
