@@ -46,7 +46,6 @@ client = stashconnect.Client(
 
 @client.event("notification")
 def message_received(data):
-    print(data)
     message = client.decode_message(
         target=data["message"]["conversation_id"],
         text=data["message"]["text"],
@@ -73,6 +72,6 @@ def message_received(data):
 
 @client.event("user-started-typing")
 def user_typing(data):
-    print(data)
+    print("User writing: " + data)
 
 client.run(debug=False)

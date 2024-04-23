@@ -238,6 +238,19 @@ class Client:
 
         return decorator
 
+    def event_modifier(self):
+        def decorator(func):
+            def wrapper(*args):
+                if str(args[2]) == str(self.user_id) and str(args[1]) == str(
+                    self._ping_target
+                ):
+                    self._end_time = time.perf_counter()
+                func(*args)
+
+            return wrapper
+
+        return decorator
+
     def _run(self, debug=False):
 
         self.sio = socketio.Client(logger=debug, engineio_logger=debug)
@@ -260,15 +273,12 @@ class Client:
             print("Disconnected from the server")
             self.sio.disconnect()
 
-        @self.sio.on("user-started-typing")
-        def pong(*args):
-            if str(args[2]) == str(self.user_id) and str(args[1]) == str(
-                self._ping_target
-            ):
-                self._end_time = time.perf_counter()
-
         for event_name, event_handler in self.events.items():
-            self.sio.on(event_name)(event_handler)
+            if event_name == "user-started-typing":
+                event_modifier = self.event_modifier()(event_handler)
+                self.sio.on(event_name)(event_modifier)
+            else:
+                self.sio.on(event_name)(event_handler)
 
         self.sio.connect(self._push_url)
         self.sio.wait()
