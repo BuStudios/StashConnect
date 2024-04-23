@@ -17,6 +17,7 @@ import time
 
 from PIL import Image
 import io
+import threading
 
 import socketio
 
@@ -77,6 +78,7 @@ class Client:
 
         self.conversation_keys = {}
         self.events = {}
+        self.loops = []
 
         self._private_key = None
         self._ping_target = None
@@ -237,6 +239,18 @@ class Client:
             return func
 
         return decorator
+    
+    def loop(self, seconds):
+        def decorator(func):
+            def wrapped_func():
+                def run():
+                    while True:
+                        func()
+                        time.sleep(seconds)
+                return run
+            self.loops.append(wrapped_func())
+            return func
+        return decorator
 
     def event_modifier(self):
         def decorator(func):
@@ -284,7 +298,13 @@ class Client:
         self.sio.wait()
 
     def run(self, debug=False):
+        self._run_loops()
         self._run(debug=debug)
+        
+    def _run_loops(self):
+        for loop in self.loops:
+            thread = threading.Thread(target=loop)
+            thread.start()
 
     def ws_latency(self, target):
 

@@ -15,7 +15,8 @@ encryption_password = os.getenv("pass2")
 target = os.getenv("conversation_id")
 
 client = stashconnect.Client(
-    email=email, password=password, encryption_password=encryption_password
+    email=email, password=password, 
+    encryption_password=encryption_password
 )
 
 # client.upload_file(target, "testing/files/rick.gif")
@@ -72,6 +73,11 @@ def message_received(data):
 
 @client.event("user-started-typing")
 def user_typing(data):
-    print("User writing: " + data)
+    print("User writing: " + str(data))
+    
+@client.loop(seconds=10)
+def run():
+    print("Loop!")
+    client.send_message(target, "Loop", None, True)
 
 client.run(debug=False)
