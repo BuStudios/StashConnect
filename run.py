@@ -18,9 +18,9 @@ client = stashconnect.Client(
     email=email, password=password, encryption_password=encryption_password
 )
 
-#client.upload_file(target, "testing/files/rick.gif")
-print(client.send_message(target, "hi", "testing/files/bee.png"))
-#print(client.get_messages(target, limit=1, offset=1))
+# client.upload_file(target, "testing/files/rick.gif")
+# print(client.send_message(target, "hi", "testing/files/bee.png"))
+# print(client.get_messages(target, limit=1, offset=1))
 # print(client.get_location())
 # print(client.verify_login())
 # print(client.get_active_devices())
@@ -34,7 +34,7 @@ print(client.send_message(target, "hi", "testing/files/bee.png"))
 
 # print(client.send_message(target, "test", True))
 
-sys.exit()
+# sys.exit()
 
 # while True:
 #    text = input("Input:\n")
@@ -46,6 +46,7 @@ sys.exit()
 
 @client.event("notification")
 def message_received(data):
+    print(data)
     message = client.decode_message(
         target=data["message"]["conversation_id"],
         text=data["message"]["text"],
@@ -70,5 +71,8 @@ def message_received(data):
         text=f"[automated] msg received => ↹ websocket_latency = {latency}ms.\nreceived: {message}. author: {sender}. UNIX: {timestamp}.",
     )
 
+@client.event("user-started-typing")
+def user_typing(data):
+    print(data)
 
 client.run(debug=False)

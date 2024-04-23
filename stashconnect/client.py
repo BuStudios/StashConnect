@@ -137,12 +137,14 @@ class Client:
         return response
 
     def get_private_key(self, *, encryption_password: str) -> None:
-        
+
         print("Importing private key. Please wait...")
         response = self._post("security/get_private_key", data={})
         encrypted_key = json.loads(response["keys"]["private_key"])
 
-        self._private_key = CryptoUtils.load_private_key(encrypted_key["private"], encryption_password)
+        self._private_key = CryptoUtils.load_private_key(
+            encrypted_key["private"], encryption_password
+        )
 
     def get_conversation_key(self, target, key=None):
 
@@ -164,7 +166,9 @@ class Client:
             return self.conversation_keys[target]
 
     # MESSAGES
-    def send_message(self, target, text: str, files=None, location: bool | tuple | list = None):
+    def send_message(
+        self, target, text: str, files=None, location: bool | tuple | list = None
+    ):
         return Message.send_message(self, target, text, files, location=location)
 
     def decode_message(self, *, target, text, iv, key=None):
@@ -191,7 +195,7 @@ class Client:
         return Conversations.get_messages(
             self, conversation_id, limit=limit, offset=offset
         )
-        
+
     def upload_file(self, target, filepath):
         return Conversations.upload_file(self, target, filepath)
 
@@ -223,7 +227,13 @@ class Client:
     def event(self, name):
 
         def decorator(func):
-            self.events[name] = func
+            def wrapper(*args):
+                if len(args) == 1:
+                    func(args[0])
+                else:
+                    func(args)
+
+            self.events[name] = wrapper
             return func
 
         return decorator
