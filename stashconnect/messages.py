@@ -46,7 +46,6 @@ class Message:
             "iv": iv.hex(),
             "verification": "",
             "type": "text",
-            "is_forwarded": False,
         }
 
         data.update(kwargs)
