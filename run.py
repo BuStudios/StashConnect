@@ -15,12 +15,22 @@ encryption_password = os.getenv("pass2")
 target = os.getenv("conversation_id")
 
 client = stashconnect.Client(
-    email=email, password=password, 
-    encryption_password=encryption_password
+    email=email, password=password, encryption_password=encryption_password
 )
 
 # client.upload_file(target, "testing/files/rick.gif")
-# print(client.send_message(target, "hi", "testing/files/bee.png"))
+print(
+    client.send_message(
+        target,
+        "hi",
+        files=[
+            "testing/files/bee.png",
+            "testing/files/rick.gif",
+            "testing/files/rock.gif",
+            "testing/files/glass.jpeg",
+        ],
+    )
+)
 # print(client.get_messages(target, limit=1, offset=1))
 # print(client.get_location())
 # print(client.verify_login())
@@ -69,15 +79,19 @@ def message_received(data):
     client.send_message(
         target=data["message"]["conversation_id"],
         text=f"[automated] msg received => ↹ websocket_latency = {latency}ms.\nreceived: {message}. author: {sender}. UNIX: {timestamp}.",
+        reply_to=data["message"]["id"],
     )
+
 
 @client.event("user-started-typing")
 def user_typing(data):
     print("User writing: " + str(data))
-    
-@client.loop(seconds=10)
+
+
+@client.loop(seconds=100)
 def run():
     print("Loop!")
-    client.send_message(target, "Loop", None, True)
+    # client.send_message(target, "Loop", None, True)
+
 
 client.run(debug=False)

@@ -17,9 +17,7 @@ from .crypto_utils import CryptoUtils
 
 class Message:
 
-    def send_message(
-        self, target, text: str, files=None, location: bool | tuple | list = None
-    ):
+    def send_message(self, target, text, files, location, **kwargs):
 
         iv = Crypto.Random.get_random_bytes(16)
         conversation_key = self.get_conversation_key(target=target)
@@ -27,17 +25,22 @@ class Message:
         text_bytes = text.encode("utf-8")
         text = CryptoUtils.encrypt_aes(text_bytes, conversation_key, iv)
 
+        files_sent = []
+
         if files is not None:
-            file = self.upload_file(target, files)
-            files = [int(file["id"])]
-        else:
-            files = []
+
+            if isinstance(files, str):
+                files = [files]
+
+            for file in files:
+                file = self.upload_file(target, file)
+                files_sent.append(int(file["id"]))
 
         data = {
             "target": "conversation",
             "conversation_id": target,
             "text": text.hex(),
-            "files": json.dumps(files),
+            "files": json.dumps(files_sent),
             "url": [],
             "encrypted": True,
             "iv": iv.hex(),
@@ -45,6 +48,8 @@ class Message:
             "type": "text",
             "is_forwarded": False,
         }
+        
+        data.update(kwargs)
 
         if location is True:
 
@@ -66,11 +71,11 @@ class Message:
             data["longitude"] = CryptoUtils.encrypt_aes(
                 str(location[1]).encode("utf-8"), conversation_key, iv=iv
             ).hex()
-            
+
         response = self._post("message/send", data=data)
         return response
 
-    def decode_message(self, *, target, text, iv, key=None):
+    def decode_message(self, target, text, iv, key):
 
         if text == "":
             return text

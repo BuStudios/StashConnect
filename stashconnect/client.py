@@ -169,12 +169,12 @@ class Client:
 
     # MESSAGES
     def send_message(
-        self, target, text: str, files=None, location: bool | tuple | list = None
+        self, target, text: str, *, files=None, location: bool | tuple | list = None, **kwargs
     ):
-        return Message.send_message(self, target, text, files, location=location)
+        return Message.send_message(self, target, text, files, location, **kwargs)
 
     def decode_message(self, *, target, text, iv, key=None):
-        return Message.decode_message(self, target=target, text=text, iv=iv, key=key)
+        return Message.decode_message(self, target, text, iv, key)
 
     # USERS
     def get_location(self):
@@ -239,17 +239,21 @@ class Client:
             return func
 
         return decorator
-    
+
     def loop(self, seconds):
         def decorator(func):
             def wrapped_func():
                 def run():
+                    time.sleep(2)
                     while True:
                         func()
                         time.sleep(seconds)
+
                 return run
+
             self.loops.append(wrapped_func())
             return func
+
         return decorator
 
     def event_modifier(self):
@@ -299,8 +303,9 @@ class Client:
 
     def run(self, debug=False):
         self._run_loops()
-        self._run(debug=debug)
-        
+        if len(self.events) != 0:
+            self._run(debug=debug)
+
     def _run_loops(self):
         for loop in self.loops:
             thread = threading.Thread(target=loop)
