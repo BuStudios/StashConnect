@@ -175,6 +175,9 @@ class Client:
 
     def decode_message(self, *, target, text, iv, key=None):
         return Message.decode_message(self, target, text, iv, key)
+    
+    def like_message(self, id):
+        return Message.like_message(self, id)
 
     # USERS
     def get_location(self):

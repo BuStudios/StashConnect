@@ -19,18 +19,18 @@ client = stashconnect.Client(
 )
 
 # client.upload_file(target, "testing/files/rick.gif")
-print(
-    client.send_message(
-        target,
-        "hi",
-        files=[
-            "testing/files/bee.png",
-            "testing/files/rick.gif",
-            "testing/files/rock.gif",
-            "testing/files/glass.jpeg",
-        ],
-    )
-)
+#print(
+#    client.send_message(
+#        target,
+#        "hi",
+#        files=[
+#            "testing/files/bee.png",
+#            "testing/files/rick.gif",
+#            "testing/files/rock.gif",
+#            "testing/files/glass.jpeg",
+#        ],
+#    )
+#)
 # print(client.get_messages(target, limit=1, offset=1))
 # print(client.get_location())
 # print(client.verify_login())
@@ -73,6 +73,8 @@ def message_received(data):
     print(f"Message received: {message}. Author: {sender}. UNIX: {timestamp}.")
 
     # client.sio.emit("started-typing", (client.device_id, client.client_key, "conversation", data["message"]["conversation_id"]))
+
+    print(client.like_message(data["message"]["id"]))
 
     latency = client.ws_latency(data["message"]["conversation_id"])
 

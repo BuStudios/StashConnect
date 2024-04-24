@@ -48,7 +48,7 @@ class Message:
             "type": "text",
             "is_forwarded": False,
         }
-        
+
         data.update(kwargs)
 
         if location is True:
@@ -96,3 +96,6 @@ class Message:
 
             except Exception:
                 return text
+
+    def like_message(self, id):
+        return self._post("message/like", data={"message_id": id})
