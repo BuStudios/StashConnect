@@ -133,7 +133,7 @@ class Client:
             encrypted_key["private"], encryption_password
         )
 
-    def get_conversation_key(self, target, key=None):
+    def get_conversation_key(self, target, target_type, key=None):
 
         try:
             return self.conversation_keys[target]
@@ -141,11 +141,17 @@ class Client:
             encrypted_key = key
 
             if encrypted_key is None:
-
-                response = self._post(
-                    "message/conversation", data={"conversation_id": target}
-                )
-                encrypted_key = response["conversation"]["key"]
+                if target_type == "conversation":
+                    response = self._post(
+                        "message/conversation", data={"conversation_id": target}
+                    )
+                    encrypted_key = response["conversation"]["key"]
+                else:
+                    response = self._post(
+                        "channels/info",
+                        data={"channel_id": target, "without_members": True},
+                    )
+                    encrypted_key = response["channels"]["key"]
 
             decrypted_key = CryptoUtils.decrypt_key(encrypted_key, self._private_key)
 
@@ -169,6 +175,11 @@ class Client:
 
     def like_message(self, id):
         return Message.like_message(self, id)
+    
+    def get_messages(self, conversation_id, limit: int = 30, offset: int = 0):
+        return Message.get_messages(
+            self, conversation_id, limit, offset
+        )
 
     # USERS
     def get_location(self):
@@ -186,11 +197,6 @@ class Client:
     # CONVERSATIONS
     def archive_conversation(self, conversation_id):
         return Conversations.archive_conversation(self, conversation_id)
-
-    def get_messages(self, conversation_id, limit: int = 30, offset: int = 0):
-        return Conversations.get_messages(
-            self, conversation_id, limit=limit, offset=offset
-        )
 
     # FILES
     def upload_file(self, target, filepath):

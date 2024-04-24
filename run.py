@@ -16,11 +16,12 @@ target = os.getenv("conversation_id")
 
 client = stashconnect.Client(
     email=email, password=password, 
-    #encryption_password=encryption_password
+    encryption_password=encryption_password
 )
 
-
-print(client.get_type(5))
+pprint.pprint(client.get_messages(target, offset=50))
+#print(client.upload_file(target, "testing/files/image.png"))
+#print(client.get_type(target))
 sys.exit()
 # client.upload_file(target, "testing/files/rick.gif")
 #print(
@@ -47,7 +48,7 @@ sys.exit()
 # time.sleep(5)
 # print(client.resend_verification_email(email))
 
-# print(client.send_message(target, "test", True))
+print(client.send_message(target, ""))
 
 # sys.exit()
 

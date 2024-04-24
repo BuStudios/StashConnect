@@ -45,6 +45,7 @@ class Files:
             image_height = None
 
         total_chunks = (len(file_content) + max_chunk_size - 1) // max_chunk_size
+        target_type = self.get_type(target)
 
         for i in range(total_chunks):
             data_chunk = file_content[i * max_chunk_size : (i + 1) * max_chunk_size]
@@ -61,7 +62,7 @@ class Files:
                 "resumableRelativePath": filename,
                 "resumableTotalChunks": total_chunks,
                 "folder": 0,
-                "type": "conversation",
+                "type": target_type,
                 "type_id": target,
                 "encrypted": True,
                 "iv": iv.hex(),
@@ -81,10 +82,10 @@ class Files:
 
         data = {
             "file_id": file_id,
-            "target": "conversation",
+            "target": target_type,
             "target_id": target,
             "key": CryptoUtils.encrypt_aes(
-                file_key, self.get_conversation_key(target), iv
+                file_key, self.get_conversation_key(target, target_type), iv
             ).hex(),
             "iv": iv.hex(),
         }
