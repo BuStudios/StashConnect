@@ -10,6 +10,7 @@ from .users import Users
 from .crypto_utils import CryptoUtils
 from .conversations import Conversations
 from .files import Files
+from .tools import Tools
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
@@ -153,13 +154,19 @@ class Client:
 
     # MESSAGES
     def send_message(
-        self, target, text: str, *, files=None, location: bool | tuple | list = None, **kwargs
+        self,
+        target,
+        text: str,
+        *,
+        files=None,
+        location: bool | tuple | list = None,
+        **kwargs,
     ):
         return Message.send_message(self, target, text, files, location, **kwargs)
 
     def decode_message(self, *, target, text, iv, key=None):
         return Message.decode_message(self, target, text, iv, key)
-    
+
     def like_message(self, id):
         return Message.like_message(self, id)
 
@@ -188,7 +195,7 @@ class Client:
     # FILES
     def upload_file(self, target, filepath):
         return Files.upload_file(self, target, filepath)
-    
+
     def quota(self):
         return Files.quota(self)
 
@@ -216,6 +223,15 @@ class Client:
 
     def get_active_devices(self):
         return Settings.get_active_devices(self)
+
+    # TOOLS
+    def get_type(self, id: int | str) -> str:
+        """Returns type (conversation or channel)
+
+        Args:
+            id (int | str): The conversation or channels id
+        """
+        return Tools.get_type(self, id)
 
     def event(self, name):
 

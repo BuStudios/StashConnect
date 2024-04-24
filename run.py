@@ -15,9 +15,13 @@ encryption_password = os.getenv("pass2")
 target = os.getenv("conversation_id")
 
 client = stashconnect.Client(
-    email=email, password=password, encryption_password=encryption_password
+    email=email, password=password, 
+    #encryption_password=encryption_password
 )
 
+
+print(client.get_type(5))
+sys.exit()
 # client.upload_file(target, "testing/files/rick.gif")
 #print(
 #    client.send_message(
