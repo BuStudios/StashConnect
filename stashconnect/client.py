@@ -1,24 +1,7 @@
-import Crypto.Cipher
-import Crypto.Cipher.AES
-import Crypto.Cipher.PKCS1_OAEP
-import Crypto.Protocol
-import Crypto.PublicKey
-import Crypto.PublicKey.RSA
-import Crypto
-
-import Crypto.Random
-import Crypto.Util
-import Crypto.Util.Padding
-
 import requests
 import json
-import base64
 import time
-
-from PIL import Image
-import io
 import threading
-
 import socketio
 
 from .messages import Message
@@ -26,6 +9,7 @@ from .settings import Settings
 from .users import Users
 from .crypto_utils import CryptoUtils
 from .conversations import Conversations
+from .files import Files
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
@@ -201,8 +185,9 @@ class Client:
             self, conversation_id, limit=limit, offset=offset
         )
 
+    # FILES
     def upload_file(self, target, filepath):
-        return Conversations.upload_file(self, target, filepath)
+        return Files.upload_file(self, target, filepath)
 
     # SETTINGS
     def get_notification_count(self) -> int:
