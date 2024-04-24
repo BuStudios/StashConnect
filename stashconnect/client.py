@@ -188,6 +188,9 @@ class Client:
     # FILES
     def upload_file(self, target, filepath):
         return Files.upload_file(self, target, filepath)
+    
+    def quota(self):
+        return Files.quota(self)
 
     # SETTINGS
     def get_notification_count(self) -> int:

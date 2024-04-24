@@ -14,6 +14,12 @@ from .crypto_utils import CryptoUtils
 
 class Files:
 
+    def quota(self):
+        response = self._post(
+            "file/quota", data={"type": "personal", "type_id": self.user_id}
+        )
+        return response["quota"]
+
     def upload_file(self, target, filepath):
         filename = os.path.basename(filepath)
 
