@@ -1,15 +1,12 @@
 import stashconnect
 from dotenv import load_dotenv
-import datetime
-import os
-import time
-import pprint
 import sys
+import os
+import pprint
 
 load_dotenv("config/.env")
 
 email = os.getenv("email")
-email2 = os.getenv("email2")
 password = os.getenv("password")
 encryption_password = os.getenv("pass2")
 target = os.getenv("conversation_id")
@@ -19,12 +16,10 @@ client = stashconnect.Client(
     encryption_password=encryption_password
 )
 
-pprint.pprint(client.get_messages(target, offset=50))
-#print(client.upload_file(target, "testing/files/image.png"))
-#print(client.get_type(target))
-sys.exit()
-# client.upload_file(target, "testing/files/rick.gif")
-#print(
+# client.upload_file("1", "testing/files/glass.jpeg")
+# client.download_file("1")
+
+# print(
 #    client.send_message(
 #        target,
 #        "hi",
@@ -35,29 +30,9 @@ sys.exit()
 #            "testing/files/glass.jpeg",
 #        ],
 #    )
-#)
-# print(client.get_messages(target, limit=1, offset=1))
-# print(client.get_location())
-# print(client.verify_login())
-# print(client.get_active_devices())
-# print(client.get_me())
-# print(client.get_settings())
-# print(client.change_password(password, password))
-# pprint.pprint(client.get_notifications())
-# print(client.change_email(email))
-# time.sleep(5)
-# print(client.resend_verification_email(email))
+# )
 
 print(client.send_message(target, ""))
-
-# sys.exit()
-
-# while True:
-#    text = input("Input:\n")
-#    client.send_message(target=target, text=text)
-
-# client.change_status(str(datetime.datetime.now())[:19])
-# print(client.change_profile_picture(url="https://assets-global.website-files.com/6009ec8cda7f305645c9d91b/620bd6d655f2044afa28bff4_glassmorphism.jpeg"))
 
 
 @client.event("notification")

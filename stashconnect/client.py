@@ -95,7 +95,7 @@ class Client:
 
         return response
 
-    def _post(self, url, *, data, auth=True, **kwargs):
+    def _post(self, url, *, data, auth=True, return_all=False, **kwargs):
 
         data["device_id"] = self.device_id
 
@@ -106,15 +106,19 @@ class Client:
 
         response.raise_for_status()
 
-        response = response.json()
-        status = response["status"]
-        payload = response["payload"]
+        if not return_all:
+            response = response.json()
+            status = response["status"]
+            payload = response["payload"]
 
-        if status["value"] != "OK":
-            # create custom exceptions
-            raise Exception(status["message"])
+            if status["value"] != "OK":
+                # create custom exceptions
+                raise Exception(status["message"])
 
-        return payload
+            return payload
+
+        else:
+            return response
 
     def verify_login(self):
 
@@ -175,11 +179,9 @@ class Client:
 
     def like_message(self, id):
         return Message.like_message(self, id)
-    
+
     def get_messages(self, conversation_id, limit: int = 30, offset: int = 0):
-        return Message.get_messages(
-            self, conversation_id, limit, offset
-        )
+        return Message.get_messages(self, conversation_id, limit, offset)
 
     # USERS
     def get_location(self):
@@ -201,6 +203,12 @@ class Client:
     # FILES
     def upload_file(self, target, filepath):
         return Files.upload_file(self, target, filepath)
+
+    def download_file(self, file_id, directory=""):
+        return Files.download_file(self, file_id, directory)
+
+    def file_info(self, id):
+        return Files.file_info(self, id)
 
     def quota(self):
         return Files.quota(self)

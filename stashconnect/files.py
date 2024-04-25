@@ -126,3 +126,36 @@ class Files:
             pass
 
         return file
+
+    def download_file(self, id, directory):
+        response = self._post(f"file/download?id={id}", data={}, return_all=True)
+
+        file_info = self.file_info(id)
+        file_path = os.path.join(directory, file_info["name"])
+
+        with open(file_path, "wb") as file:
+
+            if file_info["encrypted"]:
+                key = CryptoUtils.decrypt_aes(
+                    bytes.fromhex(file_info["keys"][0]["key"]),
+                    self.get_conversation_key(
+                        file_info["keys"][0]["chat_id"],
+                        file_info["keys"][0]["type"],
+                        key=file_info["keys"][0]["chat_key"],
+                    ),
+                    bytes.fromhex(file_info["keys"][0]["iv"]),
+                )
+                decrypted = CryptoUtils.decrypt_aes(
+                    response.content,
+                    key,
+                    bytes.fromhex(file_info["e2e_iv"]),
+                )
+                file.write(decrypted)
+            else:
+                file.write(response.content)
+
+        return {"success": True}
+
+    def file_info(self, id):
+        response = self._post("file/info", data={"file_id": id})
+        return response["file"]
