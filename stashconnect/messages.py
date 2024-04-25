@@ -18,9 +18,10 @@ from .crypto_utils import CryptoUtils
 class Message:
 
     def send_message(self, target, text, files, location, **kwargs):
+        target_type = self.get_type(target)
 
         iv = Crypto.Random.get_random_bytes(16)
-        conversation_key = self.get_conversation_key(target, "conversation")
+        conversation_key = self.get_conversation_key(target, target_type)
 
         text_bytes = text.encode("utf-8")
         text = CryptoUtils.encrypt_aes(text_bytes, conversation_key, iv)
@@ -37,8 +38,8 @@ class Message:
                 files_sent.append(int(file["id"]))
 
         data = {
-            "target": "conversation",
-            "conversation_id": target,
+            "target": target_type,
+            f"{target_type}_id": target,
             "text": text.hex(),
             "files": json.dumps(files_sent),
             "url": [],
