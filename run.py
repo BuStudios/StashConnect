@@ -14,25 +14,11 @@ target = os.getenv("conversation_id")
 
 client = stashconnect.Client(
     email=email, password=password, 
-    #encryption_password=encryption_password
+    encryption_password=encryption_password
 )
-id = client.upload_file(target, "testing/files/rock.gif", encrypted=False)["id"]
-print(client.delete_files(id))
-sys.exit()
-# client.download_file("1")
 
-# print(
-#    client.send_message(
-#        target,
-#        "hi",
-#        files=[
-#            "testing/files/bee.png",
-#            "testing/files/rick.gif",
-#            "testing/files/rock.gif",
-#            "testing/files/glass.jpeg",
-#        ],
-#    )
-# )
+# id = client.upload_file(target, "testing/files/rock.gif", encrypted=False)["id"]
+# print(client.delete_files(id))
 
 # print(client.send_message(target, "o", url="https://bustudios.org"))
 
@@ -72,10 +58,9 @@ def user_typing(data):
     print("User writing: " + str(data))
 
 
-@client.loop(seconds=100)
-def run():
-    print("Loop!")
-    # client.send_message(target, "Loop", None, True)
+@client.loop(seconds=30)
+def loop():
+    client.send_message(target, "200 ping")
 
 
-client.run(debug=False)
+client.run()
