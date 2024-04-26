@@ -205,8 +205,8 @@ class Client:
         return Conversations.archive_conversation(self, conversation_id)
 
     # FILES
-    def upload_file(self, target, filepath):
-        return Files.upload_file(self, target, filepath)
+    def upload_file(self, target, filepath, encrypted=True):
+        return Files.upload_file(self, target, filepath, encrypted)
 
     def download_file(self, file_id, directory=""):
         return Files.download_file(self, file_id, directory)

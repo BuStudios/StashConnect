@@ -20,11 +20,12 @@ class Files:
         )
         return response["quota"]
 
-    def upload_file(self, target, filepath):
+    def upload_file(self, target, filepath, encrypted):
         filename = os.path.basename(filepath)
 
-        iv = Crypto.Random.get_random_bytes(16)
-        file_key = Crypto.Random.get_random_bytes(32)
+        if encrypted:
+            iv = Crypto.Random.get_random_bytes(16)
+            file_key = Crypto.Random.get_random_bytes(32)
 
         content_type = mimetypes.guess_type(filepath)[0]
         if not content_type:
@@ -49,7 +50,10 @@ class Files:
 
         for i in range(total_chunks):
             data_chunk = file_content[i * max_chunk_size : (i + 1) * max_chunk_size]
-            encrypted_chunk = CryptoUtils.encrypt_aes(data_chunk, file_key, iv)
+            if encrypted:
+                encrypted_chunk = CryptoUtils.encrypt_aes(data_chunk, file_key, iv)
+            else:
+                encrypted_chunk = data_chunk
 
             data = {
                 "resumableChunkNumber": i,
@@ -64,11 +68,13 @@ class Files:
                 "folder": 0,
                 "type": target_type,
                 "type_id": target,
-                "encrypted": True,
-                "iv": iv.hex(),
+                "encrypted": encrypted,
                 "media_width": image_width,
                 "media_height": image_height,
             }
+            
+            if encrypted:
+                data["iv"] = iv.hex()
 
             files = {
                 "file": ("[object Object]", encrypted_chunk, "application/octet-stream")
@@ -78,19 +84,21 @@ class Files:
             file = response["file"]
 
         file_id = file["id"]
-        iv = Crypto.Random.get_random_bytes(16)
-
-        data = {
-            "file_id": file_id,
-            "target": target_type,
-            "target_id": target,
-            "key": CryptoUtils.encrypt_aes(
-                file_key, self.get_conversation_key(target, target_type), iv
-            ).hex(),
-            "iv": iv.hex(),
-        }
-
-        response = self._post("security/set_file_access_key", data=data)
+        
+        if encrypted:
+            iv = Crypto.Random.get_random_bytes(16)
+    
+            data = {
+                "file_id": file_id,
+                "target": target_type,
+                "target_id": target,
+                "key": CryptoUtils.encrypt_aes(
+                    file_key, self.get_conversation_key(target, target_type), iv
+                ).hex(),
+                "iv": iv.hex(),
+            }
+    
+            response = self._post("security/set_file_access_key", data=data)
 
         try:
             with Image.open(filepath) as image:

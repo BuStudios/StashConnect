@@ -13,10 +13,11 @@ target = os.getenv("conversation_id")
 
 client = stashconnect.Client(
     email=email, password=password, 
-    encryption_password=encryption_password
+    #encryption_password=encryption_password
 )
 
-# client.upload_file("1", "testing/files/glass.jpeg")
+client.upload_file(target, "testing/files/bee.png", encrypted=False)
+sys.exit()
 # client.download_file("1")
 
 # print(
@@ -32,7 +33,7 @@ client = stashconnect.Client(
 #    )
 # )
 
-print(client.send_message(target, "o", url="https://bustudios.org"))
+# print(client.send_message(target, "o", url="https://bustudios.org"))
 
 
 @client.event("notification")
