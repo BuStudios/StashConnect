@@ -17,7 +17,7 @@ from .crypto_utils import CryptoUtils
 
 class Message:
 
-    def send_message(self, target, text, files, location, **kwargs):
+    def send_message(self, target, text, files, url, location, **kwargs):
         target_type = self.get_type(target)
 
         iv = Crypto.Random.get_random_bytes(16)
@@ -36,13 +36,15 @@ class Message:
             for file in files:
                 file = self.upload_file(target, file)
                 files_sent.append(int(file["id"]))
+                
+        url = [url]
 
         data = {
             "target": target_type,
             f"{target_type}_id": target,
             "text": text.hex(),
             "files": json.dumps(files_sent),
-            "url": [],
+            "url": json.dumps(url),
             "encrypted": True,
             "iv": iv.hex(),
             "verification": "",

@@ -169,10 +169,11 @@ class Client:
         text: str,
         *,
         files=None,
+        url = "",
         location: bool | tuple | list = None,
         **kwargs,
     ):
-        return Message.send_message(self, target, text, files, location, **kwargs)
+        return Message.send_message(self, target, text, files, url, location, **kwargs)
 
     def decode_message(self, *, target, text, iv, key=None):
         return Message.decode_message(self, target, text, iv, key)

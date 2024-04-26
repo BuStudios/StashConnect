@@ -32,7 +32,7 @@ client = stashconnect.Client(
 #    )
 # )
 
-print(client.send_message(target, ""))
+print(client.send_message(target, "o", url="https://bustudios.org"))
 
 
 @client.event("notification")
