@@ -213,6 +213,9 @@ class Client:
 
     def file_info(self, id):
         return Files.file_info(self, id)
+    
+    def delete_files(self, file_ids):
+        return Files.delete_files(self, file_ids)
 
     def quota(self):
         return Files.quota(self)

@@ -30,13 +30,13 @@ class Message:
 
         if files is not None:
 
-            if isinstance(files, str):
-                files = [files]
+            if isinstance(files, str | int):
+                files_sent = [files]
 
             for file in files:
                 file = self.upload_file(target, file)
                 files_sent.append(int(file["id"]))
-                
+
         url = [url]
 
         data = {
@@ -101,7 +101,7 @@ class Message:
 
     def like_message(self, id):
         return self._post("message/like", data={"message_id": id})
-    
+
     def delete_message(self, id):
         return self._post("message/delete", data={"message_id": id})
 

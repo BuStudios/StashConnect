@@ -8,6 +8,7 @@ import uuid
 from PIL import Image
 import base64
 import io
+import json
 
 from .crypto_utils import CryptoUtils
 
@@ -72,7 +73,7 @@ class Files:
                 "media_width": image_width,
                 "media_height": image_height,
             }
-            
+
             if encrypted:
                 data["iv"] = iv.hex()
 
@@ -84,10 +85,10 @@ class Files:
             file = response["file"]
 
         file_id = file["id"]
-        
+
         if encrypted:
             iv = Crypto.Random.get_random_bytes(16)
-    
+
             data = {
                 "file_id": file_id,
                 "target": target_type,
@@ -97,7 +98,7 @@ class Files:
                 ).hex(),
                 "iv": iv.hex(),
             }
-    
+
             response = self._post("security/set_file_access_key", data=data)
 
         try:
@@ -167,3 +168,15 @@ class Files:
     def file_info(self, id):
         response = self._post("file/info", data={"file_id": id})
         return response["file"]
+
+    def delete_files(self, ids):
+
+        ids_sent = []
+
+        if isinstance(ids, str | int):
+            ids_sent = [ids]
+        else:
+            ids_sent = ids
+
+        response = self._post("file/delete", data={"file_ids": json.dumps(ids_sent)})
+        return response

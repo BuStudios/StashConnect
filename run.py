@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import sys
 import os
 import pprint
+import time
 
 load_dotenv("config/.env")
 
@@ -15,8 +16,8 @@ client = stashconnect.Client(
     email=email, password=password, 
     #encryption_password=encryption_password
 )
-
-client.upload_file(target, "testing/files/bee.png", encrypted=False)
+id = client.upload_file(target, "testing/files/rock.gif", encrypted=False)["id"]
+print(client.delete_files(id))
 sys.exit()
 # client.download_file("1")
 
