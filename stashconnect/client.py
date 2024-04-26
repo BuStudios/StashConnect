@@ -180,6 +180,9 @@ class Client:
 
     def like_message(self, id):
         return Message.like_message(self, id)
+    
+    def delete_message(self, id):
+        return Message.delete_message(self, id)
 
     def get_messages(self, conversation_id, limit: int = 30, offset: int = 0):
         return Message.get_messages(self, conversation_id, limit, offset)

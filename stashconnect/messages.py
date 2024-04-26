@@ -101,6 +101,9 @@ class Message:
 
     def like_message(self, id):
         return self._post("message/like", data={"message_id": id})
+    
+    def delete_message(self, id):
+        return self._post("message/delete", data={"message_id": id})
 
     def get_messages(self, id, limit, offset):
         target_type = self.get_type(id)
