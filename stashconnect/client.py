@@ -178,11 +178,14 @@ class Client:
     def decode_message(self, *, target, text, iv, key=None):
         return Message.decode_message(self, target, text, iv, key)
 
-    def like_message(self, id):
-        return Message.like_message(self, id)
+    def like_message(self, message_id):
+        return Message.like_message(self, message_id)
     
-    def delete_message(self, id):
-        return Message.delete_message(self, id)
+    def unlike_message(self, message_id):
+        return Message.unlike_message(self, message_id)
+    
+    def delete_message(self, message_id):
+        return Message.delete_message(self, message_id)
 
     def get_messages(self, conversation_id, limit: int = 30, offset: int = 0):
         return Message.get_messages(self, conversation_id, limit, offset)
