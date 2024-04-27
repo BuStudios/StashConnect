@@ -17,15 +17,9 @@ client = stashconnect.Client(
     encryption_password=encryption_password
 )
 
-# id = client.upload_file(target, "testing/files/rock.gif", encrypted=False)["id"]
-# print(client.delete_files(id))
-
-# print(client.send_message(target, "o", url="https://bustudios.org"))
-
-
 @client.event("notification")
 def message_received(data):
-    message = client.decode_message(
+    message = client.messages.decode_message(
         target=data["message"]["conversation_id"],
         text=data["message"]["text"],
         iv=data["message"]["iv"],
@@ -42,11 +36,11 @@ def message_received(data):
 
     # client.sio.emit("started-typing", (client.device_id, client.client_key, "conversation", data["message"]["conversation_id"]))
 
-    print(client.like_message(data["message"]["id"]))
+    print(client.messages.like_message(data["message"]["id"]))
 
     latency = client.ws_latency(data["message"]["conversation_id"])
 
-    client.send_message(
+    client.messages.send_message(
         target=data["message"]["conversation_id"],
         text=f"[automated] msg received => ↹ websocket_latency = {latency}ms.\nreceived: {message}. author: {sender}. UNIX: {timestamp}.",
         reply_to=data["message"]["id"],
@@ -60,7 +54,7 @@ def user_typing(data):
 
 @client.loop(seconds=30)
 def loop():
-    client.send_message(target, "200 ping")
+    client.messages.send_message(target, "200 ping")
 
 
 client.run()

@@ -14,14 +14,16 @@ from .crypto_utils import CryptoUtils
 
 
 class Files:
+    def __init__(self, client):
+        self.client = client
 
     def quota(self):
-        response = self._post(
-            "file/quota", data={"type": "personal", "type_id": self.user_id}
+        response = self.client._post(
+            "file/quota", data={"type": "personal", "type_id": self.client.user_id}
         )
         return response["quota"]
 
-    def upload_file(self, target, filepath, encrypted):
+    def upload_file(self, target, filepath, encrypted=True):
         filename = os.path.basename(filepath)
 
         if encrypted:
@@ -47,7 +49,7 @@ class Files:
             image_height = None
 
         total_chunks = (len(file_content) + max_chunk_size - 1) // max_chunk_size
-        target_type = self.get_type(target)
+        target_type = self.client.tools.get_type(target)
 
         for i in range(total_chunks):
             data_chunk = file_content[i * max_chunk_size : (i + 1) * max_chunk_size]
@@ -81,7 +83,7 @@ class Files:
                 "file": ("[object Object]", encrypted_chunk, "application/octet-stream")
             }
 
-            response = self._post("file/upload", data=data, files=files)
+            response = self.client._post("file/upload", data=data, files=files)
             file = response["file"]
 
         file_id = file["id"]
@@ -94,12 +96,12 @@ class Files:
                 "target": target_type,
                 "target_id": target,
                 "key": CryptoUtils.encrypt_aes(
-                    file_key, self.get_conversation_key(target, target_type), iv
+                    file_key, self.client.get_conversation_key(target, target_type), iv
                 ).hex(),
                 "iv": iv.hex(),
             }
 
-            response = self._post("security/set_file_access_key", data=data)
+            response = self.client._post("security/set_file_access_key", data=data)
 
         try:
             with Image.open(filepath) as image:
@@ -129,17 +131,17 @@ class Files:
                 "content": str("data:image/jpeg;base64," + image_base64),
             }
 
-            self._post("file/storePreviewImage", data=data)
+            self.client._post("file/storePreviewImage", data=data)
 
         except Exception:
             pass
 
         return file
 
-    def download_file(self, id, directory):
-        response = self._post(f"file/download?id={id}", data={}, return_all=True)
+    def download_file(self, id, directory=""):
+        response = self.client._post(f"file/download?id={id}", data={}, return_all=True)
 
-        file_info = self.file_info(id)
+        file_info = self.client.files.file_info(id)
         file_path = os.path.join(directory, file_info["name"])
 
         with open(file_path, "wb") as file:
@@ -147,7 +149,7 @@ class Files:
             if file_info["encrypted"]:
                 key = CryptoUtils.decrypt_aes(
                     bytes.fromhex(file_info["keys"][0]["key"]),
-                    self.get_conversation_key(
+                    self.client.get_conversation_key(
                         file_info["keys"][0]["chat_id"],
                         file_info["keys"][0]["type"],
                         key=file_info["keys"][0]["chat_key"],
@@ -166,7 +168,7 @@ class Files:
         return {"success": True}
 
     def file_info(self, id):
-        response = self._post("file/info", data={"file_id": id})
+        response = self.client._post("file/info", data={"file_id": id})
         return response["file"]
 
     def delete_files(self, ids):
@@ -178,5 +180,7 @@ class Files:
         else:
             ids_sent = ids
 
-        response = self._post("file/delete", data={"file_ids": json.dumps(ids_sent)})
+        response = self.client._post(
+            "file/delete", data={"file_ids": json.dumps(ids_sent)}
+        )
         return response

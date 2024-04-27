@@ -15,16 +15,29 @@ import json
 from .crypto_utils import CryptoUtils
 
 
-class Message:
+class Messages:
+    def __init__(self, client):
+        self.client = client
 
-    def send_message(self, target, text, files, url, location, **kwargs):
-        target_type = self.get_type(target)
+    def send_message(
+        self,
+        target,
+        text: str,
+        *,
+        files=None,
+        url="",
+        location: bool | tuple | list = None,
+        encrypted: bool = True,
+        **kwargs,
+    ):
+        target_type = self.client.tools.get_type(target)
 
-        iv = Crypto.Random.get_random_bytes(16)
-        conversation_key = self.get_conversation_key(target, target_type)
+        if encrypted:
+            iv = Crypto.Random.get_random_bytes(16)
+            conversation_key = self.client.get_conversation_key(target, target_type)
 
-        text_bytes = text.encode("utf-8")
-        text = CryptoUtils.encrypt_aes(text_bytes, conversation_key, iv)
+            text_bytes = text.encode("utf-8")
+            text = CryptoUtils.encrypt_aes(text_bytes, conversation_key, iv)
 
         files_sent = []
 
@@ -34,7 +47,7 @@ class Message:
                 files_sent = [files]
 
             for file in files:
-                file = self.upload_file(target, file)
+                file = self.client.upload_file(target, file, encrypted)
                 files_sent.append(int(file["id"]))
 
         url = [url]
@@ -42,53 +55,64 @@ class Message:
         data = {
             "target": target_type,
             f"{target_type}_id": target,
-            "text": text.hex(),
+            "text": text,
             "files": json.dumps(files_sent),
             "url": json.dumps(url),
-            "encrypted": True,
-            "iv": iv.hex(),
+            "encrypted": encrypted,
             "verification": "",
             "type": "text",
             "is_forwarded": False,
         }
 
+        if encrypted:
+            data["iv"] = iv.hex()
+            data["text"] = text.hex()
+
         data.update(kwargs)
 
         if location is True:
 
-            location = self.get_location()["location"]
+            location = self.client.get_location()["location"]
 
-            data["latitude"] = CryptoUtils.encrypt_aes(
-                str(location["latitude"]).encode("utf-8"), conversation_key, iv=iv
-            ).hex()
-            data["longitude"] = CryptoUtils.encrypt_aes(
-                str(location["longitude"]).encode("utf-8"), conversation_key, iv=iv
-            ).hex()
+            if encrypted:
+                data["latitude"] = CryptoUtils.encrypt_aes(
+                    str(location["latitude"]).encode("utf-8"), conversation_key, iv=iv
+                ).hex()
+                data["longitude"] = CryptoUtils.encrypt_aes(
+                    str(location["longitude"]).encode("utf-8"), conversation_key, iv=iv
+                ).hex()
+            else:
+                data["latitude"] = str(location["latitude"])
+                data["longitude"] = str(location["longitude"])
 
         elif isinstance(location, tuple | list):
 
-            data["latitude"] = CryptoUtils.encrypt_aes(
-                str(location[0]).encode("utf-8"), conversation_key, iv=iv
-            ).hex()
+            if encrypted:
+                data["latitude"] = CryptoUtils.encrypt_aes(
+                    str(location[0]).encode("utf-8"), conversation_key, iv=iv
+                ).hex()
 
-            data["longitude"] = CryptoUtils.encrypt_aes(
-                str(location[1]).encode("utf-8"), conversation_key, iv=iv
-            ).hex()
+                data["longitude"] = CryptoUtils.encrypt_aes(
+                    str(location[1]).encode("utf-8"), conversation_key, iv=iv
+                ).hex()
+            else:
+                data["latitude"] = str(location[0])
+                data["longitude"] = str(location[1])
 
-        response = self._post("message/send", data=data)
+        response = self.client._post("message/send", data=data)
         return response
 
-    def decode_message(self, target, text, iv, key):
-        target_type = self.get_type(target)
+    def decode_message(self, target, text, iv, key=None):
+        target_type = self.client.tools.get_type(target)
 
         if text == "":
             return text
         else:
             try:
-                if self._private_key is None:
+                if self.client._private_key is None:
                     return text
                 else:
-                    conversation_key = self.get_conversation_key(
+                    conversation_key = self.client.get_conversation_key(
                         target, target_type, key=key
                     )
 
@@ -99,17 +123,17 @@ class Message:
             except Exception:
                 return text
 
-    def like_message(self, id):
-        return self._post("message/like", data={"message_id": id})
-    
-    def unlike_message(self, id):
-        return self._post("message/unlike", data={"message_id": id})
+    def like_message(self, message_id):
+        return self.client._post("message/like", data={"message_id": message_id})
 
-    def delete_message(self, id):
-        return self._post("message/delete", data={"message_id": id})
+    def unlike_message(self, message_id):
+        return self.client._post("message/unlike", data={"message_id": message_id})
 
-    def get_messages(self, id, limit, offset):
-        target_type = self.get_type(id)
+    def delete_message(self, message_id):
+        return self.client._post("message/delete", data={"message_id": message_id})
+
+    def get_messages(self, conversation_id, limit: int = 30, offset: int = 0):
+        target_type = self.client.tools.get_type(conversation_id)
 
         data = {
             f"{target_type}_id": id,
@@ -118,9 +142,9 @@ class Message:
             "offset": offset,
         }
 
-        response = self._post("message/content", data=data)
+        response = self.client._post("message/content", data=data)
         response = response["messages"]
-        conversation_key = self.get_conversation_key(id, target_type)
+        conversation_key = self.client.get_conversation_key(id, target_type)
 
         messages = []
 
@@ -146,7 +170,7 @@ class Message:
 
             messages.append(
                 {
-                    "text": self.decode_message(
+                    "text": self.client.messages.decode_message(
                         target=message[f"{target_type}_id"],
                         text=message["text"],
                         iv=message["iv"],

@@ -4,7 +4,7 @@ import time
 import threading
 import socketio
 
-from .messages import Message
+from .messages import Messages
 from .settings import Settings
 from .users import Users
 from .crypto_utils import CryptoUtils
@@ -45,6 +45,13 @@ class Client:
     """
 
     def __init__(self, *, email, password, device_id=None, encryption_password=None):
+        
+        self.messages = Messages(self)
+        self.tools = Tools(self)
+        self.settings = Settings(self)
+        self.users = Users(self)
+        self.files = Files(self)
+        self.conversations = Conversations(self)
 
         self.email = email
         self.password = password
@@ -161,101 +168,6 @@ class Client:
 
             self.conversation_keys[target] = decrypted_key
             return self.conversation_keys[target]
-
-    # MESSAGES
-    def send_message(
-        self,
-        target,
-        text: str,
-        *,
-        files=None,
-        url = "",
-        location: bool | tuple | list = None,
-        **kwargs,
-    ):
-        return Message.send_message(self, target, text, files, url, location, **kwargs)
-
-    def decode_message(self, *, target, text, iv, key=None):
-        return Message.decode_message(self, target, text, iv, key)
-
-    def like_message(self, message_id):
-        return Message.like_message(self, message_id)
-    
-    def unlike_message(self, message_id):
-        return Message.unlike_message(self, message_id)
-    
-    def delete_message(self, message_id):
-        return Message.delete_message(self, message_id)
-
-    def get_messages(self, conversation_id, limit: int = 30, offset: int = 0):
-        return Message.get_messages(self, conversation_id, limit, offset)
-
-    # USERS
-    def get_location(self):
-        return Users.get_location(self)
-
-    def change_status(self, status: str):
-        return Users.change_status(self, status)
-
-    def change_profile_picture(self, *, url: str):
-        return Users.change_profile_picture(self, url=url)
-
-    def reset_profile_picture(self):
-        return Users.reset_profile_picture(self)
-
-    # CONVERSATIONS
-    def archive_conversation(self, conversation_id):
-        return Conversations.archive_conversation(self, conversation_id)
-
-    # FILES
-    def upload_file(self, target, filepath, encrypted=True):
-        return Files.upload_file(self, target, filepath, encrypted)
-
-    def download_file(self, file_id, directory=""):
-        return Files.download_file(self, file_id, directory)
-
-    def file_info(self, id):
-        return Files.file_info(self, id)
-    
-    def delete_files(self, file_ids):
-        return Files.delete_files(self, file_ids)
-
-    def quota(self):
-        return Files.quota(self)
-
-    # SETTINGS
-    def get_notification_count(self) -> int:
-        return Settings.get_notification_count(self)
-
-    def get_notifications(self, limit: int = 20, offset: int = 0) -> dict:
-        return Settings.get_notifications(self, limit, offset)
-
-    def change_email(self, email: str):
-        return Settings.change_email(self, email)
-
-    def resend_verification_email(self, email: str):
-        return Settings.resend_verification_email(self, email)
-
-    def change_password(self, new_password: str, old_password: str):
-        return Settings.change_password(self, new_password, old_password)
-
-    def get_settings(self):
-        return Settings.get_settings(self)
-
-    def get_me(self):
-        return Settings.get_me(self)
-
-    def get_active_devices(self):
-        return Settings.get_active_devices(self)
-
-    # TOOLS
-    def get_type(self, id: int | str) -> str:
-        """Returns type (conversation or channel)
-
-        Args:
-            id (int | str): The conversation or channels id
-        """
-        return Tools.get_type(self, id)
 
     def event(self, name):
 
