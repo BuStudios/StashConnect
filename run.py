@@ -14,8 +14,14 @@ target = os.getenv("conversation_id")
 
 client = stashconnect.Client(
     email=email, password=password, 
-    encryption_password=encryption_password
+    #encryption_password=encryption_password
 )
+
+
+message = client.messages.send_message(target, "hello1", encrypted=False)
+print(message.author.first_name)
+message.like()
+sys.exit()
 
 @client.event("notification")
 def message_received(data):

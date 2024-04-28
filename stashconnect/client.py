@@ -4,9 +4,9 @@ import time
 import threading
 import socketio
 
-from .messages import Messages
+from .messages import MessageHandler
 from .settings import Settings
-from .users import Users
+from .users import UserManager
 from .crypto_utils import CryptoUtils
 from .conversations import Conversations
 from .files import Files
@@ -46,10 +46,10 @@ class Client:
 
     def __init__(self, *, email, password, device_id=None, encryption_password=None):
         
-        self.messages = Messages(self)
+        self.messages = MessageHandler(self)
         self.tools = Tools(self)
         self.settings = Settings(self)
-        self.users = Users(self)
+        self.users = UserManager(self)
         self.files = Files(self)
         self.conversations = Conversations(self)
 

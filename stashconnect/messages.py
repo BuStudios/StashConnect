@@ -13,9 +13,10 @@ import Crypto.Util.Padding
 import json
 
 from .crypto_utils import CryptoUtils
+from .users import User
 
 
-class Messages:
+class MessageHandler:
     def __init__(self, client):
         self.client = client
 
@@ -99,8 +100,8 @@ class Messages:
                 data["latitude"] = str(location[0])
                 data["longitude"] = str(location[1])
 
-        response = self.client._post("message/send", data=data)
-        return response
+        data = self.client._post("message/send", data=data)["message"]
+        return Message(self.client, data)
 
     def decode_message(self, target, text, iv, key=None):
         target_type = self.client.tools.get_type(target)
@@ -189,3 +190,30 @@ class Messages:
                 }
             )
         return messages
+
+
+class Message:
+    def __init__(self, client, data):
+        self.client = client
+        self.id = data["id"]
+        self.content_encrypted = data["text"]
+        self.encrypted = data["encrypted"]
+        self.type = "conversation" if data["channel_id"] == 0 else "channel"
+        self.iv = data["iv"] if self.encrypted else None
+        self.content = (
+            self.client.messages.decode_message(
+                data[f"{self.type}_id"], self.encrypted, self.iv
+            )
+            if self.encrypted
+            else self.content_encrypted
+        )
+        self.author = User(self.client, data["sender"])
+
+    def like(self):
+        return self.client.messages.like_message(self.id)
+
+    def unlike(self):
+        return self.client.messages.unlike_message(self.id)
+
+    def delete(self):
+        return self.client.messages.delete_message(self.id)
