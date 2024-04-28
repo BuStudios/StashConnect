@@ -133,6 +133,16 @@ class MessageHandler:
     def delete_message(self, message_id):
         return self.client._post("message/delete", data={"message_id": message_id})
 
+    def infos(self, message_ids):
+        if isinstance(message_ids, str | int):
+            ids = [message_ids]
+        else:
+            ids = message_ids
+        messages = self.client._post(
+            "message/infos", data={"message_ids": json.dumps(ids)}
+        )
+        return messages["messages"]
+
     def get_messages(self, conversation_id, limit: int = 30, offset: int = 0):
         target_type = self.client.tools.get_type(conversation_id)
 
