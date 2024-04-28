@@ -27,6 +27,12 @@ class Files:
         filename = os.path.basename(filepath)
 
         if encrypted:
+            if self.client._private_key is None:
+                print(
+                    "Could not upload encrypted file as no encryption password was provided"
+                )
+                return
+
             iv = Crypto.Random.get_random_bytes(16)
             file_key = Crypto.Random.get_random_bytes(32)
 
@@ -147,6 +153,12 @@ class Files:
         with open(file_path, "wb") as file:
 
             if file_info["encrypted"]:
+                if self.client._private_key is None:
+                    print(
+                        "Could not download encrypted content as no encryption password was provided"
+                    )
+                    return
+
                 key = CryptoUtils.decrypt_aes(
                     bytes.fromhex(file_info["keys"][0]["key"]),
                     self.client.get_conversation_key(

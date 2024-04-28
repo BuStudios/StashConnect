@@ -45,7 +45,7 @@ class Client:
     """
 
     def __init__(self, *, email, password, device_id=None, encryption_password=None):
-        
+
         self.messages = MessageHandler(self)
         self.tools = Tools(self)
         self.settings = Settings(self)
@@ -55,6 +55,7 @@ class Client:
 
         self.email = email
         self.password = password
+        self.encryption_password = encryption_password
 
         self.device_id = "stashconnect123" if device_id is None else device_id
         self.app_name = "stashconnect:alpha"
@@ -76,7 +77,7 @@ class Client:
         self._ping_target = None
 
         if encryption_password is not None:
-            self.get_private_key(encryption_password=encryption_password)
+            self.get_private_key(encryption_password=self.encryption_password)
 
     def _login(self):
 
@@ -98,7 +99,13 @@ class Client:
         self.first_name = response["userinfo"]["first_name"]
         self.last_name = response["userinfo"]["last_name"]
 
-        print(f"Logged in as {self.first_name} {self.last_name}!")
+        if self.encryption_password is None:
+            print(
+                f"Logged in as {self.first_name} {self.last_name}! "
+                "No encryption password was provided so some features won't work"
+            )
+        else:
+            print(f"Logged in as {self.first_name} {self.last_name}!")
 
         return response
 
@@ -145,6 +152,9 @@ class Client:
         )
 
     def get_conversation_key(self, target, target_type, key=None):
+
+        if self._private_key is None:
+            return None
 
         try:
             return self.conversation_keys[target]

@@ -17,10 +17,11 @@ client = stashconnect.Client(
     #encryption_password=encryption_password
 )
 
+messages = client.messages.get_messages(target)
+for message in messages:
+    print(message.author.first_name, message.author.email)
+    message.like()
 
-message = client.messages.send_message(target, "hello1", encrypted=False)
-print(message.author.first_name)
-message.like()
 sys.exit()
 
 @client.event("notification")

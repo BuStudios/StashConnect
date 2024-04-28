@@ -34,6 +34,12 @@ class MessageHandler:
         target_type = self.client.tools.get_type(target)
 
         if encrypted:
+            if self.client._private_key is None:
+                print(
+                    "Could not send encrypted message as no encryption password was provided"
+                )
+                return
+
             iv = Crypto.Random.get_random_bytes(16)
             conversation_key = self.client.get_conversation_key(target, target_type)
 
@@ -147,7 +153,7 @@ class MessageHandler:
         target_type = self.client.tools.get_type(conversation_id)
 
         data = {
-            f"{target_type}_id": id,
+            f"{target_type}_id": conversation_id,
             "source": target_type,
             "limit": limit,
             "offset": offset,
@@ -155,69 +161,79 @@ class MessageHandler:
 
         response = self.client._post("message/content", data=data)
         response = response["messages"]
-        conversation_key = self.client.get_conversation_key(id, target_type)
 
         messages = []
 
         for message in response:
             if message["kind"] != "message":
                 continue
-            if message["location"]["encrypted"]:
 
-                longitude = CryptoUtils.decrypt_aes(
-                    bytes.fromhex(message["location"]["longitude"]),
-                    conversation_key,
-                    iv=bytes.fromhex(message["location"]["iv"]),
-                ).decode("utf-8")
-
-                latitude = CryptoUtils.decrypt_aes(
-                    bytes.fromhex(message["location"]["latitude"]),
-                    conversation_key,
-                    iv=bytes.fromhex(message["location"]["iv"]),
-                ).decode("utf-8")
-            else:
-                longitude = message["location"]["longitude"]
-                latitude = message["location"]["latitude"]
-
-            messages.append(
-                {
-                    "text": self.client.messages.decode_message(
-                        target=message[f"{target_type}_id"],
-                        text=message["text"],
-                        iv=message["iv"],
-                    ),
-                    "time": message["time"],
-                    "location": {"longitude": longitude, "latitude": latitude},
-                    "likes": message["likes"],
-                    "files": [
-                        {
-                            "id": file["id"],
-                            "times_downloaded": file["times_downloaded"],
-                            "size_byte": file["size_byte"],
-                        }
-                        for file in message["files"]
-                    ],
-                }
-            )
-        return messages
+            # messages.append(Message(self.client, message))
+            yield Message(self.client, message)
+        # return messages
 
 
 class Message:
     def __init__(self, client, data):
         self.client = client
         self.id = data["id"]
+        self.type = "conversation" if data["channel_id"] == 0 else "channel"
+
+        self.conversation_key = self.client.get_conversation_key(
+            data[f"{self.type}_id"], self.type
+        )
+
         self.content_encrypted = data["text"]
         self.encrypted = data["encrypted"]
-        self.type = "conversation" if data["channel_id"] == 0 else "channel"
         self.iv = data["iv"] if self.encrypted else None
-        self.content = (
-            self.client.messages.decode_message(
+
+        if self.encrypted:
+            self.content = self.client.messages.decode_message(
                 data[f"{self.type}_id"], self.encrypted, self.iv
             )
-            if self.encrypted
-            else self.content_encrypted
-        )
+        else:
+            self.content = self.content_encrypted
+
+        self.timestamp = data["time"]
+        self.channel_id = data["channel_id"]
+        self.conversation_id = data["conversation_id"]
+
+        self.files = data["files"]
+        self.flagged = data["flagged"]
+
+        self.liked = data["liked"]
+        self.likes = data["likes"]
+        self.links = data["links"]
+
+        self._decrypt_location(data["location"])
+
         self.author = User(self.client, data["sender"])
+
+    def _decrypt_location(self, location):
+
+        if location["encrypted"]:
+            
+            if self.client._private_key is None:
+                print(
+                    "Could not decrypt encrypted location as no encryption password was provided"
+                )
+                self.longitude = location["longitude"]
+                self.latitude = location["latitude"]
+            
+            self.longitude = CryptoUtils.decrypt_aes(
+                bytes.fromhex(location["longitude"]),
+                self.conversation_key,
+                bytes.fromhex(self.iv),
+            ).decode("utf-8")
+
+            self.latitude = CryptoUtils.decrypt_aes(
+                bytes.fromhex(location["latitude"]),
+                self.conversation_key,
+                bytes.fromhex(self.iv),
+            ).decode("utf-8")
+        else:
+            self.longitude = location["longitude"]
+            self.latitude = location["latitude"]
 
     def like(self):
         return self.client.messages.like_message(self.id)
