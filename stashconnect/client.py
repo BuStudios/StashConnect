@@ -26,10 +26,10 @@ headers = {
 class Client:
     """Represents a client connection to Stashcat API.
 
-    Atrributes:
+    Attributes:
         .email (str): The user's email used for authentication.
         .password (str): The user's password.
-        .device_id (str): The device_id used to login, defaults to "stashconnect123".
+        .device_id (str): The device_id used to log in, defaults to "stashconnect123".
         .client_key (str): The key used in submitting requests.
         .socket_id (str): The ID for the websocket connection.
         .user_id (str): The unique ID of the connected user's account.
@@ -75,6 +75,8 @@ class Client:
 
         self._private_key = None
         self._ping_target = None
+        self._end_time = None
+        self._latency_ws = None
 
         if encryption_password is not None:
             self.get_private_key(encryption_password=self.encryption_password)
@@ -270,13 +272,13 @@ class Client:
             thread.start()
 
     def ws_latency(self, target):
-        type = self.tools.get_type(target)
+        target_type = self.tools.get_type(target)
 
         start_time = time.perf_counter()
         self._end_time = None
         self._ping_target = target
 
-        self.sio.emit("started-typing", (self.device_id, self.client_key, type, target))
+        self.sio.emit("started-typing", (self.device_id, self.client_key, target_type, target))
 
         time.sleep(2)
 

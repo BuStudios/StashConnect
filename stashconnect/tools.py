@@ -2,20 +2,20 @@ class Tools:
     def __init__(self, client):
         self.client = client
 
-    def get_type(self, id):
+    def get_type(self, type_id):
         """Returns type (conversation or channel)
         Args:
-            id (int | str): The conversation or channels id
+            type_id (int | str): The conversation or channel id
         """
 
         conversation_data = {
-            "conversation_id": id,
+            "conversation_id": type_id,
             "source": "conversation",
             "limit": 0,
             "offset": 0,
         }
         channel_data = {
-            "channel_id": id,
+            "channel_id": type_id,
             "source": "channel",
             "limit": 0,
             "offset": 0,
