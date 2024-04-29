@@ -4,7 +4,7 @@ import time
 import threading
 import socketio
 
-from .messages import MessageHandler
+from .messages import MessageHandler, Message
 from .settings import Settings
 from .users import UserManager
 from .crypto_utils import CryptoUtils
@@ -183,13 +183,18 @@ class Client:
 
         def decorator(func):
             def wrapper(*args):
-                if len(args) == 1:
-                    func(args[0])
+
+                if func.__name__ == "message_received":
+                    func(Message(self, args[0]["message"]))
+
                 else:
-                    func(args)
+                    if len(args) == 1:
+                        func(args[0])
+                    else:
+                        func(args)
 
             self.events[name] = wrapper
-            return func
+            return wrapper
 
         return decorator
 
@@ -265,19 +270,19 @@ class Client:
             thread.start()
 
     def ws_latency(self, target):
+        type = self.tools.get_type(target)
 
         start_time = time.perf_counter()
         self._end_time = None
         self._ping_target = target
-        self.sio.emit(
-            "started-typing", (self.device_id, self.client_key, "conversation", target)
-        )
+
+        self.sio.emit("started-typing", (self.device_id, self.client_key, type, target))
 
         time.sleep(2)
 
         if self._end_time is None:
             self._latency_ws = None
-            return "Error"
+            return "[Error]"
         else:
             self._latency_ws = (round((self._end_time - start_time) * 100000)) / 100
             return self._latency_ws

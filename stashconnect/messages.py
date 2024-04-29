@@ -177,7 +177,13 @@ class Message:
     def __init__(self, client, data):
         self.client = client
         self.id = data["id"]
-        self.type = "conversation" if data["channel_id"] == 0 else "channel"
+
+        if data["channel_id"] == 0:
+            self.type = "conversation"
+            self.type_id = data["conversation_id"]
+        else:
+            self.type = "channel"
+            self.type_id = data["channel_id"]
 
         self.conversation_key = self.client.get_conversation_key(
             data[f"{self.type}_id"], self.type
@@ -189,7 +195,7 @@ class Message:
 
         if self.encrypted:
             self.content = self.client.messages.decode_message(
-                data[f"{self.type}_id"], self.encrypted, self.iv
+                data[f"{self.type}_id"], self.content_encrypted, self.iv
             )
         else:
             self.content = self.content_encrypted
@@ -212,14 +218,14 @@ class Message:
     def _decrypt_location(self, location):
 
         if location["encrypted"]:
-            
+
             if self.client._private_key is None:
                 print(
                     "Could not decrypt encrypted location as no encryption password was provided"
                 )
                 self.longitude = location["longitude"]
                 self.latitude = location["latitude"]
-            
+
             self.longitude = CryptoUtils.decrypt_aes(
                 bytes.fromhex(location["longitude"]),
                 self.conversation_key,
@@ -243,3 +249,23 @@ class Message:
 
     def delete(self):
         return self.client.messages.delete_message(self.id)
+
+    def respond(
+        self,
+        text: str,
+        *,
+        files=None,
+        url="",
+        location: bool | tuple | list = None,
+        encrypted: bool = True,
+        **kwargs,
+    ):
+        return self.client.messages.send_message(
+            target=self.type_id,
+            text=text,
+            files=files,
+            url=url,
+            location=location,
+            encrypted=encrypted,
+            **kwargs,
+        )

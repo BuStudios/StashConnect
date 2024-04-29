@@ -13,45 +13,32 @@ encryption_password = os.getenv("pass2")
 target = os.getenv("conversation_id")
 
 client = stashconnect.Client(
-    email=email, password=password, 
-    #encryption_password=encryption_password
+    email=email, password=password,
+    encryption_password=encryption_password
 )
 
+"""
 messages = client.messages.get_messages(target)
 for message in messages:
-    print(message.author.first_name, message.author.email)
     message.like()
 
 sys.exit()
+"""
+
 
 @client.event("notification")
 def message_received(data):
-    message = client.messages.decode_message(
-        target=data["message"]["conversation_id"],
-        text=data["message"]["text"],
-        iv=data["message"]["iv"],
-        key=data["conversation"]["key"],
-    )
+    data.like()
 
-    sender = (
-        data["message"]["sender"]["first_name"],
-        data["message"]["sender"]["last_name"],
-    )
-    timestamp = data["message"]["time"]
+    latency = client.ws_latency(data.type_id)
 
-    print(f"Message received: {message}. Author: {sender}. UNIX: {timestamp}.")
+    if data.type == "conversation":
+        data.respond(
+            f"[automated] ↹ websocket_latency = {latency}ms\n| email = {data.author.email}\n| encrypted_text = {data.content_encrypted}",
+            reply_to=data.id,
+        )
 
-    # client.sio.emit("started-typing", (client.device_id, client.client_key, "conversation", data["message"]["conversation_id"]))
-
-    print(client.messages.like_message(data["message"]["id"]))
-
-    latency = client.ws_latency(data["message"]["conversation_id"])
-
-    client.messages.send_message(
-        target=data["message"]["conversation_id"],
-        text=f"[automated] msg received => ↹ websocket_latency = {latency}ms.\nreceived: {message}. author: {sender}. UNIX: {timestamp}.",
-        reply_to=data["message"]["id"],
-    )
+    data.unlike()
 
 
 @client.event("user-started-typing")
@@ -59,9 +46,9 @@ def user_typing(data):
     print("User writing: " + str(data))
 
 
-@client.loop(seconds=30)
+@client.loop(seconds=3000)
 def loop():
-    client.messages.send_message(target, "200 ping")
+    pass
 
 
 client.run()
