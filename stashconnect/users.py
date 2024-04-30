@@ -48,25 +48,31 @@ class UserManager:
         response = self.client._post("/location/get", data={})
         return response
 
+    def info(self, user_id, withkey=True):
+        response = self.client._post(
+            "users/info", data={"user_id": user_id, "withkey": withkey}
+        )
+        return response["user"]
+
 
 class User:
     def __init__(self, client, data) -> None:
         self.client = client
         self.id = data["id"]
-        user = self.client._post(
-            "users/info", data={"user_id": data["id"], "withkey": True}
-        )["user"]
+
+        user = self.client.users.info(data["id"])
+
         self.first_name = user["first_name"]
         self.last_name = user["last_name"]
-        
+
         self.email = user["email"]
         self.status = user["status"]
         self.image = user["image"]
-        
+
         self.language = user["language"]
         self.last_login = user["last_login"]
         self.online = user["online"]
         self.permissions = user["permissions"]
-        
+
         self.public_key = user["public_key"]
         self.companies = user["roles"]

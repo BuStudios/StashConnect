@@ -17,7 +17,9 @@ client = stashconnect.Client(
     encryption_password=encryption_password
 )
 
+
 """
+print(client.conversations.create_conversation())
 messages = client.messages.get_messages(target)
 for message in messages:
     message.like()
