@@ -20,7 +20,7 @@ class MessageHandler:
     def __init__(self, client):
         self.client = client
 
-    def send_message(
+    def send(
         self,
         target,
         text: str,
@@ -109,7 +109,7 @@ class MessageHandler:
         data = self.client._post("message/send", data=data)["message"]
         return Message(self.client, data)
 
-    def decode_message(self, target, text, iv, key=None):
+    def decode(self, target, text, iv, key=None):
         target_type = self.client.tools.get_type(target)
 
         if text == "":
@@ -130,13 +130,13 @@ class MessageHandler:
             except Exception:
                 return text
 
-    def like_message(self, message_id):
+    def like(self, message_id):
         return self.client._post("message/like", data={"message_id": message_id})
 
-    def unlike_message(self, message_id):
+    def unlike(self, message_id):
         return self.client._post("message/unlike", data={"message_id": message_id})
 
-    def delete_message(self, message_id):
+    def delete(self, message_id):
         return self.client._post("message/delete", data={"message_id": message_id})
 
     def infos(self, message_ids):
@@ -162,15 +162,38 @@ class MessageHandler:
         response = self.client._post("message/content", data=data)
         response = response["messages"]
 
-        messages = []
+        for message in response:
+            if message["kind"] != "message":
+                continue
+
+            yield Message(self.client, message)
+
+    def get_flagged(self, conversation_id, limit: int = 100, offset: int = 0):
+        target_type = self.client.tools.get_type(conversation_id)
+
+        data = {
+            "type": target_type,
+            "type_id": conversation_id,
+            "offset": offset,
+            "limit": limit,
+        }
+
+        response = self.client._post("message/list_flagged_messages", data=data)
+        response = response["messages"]
 
         for message in response:
             if message["kind"] != "message":
                 continue
 
-            # messages.append(Message(self.client, message))
             yield Message(self.client, message)
-        # return messages
+
+    def flag(self, message_id):
+        response = self.client._post("message/flag", data={"message_id": message_id})
+        return response
+    
+    def unflag(self, message_id):
+        response = self.client._post("message/unflag", data={"message_id": message_id})
+        return response
 
 
 class Message:
@@ -194,7 +217,7 @@ class Message:
         self.iv = data["iv"] if self.encrypted else None
 
         if self.encrypted:
-            self.content = self.client.messages.decode_message(
+            self.content = self.client.messages.decode(
                 data[f"{self.type}_id"], self.content_encrypted, self.iv
             )
         else:
@@ -242,13 +265,19 @@ class Message:
             self.latitude = location["latitude"]
 
     def like(self):
-        return self.client.messages.like_message(self.id)
+        return self.client.messages.like(self.id)
 
     def unlike(self):
-        return self.client.messages.unlike_message(self.id)
+        return self.client.messages.unlike(self.id)
 
     def delete(self):
-        return self.client.messages.delete_message(self.id)
+        return self.client.messages.delete(self.id)
+    
+    def flag(self):
+        return self.client.messages.flag(self.id)
+    
+    def unflag(self):
+        return self.client.messages.unflag(self.id)
 
     def respond(
         self,
@@ -260,7 +289,7 @@ class Message:
         encrypted: bool = True,
         **kwargs,
     ):
-        return self.client.messages.send_message(
+        return self.client.messages.send(
             target=self.type_id,
             text=text,
             files=files,

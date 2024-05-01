@@ -14,16 +14,17 @@ target = os.getenv("conversation_id")
 
 client = stashconnect.Client(
     email=email, password=password,
-    encryption_password=encryption_password
+    encryption_password=encryption_password,
+    device_id="99dme98fsefmf8fuscpdu",
+    app_name="maintest",
 )
 
 
 """
-print(client.conversations.create_conversation())
-messages = client.messages.get_messages(target)
+messages = client.messages.get_flagged(target)
 for message in messages:
-    message.like()
-
+    print(message.content)
+    message.unflag()
 sys.exit()
 """
 
@@ -36,7 +37,7 @@ def message_received(data):
 
     if data.type == "conversation":
         data.respond(
-            f"[automated] ↹ websocket_latency = {latency}ms\n| email = {data.author.email}\n| encrypted_text = {data.content_encrypted}",
+            f"[automated] ↹ websocket_latency = {latency}ms\n| text = {data.content[:50]}...\n| encrypted_text = {data.content_encrypted}",
             reply_to=data.id,
         )
 

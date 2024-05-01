@@ -44,7 +44,7 @@ class Client:
         .change_status(status): Updates the user's status.
     """
 
-    def __init__(self, *, email, password, device_id=None, encryption_password=None):
+    def __init__(self, *, email, password, encryption_password=None, device_id=None, app_name=None):
 
         self.messages = MessageHandler(self)
         self.tools = Tools(self)
@@ -57,8 +57,8 @@ class Client:
         self.password = password
         self.encryption_password = encryption_password
 
-        self.device_id = "stashconnect123" if device_id is None else device_id
-        self.app_name = "stashconnect:alpha"
+        self.device_id = "stashconnect" if device_id is None else device_id
+        self.app_name = "stashconnect" if app_name is None else app_name
 
         self._main_url = "https://api.stashcat.com/"
         self._push_url = "https://push.stashcat.com/"
