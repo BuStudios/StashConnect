@@ -8,7 +8,7 @@ from .messages import MessageHandler, Message
 from .settings import Settings
 from .users import UserManager
 from .crypto_utils import CryptoUtils
-from .conversations import Conversations
+from .conversations import ConversationManager
 from .files import Files
 from .tools import Tools
 
@@ -45,7 +45,7 @@ class Client:
         self.settings = Settings(self)
         self.users = UserManager(self)
         self.files = Files(self)
-        self.conversations = Conversations(self)
+        self.conversations = ConversationManager(self)
 
         self.email = email
         self.password = password

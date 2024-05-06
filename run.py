@@ -14,11 +14,15 @@ target = os.getenv("conversation_id")
 
 client = stashconnect.Client(
     email=email, password=password,
-    encryption_password=encryption_password,
+    #encryption_password=encryption_password,
     device_id="99dme98fsefmf8fuscpdu",
     app_name="maintest",
 )
 
+conversation = client.conversations.get(target)
+print(conversation.members[0].first_name)
+conversation.archive()
+sys.exit()
 
 """
 messages = client.messages.get_flagged(target)
@@ -35,7 +39,7 @@ def message_received(data):
 
     latency = client.ws_latency(data.type_id)
 
-    if data.type == "conversation":
+    if data.type == "conversation" and str(data.type_id) == str(target):
         data.respond(
             f"[automated] ↹ websocket_latency = {latency}ms\n| text = {data.content[:50]}...\n| encrypted_text = {data.content_encrypted}",
             reply_to=data.id,
