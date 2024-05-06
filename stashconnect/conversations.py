@@ -28,6 +28,20 @@ class ConversationManager:
         )
         return response
 
+    def favorite(self, conversation_id):
+        response = self.client._post(
+            "message/set_favorite",
+            data={"conversation_id": conversation_id, "favorite": True},
+        )
+        return response
+
+    def unfavorite(self, conversation_id):
+        response = self.client._post(
+            "message/set_favorite",
+            data={"conversation_id": conversation_id, "favorite": False},
+        )
+        return response
+
     def create(self, members):
         conversation_key = Crypto.Random.get_random_bytes(32)
         users = []
@@ -96,33 +110,39 @@ class Conversation:
     def __init__(self, client, data):
         self.client = client
         self.id = data["id"]
-        
+
         self.type = "conversation"
         self.type_id = data["id"]
-        
+
         self.conversation_id = data["id"]
         self.channel_id = data["id"]
-        
+
         self.key_sender = data["key_sender"]
         self.conversation_key = self.client.get_conversation_key(
             data["id"], self.type, key=data["key"]
         )
-        
+
         self.encrypted = data["encrypted"]
-        self.favorite = data["favorite"]
+        self.favorited = data["favorite"]
         self.archived = data["archive"]
-        
+
         self.last_action = data["last_action"]
         self.last_activity = data["last_activity"]
-        
+
         self.muted = data["muted"]
         self.name = data["name"]
-        
+
         self.unread_messages = data["unread_messages"]
         self.user_count = data["user_count"]
-        
+
         self.members = [User(self.client, member) for member in data["members"]]
         self.callable = [User(self.client, member) for member in data["callable"]]
 
     def archive(self):
         return self.client.conversations.archive(self.id)
+
+    def favorite(self):
+        return self.client.conversations.favorite(self.id)
+
+    def unfavorite(self):
+        return self.client.conversations.unfavorite(self.id)

@@ -19,9 +19,10 @@ client = stashconnect.Client(
     app_name="maintest",
 )
 
+#print(client.conversations.favorite(target))
 conversation = client.conversations.get(target)
 print(conversation.members[0].first_name)
-conversation.archive()
+print(conversation.favorite())
 sys.exit()
 
 """
