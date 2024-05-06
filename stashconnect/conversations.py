@@ -42,6 +42,41 @@ class ConversationManager:
         )
         return response
 
+    def disable_notifications(
+        self, conversation_id: int | str, duration: int | str
+    ) -> str:
+        """Disables notifications for a conversation
+
+        Args:
+            conversation_id (int | str): The conversations id.
+            duration (int | str): how long the block should last (seconds).
+
+        Returns:
+            str: The end timestamp.
+        """
+        return self.client._post(
+            "push/disable_notifications",
+            data={
+                "type": "conversation",
+                "content_id": conversation_id,
+                "duration": duration,
+            },
+        )
+
+    def enable_notifications(self, conversation_id: int | str) -> dict:
+        """Enables notifications for a conversation
+
+        Args:
+            conversation_id (int | str): The conversations id.
+
+        Returns:
+            dict: The success status.
+        """
+        return self.client._post(
+            "push/enable_notifications",
+            data={"type": "conversation", "content_id": conversation_id},
+        )
+
     def create(self, members):
         conversation_key = Crypto.Random.get_random_bytes(32)
         users = []
@@ -146,3 +181,9 @@ class Conversation:
 
     def unfavorite(self):
         return self.client.conversations.unfavorite(self.id)
+
+    def disable_notifications(self, duration: int | str) -> str:
+        return self.client.conversations.disable_notifications(self.id, duration)
+
+    def enable_notifications(self) -> dict:
+        return self.client.conversations.enable_notifications(self.id)

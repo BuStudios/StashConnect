@@ -19,10 +19,14 @@ client = stashconnect.Client(
     app_name="maintest",
 )
 
-#print(client.conversations.favorite(target))
+#print(client.conversations.disable_notifications(target, "100"))
+#print(client.conversations.enable_notifications(target))
+
+print(client.conversations.favorite(target))
 conversation = client.conversations.get(target)
 print(conversation.members[0].first_name)
 print(conversation.favorite())
+conversation.disable_notifications("20")
 sys.exit()
 
 """
