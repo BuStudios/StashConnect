@@ -36,12 +36,6 @@ class Client:
         .image_url (str): URL to the user's profile image.
         .first_name (str): User's first name.
         .last_name (str): User's last name.
-
-    Methods:
-        .send_message(target, text). Encrypts and sends a message to a specific conversation.
-        .decode_message(text, target, iv, key -> optional): Decrypts an encrypted message.
-        .change_profile_picture(url): Updates the user's profile image with an image URL.
-        .change_status(status): Updates the user's status.
     """
 
     def __init__(self, *, email, password, encryption_password=None, device_id=None, app_name=None):
