@@ -132,7 +132,7 @@ class ConversationManager:
             data={"members": json.dumps(users), "unique_identifier": conversation_key},
         )
 
-        return response["conversation"]
+        return Conversation(self.client, response["conversation"])
 
     def get(self, conversation_id):
         response = self.client._post(
