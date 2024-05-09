@@ -10,6 +10,8 @@ from .users import UserManager
 from .crypto_utils import CryptoUtils
 from .conversations import ConversationManager
 from .companies import CompanyHandler
+from .channels import ChannelManager
+
 from .files import Files
 from .tools import Tools
 
@@ -50,6 +52,7 @@ class Client:
         self.files = Files(self)
         self.conversations = ConversationManager(self)
         self.companies = CompanyHandler(self)
+        self.channels = ChannelManager(self)
 
         self.email = email
         self.password = password
