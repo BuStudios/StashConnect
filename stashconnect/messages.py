@@ -13,7 +13,7 @@ import Crypto.Util.Padding
 import json
 
 from .crypto_utils import CryptoUtils
-from .users import User
+from .models import Message
 
 
 class MessageHandler:
@@ -190,111 +190,7 @@ class MessageHandler:
     def flag(self, message_id):
         response = self.client._post("message/flag", data={"message_id": message_id})
         return response
-    
+
     def unflag(self, message_id):
         response = self.client._post("message/unflag", data={"message_id": message_id})
         return response
-
-
-class Message:
-    def __init__(self, client, data):
-        self.client = client
-        self.id = data["id"]
-
-        if data["channel_id"] == 0:
-            self.type = "conversation"
-            self.type_id = data["conversation_id"]
-        else:
-            self.type = "channel"
-            self.type_id = data["channel_id"]
-
-        self.conversation_key = self.client.get_conversation_key(
-            data[f"{self.type}_id"], self.type
-        )
-
-        self.content_encrypted = data["text"]
-        self.encrypted = data["encrypted"]
-        self.iv = data["iv"] if self.encrypted else None
-
-        if self.encrypted:
-            self.content = self.client.messages.decode(
-                data[f"{self.type}_id"], self.content_encrypted, self.iv
-            )
-        else:
-            self.content = self.content_encrypted
-
-        self.timestamp = data["time"]
-        self.channel_id = data["channel_id"]
-        self.conversation_id = data["conversation_id"]
-
-        self.files = data["files"]
-        self.flagged = data["flagged"]
-
-        self.liked = data["liked"]
-        self.likes = data["likes"]
-        self.links = data["links"]
-
-        self._decrypt_location(data["location"])
-
-        self.author = User(self.client, data["sender"])
-
-    def _decrypt_location(self, location):
-
-        if location["encrypted"]:
-
-            if self.client._private_key is None:
-                print(
-                    "Could not decrypt encrypted location as no encryption password was provided"
-                )
-                self.longitude = location["longitude"]
-                self.latitude = location["latitude"]
-
-            self.longitude = CryptoUtils.decrypt_aes(
-                bytes.fromhex(location["longitude"]),
-                self.conversation_key,
-                bytes.fromhex(self.iv),
-            ).decode("utf-8")
-
-            self.latitude = CryptoUtils.decrypt_aes(
-                bytes.fromhex(location["latitude"]),
-                self.conversation_key,
-                bytes.fromhex(self.iv),
-            ).decode("utf-8")
-        else:
-            self.longitude = location["longitude"]
-            self.latitude = location["latitude"]
-
-    def like(self):
-        return self.client.messages.like(self.id)
-
-    def unlike(self):
-        return self.client.messages.unlike(self.id)
-
-    def delete(self):
-        return self.client.messages.delete(self.id)
-    
-    def flag(self):
-        return self.client.messages.flag(self.id)
-    
-    def unflag(self):
-        return self.client.messages.unflag(self.id)
-
-    def respond(
-        self,
-        text: str,
-        *,
-        files=None,
-        url="",
-        location: bool | tuple | list = None,
-        encrypted: bool = True,
-        **kwargs,
-    ):
-        return self.client.messages.send(
-            target=self.type_id,
-            text=text,
-            files=files,
-            url=url,
-            location=location,
-            encrypted=encrypted,
-            **kwargs,
-        )

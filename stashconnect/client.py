@@ -4,7 +4,7 @@ import time
 import threading
 import socketio
 
-from .messages import MessageHandler, Message
+from .messages import MessageHandler
 from .settings import Settings
 from .users import UserManager
 from .crypto_utils import CryptoUtils
@@ -12,6 +12,8 @@ from .conversations import ConversationManager
 from .companies import CompanyHandler
 from .files import Files
 from .tools import Tools
+
+from .models import Message
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",

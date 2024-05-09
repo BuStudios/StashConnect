@@ -19,9 +19,8 @@ client = stashconnect.Client(
     app_name="maintest",
 )
 
-
 company = client.companies.member()
-print(company[0].logo_url)
+print(company[0].manager.permissions)
 sys.exit()
 
 #print(client.conversations.disable_notifications(target, "100"))

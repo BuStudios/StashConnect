@@ -15,7 +15,7 @@ import base64
 import json
 import time
 
-from .users import User
+from .models import Conversation
 
 
 class ConversationManager:
@@ -106,7 +106,7 @@ class ConversationManager:
 
         # encrypt conversation key using public key for all members
         for member in members:
-            user = self.client.users.info(member)
+            user = self.client.users._info(member)
 
             publickey = Crypto.PublicKey.RSA.import_key(user["public_key"])
 
@@ -139,51 +139,3 @@ class ConversationManager:
             "message/conversation", data={"conversation_id": conversation_id}
         )
         return Conversation(self.client, response["conversation"])
-
-
-class Conversation:
-    def __init__(self, client, data):
-        self.client = client
-        self.id = data["id"]
-
-        self.type = "conversation"
-        self.type_id = data["id"]
-
-        self.conversation_id = data["id"]
-        self.channel_id = data["id"]
-
-        self.key_sender = data["key_sender"]
-        self.conversation_key = self.client.get_conversation_key(
-            data["id"], self.type, key=data["key"]
-        )
-
-        self.encrypted = data["encrypted"]
-        self.favorited = data["favorite"]
-        self.archived = data["archive"]
-
-        self.last_action = data["last_action"]
-        self.last_activity = data["last_activity"]
-
-        self.muted = data["muted"]
-        self.name = data["name"]
-
-        self.unread_messages = data["unread_messages"]
-        self.user_count = data["user_count"]
-
-        self.members = [User(self.client, member) for member in data["members"]]
-        self.callable = [User(self.client, member) for member in data["callable"]]
-
-    def archive(self):
-        return self.client.conversations.archive(self.id)
-
-    def favorite(self):
-        return self.client.conversations.favorite(self.id)
-
-    def unfavorite(self):
-        return self.client.conversations.unfavorite(self.id)
-
-    def disable_notifications(self, duration: int | str) -> str:
-        return self.client.conversations.disable_notifications(self.id, duration)
-
-    def enable_notifications(self) -> dict:
-        return self.client.conversations.enable_notifications(self.id)
