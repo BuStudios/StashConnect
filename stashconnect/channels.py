@@ -47,3 +47,35 @@ class ChannelManager:
 
         response = self.client._post("channels/create", data=data)
         return response["channel"]
+
+    def create(
+        self,
+        company_id,
+        channel_id,
+        *,
+        description="",
+        channel_name,
+        password=None,
+        visible=True,
+        writable="all",
+        inviteable="all",
+        show_activities=True,
+        show_membership_activities=True
+    ):
+
+        data = {
+            "channel_id": channel_id,
+            "company_id": company_id,
+            "channel_name": channel_name,
+            "description": description,
+            "writable": writable,
+            "visible": visible,
+            "inviteable": inviteable,
+            "password": password,
+            "password_repeat": password,
+            "show_activities": show_activities,
+            "show_membership_activities": show_membership_activities,
+        }
+
+        response = self.client._post("channels/edit", data=data)
+        return response["channel"]
