@@ -83,3 +83,10 @@ class ChannelManager:
     def quit(self, channel_id):
         response = self.client._post("channels/quit", data={"channel_id": channel_id})
         return response
+
+    def rename(self, channel_id, channel_name):
+        response = self.client._post(
+            "channels/rename",
+            data={"channel_id": channel_id, "channel_name": channel_name},
+        )
+        return response
