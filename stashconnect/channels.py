@@ -79,3 +79,7 @@ class ChannelManager:
 
         response = self.client._post("channels/edit", data=data)
         return response["channel"]
+
+    def quit(self, channel_id):
+        response = self.client._post("channels/quit", data={"channel_id": channel_id})
+        return response
