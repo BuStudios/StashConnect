@@ -48,7 +48,7 @@ class ChannelManager:
         response = self.client._post("channels/create", data=data)
         return response["channel"]
 
-    def create(
+    def edit(
         self,
         company_id,
         channel_id,
