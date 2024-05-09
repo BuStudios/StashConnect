@@ -3,6 +3,8 @@ from PIL import Image
 import io
 import base64
 
+from .companies import Company
+
 
 class UserManager:
     def __init__(self, client):

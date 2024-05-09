@@ -9,6 +9,7 @@ from .settings import Settings
 from .users import UserManager
 from .crypto_utils import CryptoUtils
 from .conversations import ConversationManager
+from .companies import CompanyHandler
 from .files import Files
 from .tools import Tools
 
@@ -46,6 +47,7 @@ class Client:
         self.users = UserManager(self)
         self.files = Files(self)
         self.conversations = ConversationManager(self)
+        self.companies = CompanyHandler(self)
 
         self.email = email
         self.password = password
