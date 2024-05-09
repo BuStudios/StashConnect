@@ -90,3 +90,10 @@ class ChannelManager:
             data={"channel_id": channel_id, "channel_name": channel_name},
         )
         return response
+
+    def edit_description(self, channel_id, description):
+        response = self.client._post(
+            "channels/editDescription",
+            data={"channel_id": channel_id, "description": description},
+        )
+        return response
