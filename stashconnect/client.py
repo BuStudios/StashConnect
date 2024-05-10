@@ -4,12 +4,12 @@ import time
 import threading
 import socketio
 
-from .messages import MessageHandler
+from .messages import MessageManager
 from .settings import Settings
 from .users import UserManager
 from .crypto_utils import CryptoUtils
 from .conversations import ConversationManager
-from .companies import CompanyHandler
+from .companies import CompanyManager
 from .channels import ChannelManager
 
 from .files import Files
@@ -45,13 +45,13 @@ class Client:
 
     def __init__(self, *, email, password, encryption_password=None, device_id=None, app_name=None):
 
-        self.messages = MessageHandler(self)
+        self.messages = MessageManager(self)
         self.tools = Tools(self)
         self.settings = Settings(self)
         self.users = UserManager(self)
         self.files = Files(self)
         self.conversations = ConversationManager(self)
-        self.companies = CompanyHandler(self)
+        self.companies = CompanyManager(self)
         self.channels = ChannelManager(self)
 
         self.email = email

@@ -1,7 +1,7 @@
 from .models import Company
 
 
-class CompanyHandler:
+class CompanyManager:
     def __init__(self, client):
         self.client = client
 

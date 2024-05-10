@@ -16,7 +16,7 @@ from .crypto_utils import CryptoUtils
 from .models import Message
 
 
-class MessageHandler:
+class MessageManager:
     def __init__(self, client):
         self.client = client
 
