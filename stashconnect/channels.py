@@ -9,6 +9,9 @@ import Crypto
 import base64
 import json
 
+from .models import User
+from typing import Generator
+
 
 class ChannelManager:
     def __init__(self, client):
@@ -197,3 +200,37 @@ class ChannelManager:
         )
 
         return response
+
+    def members(
+        self,
+        channel_id: int | str,
+        *,
+        search: str | int = None,
+        limit: int | str = 40,
+        offset: int | str = 0
+    ) -> Generator[User, None, None]:
+        """Lists the members if a channel as a generator
+
+        Args:
+            channel_id (int | str): The channels id.
+            search (str | int, optional): The search keyword that is used. Defaults to None.
+            limit (int | str, optional): Limit of answer. Defaults to 40.
+            offset (int | str, optional): Offset of answer. Defaults to 0.
+
+        Yields:
+            Generator[User, None, None]: A generator object with a User object
+            (use: for member in members).
+        """
+        data = {
+            "channel_id": channel_id,
+            "limit": limit,
+            "offset": offset,
+            "filter": "members",
+            "sorting": ["first_name_asc", "last_name_asc"],
+            "search": search,
+        }
+
+        response = self.client._post("channels/members", data=data)
+
+        for member in response["members"]:
+            yield User(self.client, member)

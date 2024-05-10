@@ -11,6 +11,7 @@ email = os.getenv("email")
 password = os.getenv("password")
 encryption_password = os.getenv("pass2")
 target = os.getenv("conversation_id")
+target_channel = os.getenv("channel_id")
 
 client = stashconnect.Client(
     email=email, password=password,
@@ -19,7 +20,10 @@ client = stashconnect.Client(
     app_name="maintest",
 )
 
-channel = client.channels.invite("channel_id", "user_ids")
+members = client.channels.members(target_channel)
+for member in members:
+    print(member.first_name)
+
 sys.exit()
 
 company = client.companies.member()

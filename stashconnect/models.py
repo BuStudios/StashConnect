@@ -112,22 +112,27 @@ class User:
         self.client = client
         self.id = data["id"]
 
-        user = self.client.users._info(data["id"])
+        try:
+            self.set_attributes(data)
+        except KeyError:
+            user_data = self.client.users._info(self.id)
+            self.set_attributes(user_data)
 
-        self.first_name = user["first_name"]
-        self.last_name = user["last_name"]
+    def set_attributes(self, data):
+        self.first_name = data["first_name"]
+        self.last_name = data["last_name"]
 
-        self.email = user["email"]
-        self.status = user["status"]
-        self.image = user["image"]
+        self.email = data["email"]
+        self.status = data["status"]
+        self.image = data["image"]
 
-        self.language = user["language"]
-        self.last_login = user["last_login"]
-        self.online = user["online"]
-        self.permissions = user["permissions"]
+        self.language = data["language"]
+        self.last_login = data["last_login"]
+        self.online = data["online"]
+        self.permissions = data["permissions"]
 
-        self.public_key = user["public_key"]
-        self.companies = user["roles"]
+        self.public_key = data["public_key"]
+        self.companies = data["roles"]
 
 
 class Conversation:
@@ -183,7 +188,9 @@ class Company:
         self.client = client
 
         if "company_id" in data:
-            data = self.client._post("company/details", data={"company_id": data["company_id"]})["company"]
+            data = self.client._post(
+                "company/details", data={"company_id": data["company_id"]}
+            )["company"]
 
         self.id = data["id"]
 
