@@ -53,3 +53,17 @@ class CompanyManager:
             "server/get_email_templates", data={"company_id": company_id}
         )
         return response["templates"]
+
+    def get_ldaps(self, company_id: str | int) -> dict:
+        """Gets the companies ldaps [untested]
+
+        Args:
+            company_id (str | int): The companies id.
+
+        Returns:
+            dict: [untested]
+        """
+        response = self.client._post(
+            "connections/servers", data={"company_id": company_id}
+        )
+        return response["servers"]

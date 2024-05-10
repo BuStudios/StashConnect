@@ -233,7 +233,7 @@ class Company:
             dict: The companies settings.
         """
         return self.client.companies.get_settings(self.id)
-    
+
     def email_templates(self) -> dict:
         """Gets the email templates of the company
 
@@ -241,6 +241,15 @@ class Company:
             dict: Return a dict i think
         """
         return self.client.companies.email_templates(self.id)
+
+    def get_ldaps(self) -> dict:
+        """Gets the companies ldaps [untested]
+
+        Returns:
+            dict: [untested]
+        """
+        return self.client.companies.get_ldaps(self.id)
+
 
 class Channel:
     def __init__(self, client, data):
