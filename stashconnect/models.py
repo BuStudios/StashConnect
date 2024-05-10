@@ -332,3 +332,14 @@ class Channel:
             dict: The success status.
         """
         return self.client.channels.quit(self.id)
+
+    def rename(self, channel_name: str) -> dict:
+        """Renames a channel
+
+        Args:
+            channel_name (str): The new channel name.
+
+        Returns:
+            dict: The success status.
+        """
+        return self.client.channels.rename(self.id, channel_name)
