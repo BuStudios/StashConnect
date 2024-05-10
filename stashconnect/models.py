@@ -250,6 +250,22 @@ class Company:
         """
         return self.client.companies.get_ldaps(self.id)
 
+    def delete(self) -> dict:
+        """Deletes the company [dangerous!]
+
+        Returns:
+            dict: The success status.
+        """
+        return self.client.companies.delete(self.id)
+
+    def quit(self) -> dict:
+        """Leaves a company [dangerous!]
+
+        Returns:
+            dict: The success status.
+        """
+        return self.client.companies.quit(self.id)
+
 
 class Channel:
     def __init__(self, client, data):

@@ -67,3 +67,29 @@ class CompanyManager:
             "connections/servers", data={"company_id": company_id}
         )
         return response["servers"]
+
+    def delete(self, company_id: str | int) -> dict:
+        """Deletes the company [dangerous!]
+
+        Args:
+            company_id (str | int): The companies id.
+
+        Returns:
+            dict: The success status.
+        """
+        response = self.client._post(
+            "server/delete_company", data={"company_id": company_id}
+        )
+        return response
+
+    def quit(self, company_id: str | int) -> dict:
+        """Leaves a company [dangerous!]
+
+        Args:
+            company_id (str | int): The companies id.
+
+        Returns:
+            dict: The success status.
+        """
+        response = self.client._post("company/quit", data={"company_id": company_id})
+        return response
