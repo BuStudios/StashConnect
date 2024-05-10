@@ -299,3 +299,66 @@ class ChannelManager:
             "channels/declineInvite", data={"invite_id": invite_id}
         )
         return response
+
+    def favorite(self, channel_id: int | str) -> dict:
+        """Favorites a channel
+
+        Args:
+            channel_id (int | str): The channels id.
+
+        Returns:
+            dict: The success status.
+        """
+        response = self.client._post(
+            "message/set_favorite",
+            data={"channel_id": channel_id, "favorite": True},
+        )
+        return response
+
+    def unfavorite(self, channel_id: int | str) -> dict:
+        """Unfavorites a channel
+
+        Args:
+            channel_id (int | str): The channels id.
+
+        Returns:
+            dict: The success status.
+        """
+        response = self.client._post(
+            "message/set_favorite",
+            data={"channel_id": channel_id, "favorite": False},
+        )
+        return response
+
+    def disable_notifications(self, channel_id: int | str, duration: int | str) -> str:
+        """Disables notifications for a channel
+
+        Args:
+            channel_id (int | str): The channels id.
+            duration (int | str): how long the block should last (seconds).
+
+        Returns:
+            str: The end timestamp.
+        """
+        return self.client._post(
+            "push/disable_notifications",
+            data={
+                "type": "channel",
+                "content_id": channel_id,
+                "duration": duration,
+            },
+        )
+
+    def enable_notifications(self, channel_id: int | str) -> dict:
+        """Enables notifications for a channel
+
+        Args:
+            channel_id (int | str): The channels id.
+
+        Returns:
+            dict: The success status.
+        """
+        return self.client._post(
+            "push/enable_notifications",
+            data={"type": "channel", "content_id": channel_id},
+        )
