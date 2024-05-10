@@ -12,6 +12,7 @@ password = os.getenv("password")
 encryption_password = os.getenv("pass2")
 target = os.getenv("conversation_id")
 target_channel = os.getenv("channel_id")
+company_id = os.getenv("company")
 
 client = stashconnect.Client(
     email=email, password=password,
@@ -23,6 +24,9 @@ client = stashconnect.Client(
 #members = client.channels.members(target_channel)
 #for member in members:
 #    print(member.first_name)
+
+print(client.companies.get_settings(company_id))
+sys.exit()
 
 channels = client.channels.info(target_channel)
 channels.disable_notifications(200)

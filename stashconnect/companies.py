@@ -25,3 +25,17 @@ class CompanyManager:
         """
         response = self.client._post("company/member", data={"no_cache": True})
         return [Company(self.client, data) for data in response["companies"]]
+
+    def get_settings(self, company_id: str | int) -> dict:
+        """Gets the settings of a company
+
+        Args:
+            company_id (str | int): The companies id.
+
+        Returns:
+            dict: The companies settings.
+        """
+        response = self.client._post(
+            "company/settings", data={"company_id": company_id}
+        )
+        return response["settings"]
