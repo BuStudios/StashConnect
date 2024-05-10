@@ -97,3 +97,34 @@ class ChannelManager:
             data={"channel_id": channel_id, "description": description},
         )
         return response
+
+    def delete(self, channel_id):
+        response = self.client._post("channels/delete", data={"channel_id": channel_id})
+        return response
+
+    def change_permission(self, channel_id, writable):
+        response = self.client._post(
+            "channels/changePermissions",
+            data={"channel_id": channel_id, "writable": writable},
+        )
+        return response["channel"]
+
+    def remove_user(self, channel_id, user_id):
+        response = self.client._post(
+            "channels/removeUser", data={"channel_id": channel_id, "user_id": user_id}
+        )
+        return response["channel"]
+
+    def add_manager_status(self, channel_id, user_id):
+        response = self.client._post(
+            "channels/addModeratorStatus",
+            data={"channel_id": channel_id, "user_id": user_id},
+        )
+        return response["channel"]
+
+    def remove_manager_status(self, channel_id, user_id):
+        response = self.client._post(
+            "channels/removeModeratorStatus",
+            data={"channel_id": channel_id, "user_id": user_id},
+        )
+        return response["channel"]
