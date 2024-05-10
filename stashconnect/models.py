@@ -226,6 +226,14 @@ class Company:
         self.roles = data["roles"]
         self.settings = data["settings"]
 
+    def get_settings(self) -> dict:
+        """Gets the settings of a company
+
+        Returns:
+            dict: The companies settings.
+        """
+        return self.client.companies.get_settings(self.id)
+
 
 class Channel:
     def __init__(self, client, data):

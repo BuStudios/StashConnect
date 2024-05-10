@@ -25,7 +25,8 @@ client = stashconnect.Client(
 #for member in members:
 #    print(member.first_name)
 
-print(client.companies.get_settings(company_id))
+company = client.companies.info(company_id)
+print(company.get_settings())
 sys.exit()
 
 channels = client.channels.info(target_channel)
