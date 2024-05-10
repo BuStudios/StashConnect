@@ -294,13 +294,11 @@ class Channel:
         writable: str = "all",
         inviteable: str = "all",
         show_activities: bool = True,
-        show_membership_activities: bool = True
+        show_membership_activities: bool = True,
     ):
         """Edits a channel
 
         Args:
-            company_id (int | str): The companies id.
-            channel_id (int | str): The channels id.
             channel_name (str): The channels name.
             description (str, optional): The channels description. Defaults to "".
             password (str, optional): The channels password. Defaults to None.
@@ -326,3 +324,11 @@ class Channel:
             show_activities=show_activities,
             show_membership_activities=show_membership_activities,
         )
+
+    def quit(self) -> dict:
+        """Leaves a channel
+
+        Returns:
+            dict: The success status.
+        """
+        return self.client.channels.quit(self.id)
