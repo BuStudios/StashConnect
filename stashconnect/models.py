@@ -343,3 +343,44 @@ class Channel:
             dict: The success status.
         """
         return self.client.channels.rename(self.id, channel_name)
+
+    def edit_description(self, description: str) -> dict:
+        """Edits the description of a channel
+
+        Args:
+            description (str): The new channel description.
+
+        Returns:
+            dict: The success status.
+        """
+        return self.client.channels.edit_description(self.id, description)
+
+    def delete(self) -> dict:
+        """Deletes a channel (without confirmation!)
+
+        Returns:
+            dict: The success status.
+        """
+        return self.client.channels.delete(self.id)
+
+    def change_permission(self, writable: str) -> Channel:
+        """Sets who can write in the channel
+
+        Args:
+            writable (str): Sets who can write in the channel.
+
+        Returns:
+            Channel: A channel object.
+        """
+        return self.client.channels.change_permission(self.id, writable)
+
+    def remove_user(self, user_id: int | str) -> Channel:
+        """Removes the user from the channel
+
+        Args:
+            user_id (int | str): The users id.
+
+        Returns:
+            Channel: A channel object.
+        """
+        return self.client.channels.remove_user(self.id, user_id)
