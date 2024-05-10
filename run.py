@@ -25,6 +25,8 @@ client = stashconnect.Client(
 #    print(member.first_name)
 
 channels = client.channels.info(target_channel)
+channels.disable_notifications(200)
+sys.exit()
 members = channels.members()
 for member in members:
     print(member.first_name)

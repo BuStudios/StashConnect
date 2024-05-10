@@ -490,7 +490,7 @@ class ChannelManager:
         )
         return response
 
-    def disable_notifications(self, channel_id: int | str, duration: int | str) -> str:
+    def disable_notifications(self, channel_id: int | str, duration: int | str) -> dict:
         """Disables notifications for a channel
 
         Args:
@@ -498,7 +498,7 @@ class ChannelManager:
             duration (int | str): how long the block should last (seconds).
 
         Returns:
-            str: The end timestamp.
+            dict: The end timestamp.
         """
         return self.client._post(
             "push/disable_notifications",

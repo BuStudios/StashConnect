@@ -453,3 +453,49 @@ class Channel:
         return self.client.channels.members(
             self.id, search=search, limit=limit, offset=offset
         )
+
+    def join(self, *, password: str | int = ""):
+        """Joins a channel
+
+        Args:
+            password (str | int, optional): The password. Defaults to "".
+
+        Returns:
+            Channel: A channel object.
+        """
+        return self.client.channels.join(self.id, password=password)
+
+    def favorite(self) -> dict:
+        """Favorites a channel
+
+        Returns:
+            dict: The success status.
+        """
+        return self.client.channels.favorite(self.id)
+
+    def unfavorite(self) -> dict:
+        """Unfavorites a channel
+
+        Returns:
+            dict: The success status.
+        """
+        return self.client.channels.unfavorite(self.id)
+
+    def disable_notifications(self, duration: int | str) -> dict:
+        """Disables notifications for a channel
+
+        Args:
+            duration (int | str): how long the block should last (seconds).
+
+        Returns:
+            dict: The end timestamp.
+        """
+        return self.client.channels.disable_notifications(self.id, duration)
+
+    def enable_notifications(self) -> dict:
+        """Enables notifications for a channel
+
+        Returns:
+            dict: The success status.
+        """
+        return self.client.channels.enable_notifications(self.id)
