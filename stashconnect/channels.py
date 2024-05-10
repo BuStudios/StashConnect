@@ -241,13 +241,20 @@ class ChannelManager:
         )
         return response["channel"]
 
-    def recommendations(self, company_id):
+    def recommendations(self, company_id: int | str):
         response = self.client._post(
             "channels/recommendations", data={"company": company_id}
         )
         return response["channels"]
 
-    def visible(self, company_id, *, limit=30, offset=0, search=""):
+    def visible(
+        self,
+        company_id: int | str,
+        *,
+        limit: int | str = 30,
+        offset: int | str = 0,
+        search: str | int = ""
+    ):
         response = self.client._post(
             "channels/visible",
             data={
@@ -256,5 +263,11 @@ class ChannelManager:
                 "offset": offset,
                 "search": search,
             },
+        )
+        return response["channels"]
+
+    def joined(self, company_id: int | str):
+        response = self.client._post(
+            "channels/subscripted", data={"company": company_id}
         )
         return response["channels"]

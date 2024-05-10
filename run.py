@@ -24,7 +24,7 @@ client = stashconnect.Client(
 #for member in members:
 #    print(member.first_name)
 
-channels = client.channels.visible("company", limit=2)
+channels = client.channels.joined("")
 pprint.pprint(channels)
 
 sys.exit()
