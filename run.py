@@ -20,9 +20,12 @@ client = stashconnect.Client(
     app_name="maintest",
 )
 
-members = client.channels.members(target_channel)
-for member in members:
-    print(member.first_name)
+#members = client.channels.members(target_channel)
+#for member in members:
+#    print(member.first_name)
+
+channels = client.channels.visible("company", limit=2)
+pprint.pprint(channels)
 
 sys.exit()
 

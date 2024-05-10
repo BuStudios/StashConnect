@@ -234,3 +234,27 @@ class ChannelManager:
 
         for member in response["members"]:
             yield User(self.client, member)
+
+    def join(self, channel_id: int | str, *, password: str | int = ""):
+        response = self.client._post(
+            "channels/join", data={"channel_id": channel_id, "password": password}
+        )
+        return response["channel"]
+
+    def recommendations(self, company_id):
+        response = self.client._post(
+            "channels/recommendations", data={"company": company_id}
+        )
+        return response["channels"]
+
+    def visible(self, company_id, *, limit=30, offset=0, search=""):
+        response = self.client._post(
+            "channels/visible",
+            data={
+                "company": company_id,
+                "limit": limit,
+                "offset": offset,
+                "search": search,
+            },
+        )
+        return response["channels"]
