@@ -39,3 +39,17 @@ class CompanyManager:
             "company/settings", data={"company_id": company_id}
         )
         return response["settings"]
+
+    def email_templates(self, company_id: str | int) -> dict:
+        """Gets the email templates of the company
+
+        Args:
+            company_id (str | int): The companies id.
+
+        Returns:
+            dict: Return a dict i think
+        """
+        response = self.client._post(
+            "server/get_email_templates", data={"company_id": company_id}
+        )
+        return response["templates"]
