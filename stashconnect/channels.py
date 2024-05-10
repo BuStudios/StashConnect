@@ -271,3 +271,31 @@ class ChannelManager:
             "channels/subscripted", data={"company": company_id}
         )
         return response["channels"]
+
+    def accept_invite(self, invite_id: int | str) -> dict:
+        """Accepts an invite.
+
+        Args:
+            invite_id (int | str): The id of the invite.
+
+        Returns:
+            dict: The success status.
+        """
+        response = self.client._post(
+            "channels/acceptInvite", data={"invite_id": invite_id}
+        )
+        return response
+
+    def decline_invite(self, invite_id: int | str) -> dict:
+        """Declines an invite.
+
+        Args:
+            invite_id (int | str): The id of the invite.
+
+        Returns:
+            dict: The success status.
+        """
+        response = self.client._post(
+            "channels/declineInvite", data={"invite_id": invite_id}
+        )
+        return response
