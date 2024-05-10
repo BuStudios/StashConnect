@@ -19,18 +19,35 @@ class ChannelManager:
 
     def create(
         self,
-        channel_name,
-        company_id,
+        channel_name: str,
+        company_id: int | str,
         *,
-        description="",
-        password=None,
-        channel_type="encrypted",
-        visible=True,
-        writable="all",
-        inviteable="all",
-        show_activities=True,
-        show_membership_activities=True
-    ):
+        description: str = "",
+        password: str = None,
+        channel_type: str = "encrypted",
+        visible: bool = True,
+        writable: str = "all",
+        inviteable: str = "all",
+        show_activities: bool = True,
+        show_membership_activities: bool = True
+    ) -> Channel:
+        """Creates a channel
+
+        Args:
+            channel_name (str): The channels name.
+            company_id (int | str): The companies id.
+            description (str, optional): The channels description. Defaults to "".
+            password (str, optional): The channels password. Defaults to None.
+            channel_type (str, optional): The channels type. Defaults to "encrypted".
+            visible (bool, optional): The channels visibility. Defaults to True.
+            writable (str, optional): Sets who can write in the channel. Defaults to "all".
+            inviteable (str, optional): Sets who can invite other users. Defaults to "all".
+            show_activities (bool, optional): [name]. Defaults to True.
+            show_membership_activities (bool, optional): [name]. Defaults to True.
+
+        Returns:
+            Channel: A channel object.
+        """
         conversation_key = Crypto.Random.get_random_bytes(32)
         encryptor = Crypto.Cipher.PKCS1_OAEP.new(self.client._private_key.publickey())
 
@@ -56,18 +73,35 @@ class ChannelManager:
 
     def edit(
         self,
-        company_id,
-        channel_id,
+        company_id: int | str,
+        channel_id: int | str,
         *,
-        description="",
-        channel_name,
-        password=None,
-        visible=True,
-        writable="all",
-        inviteable="all",
-        show_activities=True,
-        show_membership_activities=True
-    ):
+        description: str = "",
+        channel_name: str,
+        password: str = None,
+        visible: bool = True,
+        writable: str = "all",
+        inviteable: str = "all",
+        show_activities: bool = True,
+        show_membership_activities: bool = True
+    ) -> Channel:
+        """Edits a channel
+
+        Args:
+            company_id (int | str): The companies id.
+            channel_id (int | str): The channels id.
+            channel_name (str): The channels name.
+            description (str, optional): The channels description. Defaults to "".
+            password (str, optional): The channels password. Defaults to None.
+            visible (bool, optional): The channels visibility. Defaults to True.
+            writable (str, optional): Sets who can write in the channel. Defaults to "all".
+            inviteable (str, optional): Sets who can invite other users. Defaults to "all".
+            show_activities (bool, optional): [name]. Defaults to True.
+            show_membership_activities (bool, optional): [name]. Defaults to True.
+
+        Returns:
+            Channel: A channel object.
+        """
 
         data = {
             "channel_id": channel_id,
@@ -86,63 +120,153 @@ class ChannelManager:
         response = self.client._post("channels/edit", data=data)
         return Channel(self.client, response["channel"])
 
-    def quit(self, channel_id):
+    def quit(self, channel_id: int | str) -> dict:
+        """Leaves a channel
+
+        Args:
+            channel_id (int | str): The channels id.
+
+        Returns:
+            dict: The success status.
+        """
         response = self.client._post("channels/quit", data={"channel_id": channel_id})
         return response
 
-    def rename(self, channel_id, channel_name):
+    def rename(self, channel_id: int | str, channel_name: str) -> dict:
+        """Renames a channel
+
+        Args:
+            channel_id (int | str): The channels id.
+            channel_name (str): The new channel name.
+
+        Returns:
+            dict: The success status.
+        """
         response = self.client._post(
             "channels/rename",
             data={"channel_id": channel_id, "channel_name": channel_name},
         )
         return response
 
-    def edit_description(self, channel_id, description):
+    def edit_description(self, channel_id: int | str, description: str) -> dict:
+        """Edits the description of a channel
+
+        Args:
+            channel_id (int | str): The channels id.
+            description (str): The new channel description.
+
+        Returns:
+            dict: The success status.
+        """
         response = self.client._post(
             "channels/editDescription",
             data={"channel_id": channel_id, "description": description},
         )
         return response
 
-    def delete(self, channel_id):
+    def delete(self, channel_id: int | str) -> dict:
+        """Deletes a channel (without confirmation!)
+
+        Args:
+            channel_id (int | str): The channels id.
+
+        Returns:
+            dict: The success status.
+        """
         response = self.client._post("channels/delete", data={"channel_id": channel_id})
         return response
 
-    def change_permission(self, channel_id, writable):
+    def change_permission(self, channel_id: int | str, writable: str) -> Channel:
+        """Sets who can write in the channel
+
+        Args:
+            channel_id (int | str): The channels id.
+            writable (str): Sets who can write in the channel.
+
+        Returns:
+            Channel: A channel object.
+        """
         response = self.client._post(
             "channels/changePermissions",
             data={"channel_id": channel_id, "writable": writable},
         )
         return Channel(self.client, response["channel"])
 
-    def remove_user(self, channel_id, user_id):
+    def remove_user(self, channel_id: int | str, user_id: int | str) -> Channel:
+        """Removes the user from the channel
+
+        Args:
+            channel_id (int | str): The channels id.
+            user_id (int | str): The users id.
+
+        Returns:
+            Channel: A channel object.
+        """
         response = self.client._post(
             "channels/removeUser", data={"channel_id": channel_id, "user_id": user_id}
         )
         return Channel(self.client, response["channel"])
 
-    def add_manager_status(self, channel_id, user_id):
+    def add_manager_status(self, channel_id: int | str, user_id: int | str) -> Channel:
+        """Adds a moderation status
+
+        Args:
+            channel_id (int | str): The channels id.
+            user_id (int | str): The users id.
+
+        Returns:
+            Channel: A channel object
+        """
         response = self.client._post(
             "channels/addModeratorStatus",
             data={"channel_id": channel_id, "user_id": user_id},
         )
         return Channel(self.client, response["channel"])
 
-    def remove_manager_status(self, channel_id, user_id):
+    def remove_manager_status(
+        self, channel_id: int | str, user_id: int | str
+    ) -> Channel:
+        """Removes a moderation status
+
+        Args:
+            channel_id (int | str): The channels id.
+            user_id (int | str): The users id.
+
+        Returns:
+            Channel: A channel object
+        """
         response = self.client._post(
             "channels/removeModeratorStatus",
             data={"channel_id": channel_id, "user_id": user_id},
         )
         return Channel(self.client, response["channel"])
 
-    def edit_password(self, channel_id, password):
+    def edit_password(self, channel_id: int | str, password: str) -> dict:
+        """Edits the password of the channel
+
+        Args:
+            channel_id (int | str): The channels id.
+            password (str): The new password.
+
+        Returns:
+            dict: The success status.
+        """
         response = self.client._post(
             "channels/editPassword",
             data={"password": password, "channel_id": channel_id},
         )
         return response
 
-    def info(self, channel_id: int | str, without_members: bool = True):
+    def info(self, channel_id: int | str, without_members: bool = True) -> Channel:
+        """Gets the info of a channel
+
+        Args:
+            channel_id (int | str): The channels id.
+            without_members (bool, optional): Returns the members. Defaults to True.
+
+        Returns:
+            Channel: A channel object.
+        """
         response = self.client._post(
             "channels/info",
             data={"channel_id": channel_id, "without_members": without_members},
@@ -156,7 +280,7 @@ class ChannelManager:
         text: str = "",
         expiry: int | str = None,
     ) -> dict:
-        """Created an invite for a channel
+        """Creates an invite for a channel
 
         Args:
             channel_id (int | str): The id of the channel.
@@ -235,13 +359,30 @@ class ChannelManager:
         for member in response["members"]:
             yield User(self.client, member)
 
-    def join(self, channel_id: int | str, *, password: str | int = ""):
+    def join(self, channel_id: int | str, *, password: str | int = "") -> Channel:
+        """Joins a channel
+
+        Args:
+            channel_id (int | str): The channels id.
+            password (str | int, optional): The password. Defaults to "".
+
+        Returns:
+            Channel: A channel object.
+        """
         response = self.client._post(
             "channels/join", data={"channel_id": channel_id, "password": password}
         )
         return Channel(self.client, response["channel"])
 
-    def recommendations(self, company_id: int | str):
+    def recommendations(self, company_id: int | str) -> Channel:
+        """Gets custom channel recommendations
+
+        Args:
+            company_id (int | str): The companies id.
+
+        Returns:
+            Channel: A channel object.
+        """
         response = self.client._post(
             "channels/recommendations", data={"company": company_id}
         )
@@ -254,7 +395,18 @@ class ChannelManager:
         limit: int | str = 30,
         offset: int | str = 0,
         search: str | int = ""
-    ):
+    ) -> Channel:
+        """Gets all visible channels
+
+        Args:
+            company_id (int | str): The companies id.
+            limit (int | str, optional): The returned limit. Defaults to 30.
+            offset (int | str, optional): The returned offset. Defaults to 0.
+            search (str | int, optional): The search keyword. Defaults to "".
+
+        Returns:
+            Channel: A channel object.
+        """
         response = self.client._post(
             "channels/visible",
             data={
@@ -266,7 +418,15 @@ class ChannelManager:
         )
         return Channel(self.client, response["channels"])
 
-    def joined(self, company_id: int | str):
+    def joined(self, company_id: int | str) -> Channel:
+        """Gets all joined channels
+
+        Args:
+            company_id (int | str): The companies id.
+
+        Returns:
+            Channel: A channel object.
+        """
         response = self.client._post(
             "channels/subscripted", data={"company": company_id}
         )

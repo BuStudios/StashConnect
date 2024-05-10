@@ -1,6 +1,8 @@
 # All returnable objects are stored here
 
 from .crypto_utils import CryptoUtils
+from .client import Client
+from .channels import Channel
 
 
 class Message:
@@ -281,3 +283,46 @@ class Channel:
         self.invited_at = data["membership"]["invited_at"]
         self.invited_by = data["membership"]["invited_by"]
         self.invited_by_mx_user_id = data["membership"]["invited_by_mx_user_id"]
+
+    def edit(
+        self,
+        *,
+        description: str = "",
+        channel_name: str,
+        password: str = None,
+        visible: bool = True,
+        writable: str = "all",
+        inviteable: str = "all",
+        show_activities: bool = True,
+        show_membership_activities: bool = True
+    ):
+        """Edits a channel
+
+        Args:
+            company_id (int | str): The companies id.
+            channel_id (int | str): The channels id.
+            channel_name (str): The channels name.
+            description (str, optional): The channels description. Defaults to "".
+            password (str, optional): The channels password. Defaults to None.
+            visible (bool, optional): The channels visibility. Defaults to True.
+            writable (str, optional): Sets who can write in the channel. Defaults to "all".
+            inviteable (str, optional): Sets who can invite other users. Defaults to "all".
+            show_activities (bool, optional): [name]. Defaults to True.
+            show_membership_activities (bool, optional): [name]. Defaults to True.
+
+        Returns:
+            Channel: A channel object.
+        """
+
+        return self.client.channels.edit(
+            self.company.id,
+            self.id,
+            description=description,
+            channel_name=channel_name,
+            password=password,
+            visible=visible,
+            writable=writable,
+            inviteable=inviteable,
+            show_activities=show_activities,
+            show_membership_activities=show_membership_activities,
+        )
