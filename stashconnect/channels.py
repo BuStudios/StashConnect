@@ -215,7 +215,7 @@ class ChannelManager:
             user_id (int | str): The users id.
 
         Returns:
-            Channel: A channel object
+            Channel: A channel object.
         """
         response = self.client._post(
             "channels/addModeratorStatus",
@@ -233,7 +233,7 @@ class ChannelManager:
             user_id (int | str): The users id.
 
         Returns:
-            Channel: A channel object
+            Channel: A channel object.
         """
         response = self.client._post(
             "channels/removeModeratorStatus",

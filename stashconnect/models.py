@@ -1,8 +1,8 @@
 # All returnable objects are stored here
 
 from .crypto_utils import CryptoUtils
-from .client import Client
-from .channels import Channel
+
+from typing import Generator
 
 
 class Message:
@@ -363,7 +363,7 @@ class Channel:
         """
         return self.client.channels.delete(self.id)
 
-    def change_permission(self, writable: str) -> Channel:
+    def change_permission(self, writable: str):
         """Sets who can write in the channel
 
         Args:
@@ -374,7 +374,7 @@ class Channel:
         """
         return self.client.channels.change_permission(self.id, writable)
 
-    def remove_user(self, user_id: int | str) -> Channel:
+    def remove_user(self, user_id: int | str):
         """Removes the user from the channel
 
         Args:
@@ -384,3 +384,72 @@ class Channel:
             Channel: A channel object.
         """
         return self.client.channels.remove_user(self.id, user_id)
+
+    def add_manager_status(self, user_id: int | str):
+        """Adds a moderation status
+
+        Args:
+            user_id (int | str): The users id.
+
+        Returns:
+            Channel: A channel object.
+        """
+        return self.client.channels.add_manager_status(self.id, user_id)
+
+    def remove_manager_status(self, user_id: int | str):
+        """Removes a moderation status
+
+        Args:
+            user_id (int | str): The users id.
+
+        Returns:
+            Channel: A channel object.
+        """
+        return self.client.channels.remove_manager_status(self.id, user_id)
+
+    def edit_password(self, password: str) -> dict:
+        """Edits the password of the channel
+
+        Args:
+            password (str): The new password.
+
+        Returns:
+            dict: The success status.
+        """
+        return self.client.channels.edit_password(self.id, password)
+
+    def invite(
+        self,
+        members: int | str | list | tuple,
+        text: str = "",
+        expiry: int | str = None,
+    ) -> dict:
+        """Creates an invite for a channel
+
+        Args:
+            members (int | str | list | tuple): Members to invite as a list or string.
+            text (str, optional): The text invited users will become. Defaults to "".
+            expiry (int | str, optional): Expiry time as a unix timestamp. Defaults to None.
+
+        Returns:
+            dict: The success status.
+        """
+        return self.client.channels.invite(self.id, members, text, expiry)
+
+    def members(
+        self, *, search: str | int = None, limit: int | str = 40, offset: int | str = 0
+    ) -> Generator[User, None, None]:
+        """Lists the members if a channel as a generator
+
+        Args:
+            search (str | int, optional): The search keyword that is used. Defaults to None.
+            limit (int | str, optional): Limit of answer. Defaults to 40.
+            offset (int | str, optional): Offset of answer. Defaults to 0.
+
+        Yields:
+            Generator[User, None, None]: A generator object with a User object
+            (use: for member in members).
+        """
+        return self.client.channels.members(
+            self.id, search=search, limit=limit, offset=offset
+        )
