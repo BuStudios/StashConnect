@@ -15,7 +15,7 @@ target_channel = os.getenv("channel_id")
 
 client = stashconnect.Client(
     email=email, password=password,
-    encryption_password=encryption_password,
+    #encryption_password=encryption_password,
     device_id="99dme98fsefmf8fuscpdu",
     app_name="maintest",
 )
@@ -24,8 +24,8 @@ client = stashconnect.Client(
 #for member in members:
 #    print(member.first_name)
 
-channels = client.channels.joined("")
-pprint.pprint(channels)
+channels = client.channels.info(target_channel)
+print(channels.description)
 
 sys.exit()
 

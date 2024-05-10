@@ -223,3 +223,61 @@ class Company:
         self.permission = data["permission"]
         self.roles = data["roles"]
         self.settings = data["settings"]
+
+
+class Channel:
+    def __init__(self, client, data):
+        self.client = client
+        self.id = data["id"]
+
+        try:
+            self.set_attributes(data)
+        except KeyError:
+            data = self.client.channels.info(self.id)
+            self.set_attributes(data)
+
+    def set_attributes(self, data):
+        self.company = Company(self.client, {"company_id": data["company"]})
+
+        self.crypto_properties = data["crypto_properties"]
+        self.encrypted = data["encrypted"]
+        self.federated = data["federated"]
+        self.unique_identifier = data["unique_identifier"]
+
+        self.description = data["description"]
+        self.name = data["name"]
+        self.image = data["image"]
+        self.group_id = data["group_id"]
+
+        self.can_leave = data["can_leave"]
+        self.inviteable = data["inviteable"]
+        self.last_action = data["last_action"]
+
+        self.ldap_name = data["ldap_name"]
+        self.mx_room_alias = data["mx_room_alias"]
+        self.mx_room_id = data["mx_room_id"]
+        self.mx_room_server_status = data["mx_room_server_status"]
+
+        self.num_members_without_keys = data["num_members_without_keys"]
+        self.password = data["password"]
+        self.pending_count = data["pending_count"]
+        self.request_count = data["request_count"]
+
+        self.show_activities = data["show_activities"]
+        self.show_membership_activities = data["show_membership_activities"]
+        self.type = data["type"]
+
+        self.user_count = data["user_count"]
+        self.visible = data["visible"]
+        self.writable = data["writable"]
+
+        self.is_member = data["membership"]["is_member"]
+        self.joined = data["membership"]["joined"]
+        self.may_manage = data["membership"]["may_manage"]
+        self.muted = data["membership"]["muted"]
+        self.write = data["membership"]["write"]
+
+        self.confirmation = data["membership"]["confirmation"]
+        self.invited_at = data["membership"]["invited_at"]
+        self.invited_by = data["membership"]["invited_by"]
+        self.invited_by_mx_user_id = data["membership"]["invited_by_mx_user_id"]

@@ -9,7 +9,7 @@ import Crypto
 import base64
 import json
 
-from .models import User
+from .models import User, Channel
 from typing import Generator
 
 
@@ -52,7 +52,7 @@ class ChannelManager:
         }
 
         response = self.client._post("channels/create", data=data)
-        return response["channel"]
+        return Channel(self.client, response["channel"])
 
     def edit(
         self,
@@ -84,7 +84,7 @@ class ChannelManager:
         }
 
         response = self.client._post("channels/edit", data=data)
-        return response["channel"]
+        return Channel(self.client, response["channel"])
 
     def quit(self, channel_id):
         response = self.client._post("channels/quit", data={"channel_id": channel_id})
@@ -113,27 +113,27 @@ class ChannelManager:
             "channels/changePermissions",
             data={"channel_id": channel_id, "writable": writable},
         )
-        return response["channel"]
+        return Channel(self.client, response["channel"])
 
     def remove_user(self, channel_id, user_id):
         response = self.client._post(
             "channels/removeUser", data={"channel_id": channel_id, "user_id": user_id}
         )
-        return response["channel"]
+        return Channel(self.client, response["channel"])
 
     def add_manager_status(self, channel_id, user_id):
         response = self.client._post(
             "channels/addModeratorStatus",
             data={"channel_id": channel_id, "user_id": user_id},
         )
-        return response["channel"]
+        return Channel(self.client, response["channel"])
 
     def remove_manager_status(self, channel_id, user_id):
         response = self.client._post(
             "channels/removeModeratorStatus",
             data={"channel_id": channel_id, "user_id": user_id},
         )
-        return response["channel"]
+        return Channel(self.client, response["channel"])
 
     def edit_password(self, channel_id, password):
         response = self.client._post(
@@ -147,7 +147,7 @@ class ChannelManager:
             "channels/info",
             data={"channel_id": channel_id, "without_members": without_members},
         )
-        return response["channels"]
+        return Channel(self.client, response["channels"])
 
     def invite(
         self,
@@ -239,13 +239,13 @@ class ChannelManager:
         response = self.client._post(
             "channels/join", data={"channel_id": channel_id, "password": password}
         )
-        return response["channel"]
+        return Channel(self.client, response["channel"])
 
     def recommendations(self, company_id: int | str):
         response = self.client._post(
             "channels/recommendations", data={"company": company_id}
         )
-        return response["channels"]
+        return Channel(self.client, response["channels"])
 
     def visible(
         self,
@@ -264,13 +264,13 @@ class ChannelManager:
                 "search": search,
             },
         )
-        return response["channels"]
+        return Channel(self.client, response["channels"])
 
     def joined(self, company_id: int | str):
         response = self.client._post(
             "channels/subscripted", data={"company": company_id}
         )
-        return response["channels"]
+        return Channel(self.client, response["channels"])
 
     def accept_invite(self, invite_id: int | str) -> dict:
         """Accepts an invite.
