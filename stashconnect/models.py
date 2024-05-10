@@ -266,6 +266,22 @@ class Company:
         """
         return self.client.companies.quit(self.id)
 
+    def list_features(self) -> dict:
+        """Lists company features
+
+        Returns:
+            dict: Company features
+        """
+        return self.client.companies.list_features(self.id)
+
+    def get_market(self) -> dict:
+        """Gets the companies market
+
+        Returns:
+            dict: The market
+        """
+        return self.client.companies.get_market(self.id)
+
 
 class Channel:
     def __init__(self, client, data):

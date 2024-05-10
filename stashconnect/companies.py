@@ -93,3 +93,31 @@ class CompanyManager:
         """
         response = self.client._post("company/quit", data={"company_id": company_id})
         return response
+
+    def list_features(self, company_id: str | int) -> dict:
+        """Lists company features
+
+        Args:
+            company_id (str | int): The companies id.
+
+        Returns:
+            dict: Company features
+        """
+        response = self.client._post(
+            "server/list_company_features", data={"company_id": company_id}
+        )
+        return response["company_features"]
+
+    def get_market(self, company_id: str | int) -> dict:
+        """Gets the companies market
+
+        Args:
+            company_id (str | int): The companies id.
+
+        Returns:
+            dict: The market
+        """
+        response = self.client._post(
+            "manage/get_company_market", data={"company_id": company_id}
+        )
+        return response["market"]
