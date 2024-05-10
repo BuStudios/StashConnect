@@ -1,10 +1,13 @@
 import Crypto.Cipher
 import Crypto.Cipher.AES
 import Crypto.Cipher.PKCS1_OAEP
+import Crypto.PublicKey
+import Crypto.PublicKey.RSA
 import Crypto.Random
 import Crypto
 
 import base64
+import json
 
 
 class ChannelManager:
@@ -128,3 +131,69 @@ class ChannelManager:
             data={"channel_id": channel_id, "user_id": user_id},
         )
         return response["channel"]
+
+    def edit_password(self, channel_id, password):
+        response = self.client._post(
+            "channels/editPassword",
+            data={"password": password, "channel_id": channel_id},
+        )
+        return response
+
+    def info(self, channel_id: int | str, without_members: bool = True):
+        response = self.client._post(
+            "channels/info",
+            data={"channel_id": channel_id, "without_members": without_members},
+        )
+        return response["channels"]
+
+    def invite(
+        self,
+        channel_id: int | str,
+        members: int | str | list | tuple,
+        text: str = "",
+        expiry: int | str = None,
+    ) -> dict:
+        """Created an invite for a channel
+
+        Args:
+            channel_id (int | str): The id of the channel.
+            members (int | str | list | tuple): Members to invite as a list or string.
+            text (str, optional): The text invited users will become. Defaults to "".
+            expiry (int | str, optional): Expiry time as a unix timestamp. Defaults to None.
+
+        Returns:
+            dict: The success status.
+        """
+        # fetch the channels key
+        conversation_key = self.client.get_conversation_key(channel_id, "channel")
+        users = []
+
+        if isinstance(members, str | int):
+            members = [members]
+
+        for member in members:
+            user = self.client.users._info(member)
+
+            publickey = Crypto.PublicKey.RSA.import_key(user["public_key"])
+            encryptor = Crypto.Cipher.PKCS1_OAEP.new(publickey)
+            encrypted_key = encryptor.encrypt(conversation_key)
+
+            users.append(
+                {
+                    "id": int(user["id"]),
+                    "key": base64.b64encode(encrypted_key).decode("utf-8"),
+                    "expiry": expiry,
+                    "userVerified": True,
+                }
+            )
+
+        response = self.client._post(
+            "channels/createInvite",
+            data={
+                "channel_id": int(channel_id),
+                "users": json.dumps(users),
+                "text": text,
+            },
+        )
+
+        return response

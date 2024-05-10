@@ -14,10 +14,13 @@ target = os.getenv("conversation_id")
 
 client = stashconnect.Client(
     email=email, password=password,
-    #encryption_password=encryption_password,
+    encryption_password=encryption_password,
     device_id="99dme98fsefmf8fuscpdu",
     app_name="maintest",
 )
+
+channel = client.channels.invite("channel_id", "user_ids")
+sys.exit()
 
 company = client.companies.member()
 print(company[0].manager.permissions)
