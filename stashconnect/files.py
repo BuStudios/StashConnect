@@ -33,16 +33,19 @@ class Files:
                 )
                 return
 
+            # generate random iv and file key
             iv = Crypto.Random.get_random_bytes(16)
             file_key = Crypto.Random.get_random_bytes(32)
 
+        # guess content type from extension
         content_type = mimetypes.guess_type(filepath)[0]
         if not content_type:
             content_type = "application/octet-stream"
 
-        max_chunk_size = 5 * 1024 * 1024
-        upload_identifier = str(uuid.uuid4())
+        max_chunk_size = 5 * 1024 * 1024  # limit chunk upload size to 5MB
+        upload_identifier = str(uuid.uuid4())  # the uploads id
 
+        # open file in binary mode
         with open(filepath, "rb") as file:
             file_content = file.read()
 
@@ -54,11 +57,14 @@ class Files:
             image_width = None
             image_height = None
 
+        # calculate total chunks
         total_chunks = (len(file_content) + max_chunk_size - 1) // max_chunk_size
         target_type = self.client.tools.get_type(target)
 
         for i in range(total_chunks):
             data_chunk = file_content[i * max_chunk_size : (i + 1) * max_chunk_size]
+
+            # encrypt the chunk
             if encrypted:
                 encrypted_chunk = CryptoUtils.encrypt_aes(data_chunk, file_key, iv)
             else:
@@ -89,12 +95,15 @@ class Files:
                 "file": ("[object Object]", encrypted_chunk, "application/octet-stream")
             }
 
+            # upload the current chunk
             response = self.client._post("file/upload", data=data, files=files)
             file = response["file"]
 
         file_id = file["id"]
 
         if encrypted:
+            # sets a file access key for encrypted files
+
             iv = Crypto.Random.get_random_bytes(16)
 
             data = {
@@ -110,6 +119,7 @@ class Files:
             response = self.client._post("security/set_file_access_key", data=data)
 
         try:
+            # upload a thumbnail image if the file is a image
             with Image.open(filepath) as image:
                 output_size = 100
 
