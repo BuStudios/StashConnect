@@ -27,33 +27,6 @@ client = stashconnect.Client(
 
 print(client.companies.list_features(company_id))
 
-#company = client.companies.info(company_id)
-#print(company.get_settings())
-sys.exit()
-
-channels = client.channels.info(target_channel)
-channels.disable_notifications(200)
-sys.exit()
-members = channels.members()
-for member in members:
-    print(member.first_name)
-
-sys.exit()
-
-company = client.companies.member()
-print(company[0].manager.permissions)
-sys.exit()
-
-#print(client.conversations.disable_notifications(target, "100"))
-#print(client.conversations.enable_notifications(target))
-
-print(client.conversations.favorite(target))
-conversation = client.conversations.get(target)
-print(conversation.members[0].first_name)
-print(conversation.favorite())
-conversation.disable_notifications("20")
-sys.exit()
-
 """
 messages = client.messages.get_flagged(target)
 for message in messages:
