@@ -21,6 +21,9 @@ client = stashconnect.Client(
     app_name="maintest",
 )
 
+print(client.files.move("id", "dest"))
+sys.exit()
+
 #members = client.channels.members(target_channel)
 #for member in members:
 #    print(member.first_name)

@@ -23,7 +23,7 @@ class Files:
         )
         return response["quota"]
 
-    def upload_file(self, target, filepath, encrypted=True):
+    def upload(self, target, filepath, encrypted=True):
         filename = os.path.basename(filepath)
 
         if encrypted:
@@ -154,7 +154,7 @@ class Files:
 
         return file
 
-    def download_file(self, id, directory=""):
+    def download(self, id, directory=""):
         response = self.client._post(f"file/download?id={id}", data={}, return_all=True)
 
         file_info = self.client.files.file_info(id)
@@ -187,13 +187,13 @@ class Files:
             else:
                 file.write(response.content)
 
-        return {"success": True}
+        return file_path
 
-    def file_info(self, id):
+    def info(self, id):
         response = self.client._post("file/info", data={"file_id": id})
         return response["file"]
 
-    def delete_files(self, ids):
+    def delete(self, ids):
 
         ids_sent = []
 
@@ -205,4 +205,18 @@ class Files:
         response = self.client._post(
             "file/delete", data={"file_ids": json.dumps(ids_sent)}
         )
+        return response
+
+    def move(self, id: str | int, folder_id: str | int) -> dict:
+        """Moves a file into a specified folder
+
+        Args:
+            id (str | int): The files id.
+            folder_id (str | int): The folders id.
+
+        Returns:
+            dict: The success status.
+        """
+        data = {"file_id": id, "parent_id": folder_id}
+        response = self.client._post("file/move", data=data)
         return response
