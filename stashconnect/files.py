@@ -11,6 +11,7 @@ import io
 import json
 
 from .crypto_utils import CryptoUtils
+from .models import Channel, Conversation
 
 
 class Files:
@@ -263,3 +264,28 @@ class Files:
         }
         response = self.client._post("file/copy", data=data)
         return response["file"]
+
+    def shares(self, id: str | int) -> dict:
+        """Get a files shares
+
+        Args:
+            id (str | int): The files id.
+
+        Returns:
+            dict: The files shares as a dict.
+        """
+        data = {"file_id": id}
+        response = self.client._post("file/shares", data=data)["shares"]
+
+        channels = []
+        for channel in response["channels"]:
+            channels.append(Channel(self.client, channel))
+
+        conversations = []
+        for conversation in response["conversations"]:
+            conversations.append(Conversation(self.client, conversation))
+
+        response["channels"] = channels
+        response["conversations"] = conversations
+
+        return response

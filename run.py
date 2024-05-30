@@ -21,7 +21,7 @@ client = stashconnect.Client(
     app_name="maintest",
 )
 
-print(client.files.copy("file"))
+print(client.files.shares("id")["conversations"][0].last_action)
 sys.exit()
 
 #members = client.channels.members(target_channel)
