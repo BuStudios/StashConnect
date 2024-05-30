@@ -21,7 +21,7 @@ client = stashconnect.Client(
     app_name="maintest",
 )
 
-print(client.files.move("id", "dest"))
+print(client.files.rename("file", "ehhehuwhwuhewiu"))
 sys.exit()
 
 #members = client.channels.members(target_channel)

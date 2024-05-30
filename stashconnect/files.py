@@ -220,3 +220,17 @@ class Files:
         data = {"file_id": id, "parent_id": folder_id}
         response = self.client._post("file/move", data=data)
         return response
+
+    def rename(self, id: str | int, name: str) -> dict:
+        """Renames a file
+
+        Args:
+            id (str | int): The files id.
+            name (str): The files new name.
+
+        Returns:
+            dict: The success status
+        """
+        data = {"file_id": id, "name": name}
+        response = self.client._post("file/rename", data=data)
+        return response
