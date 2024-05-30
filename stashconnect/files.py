@@ -234,3 +234,32 @@ class Files:
         data = {"file_id": id, "name": name}
         response = self.client._post("file/rename", data=data)
         return response
+
+    def copy(
+        self,
+        id: str | int,
+        folder_id: str | int = 0,
+        type: str = "personal",
+        type_id: str | int = None,
+    ):
+        """Copies a file to a folder.
+
+        Args:
+            id (str | int): The files id.
+            folder_id (str | int, optional): The new folders id. Defaults to main.
+            type (str, optional): The destinations type. Defaults to "personal".
+            type_id (str | int, optional): The destinations type id. Defaults to client.user_id.
+
+        Returns:
+            File: A file object.
+        """
+        if type_id is None:
+            type_id = self.client.user_id
+        data = {
+            "file_id": id,
+            "folder_id": folder_id,
+            "type": type,
+            "type_id": type_id,
+        }
+        response = self.client._post("file/copy", data=data)
+        return response["file"]
