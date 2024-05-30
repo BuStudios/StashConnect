@@ -26,7 +26,7 @@ class MessageManager:
         text: str,
         *,
         files=None,
-        url="",
+        urls="",
         location: bool | tuple | list = None,
         encrypted: bool = True,
         **kwargs,
@@ -57,14 +57,17 @@ class MessageManager:
                 file = self.client.upload_file(target, file, encrypted)
                 files_sent.append(int(file["id"]))
 
-        url = [url]
+        if isinstance(urls, str):
+            sent_urls = [urls]
+        else:
+            sent_urls = urls
 
         data = {
             "target": target_type,
             f"{target_type}_id": target,
             "text": text,
             "files": json.dumps(files_sent),
-            "url": json.dumps(url),
+            "url": json.dumps(sent_urls),
             "encrypted": encrypted,
             "verification": "",
             "type": "text",
