@@ -17,3 +17,5 @@ unfinished
 
 ---
 StashConnect is not affiliated with Stashcat GmbH or any of its affiliates.
+
+<img src="assets/icon-full.png">
