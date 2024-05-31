@@ -1,8 +1,8 @@
-# <img src="assets/icon.png" height="22"> StashConnect
+# <img src="https://raw.githubusercontent.com/BuStudios/StashConnect/main/assets/icon.png" height="22"> StashConnect
 
 An API wrapper for [stashcat](https://stashcat.com/) and [schul.cloud](https://schul.cloud).<br>
-```
-unfinished
+```bash
+pip install stashconnect
 ```
 
 ## Contributors
@@ -18,4 +18,4 @@ unfinished
 ---
 StashConnect is not affiliated with Stashcat GmbH or any of its affiliates.
 
-<img src="assets/icon-full.png">
+<img src="https://raw.githubusercontent.com/BuStudios/StashConnect/main/assets/icon-full.png">
