@@ -18,13 +18,28 @@ class Files:
     def __init__(self, client):
         self.client = client
 
-    def quota(self):
+    def quota(self) -> dict:
+        """Gets the users quota
+
+        Returns:
+            dict: The users quota.
+        """
         response = self.client._post(
             "file/quota", data={"type": "personal", "type_id": self.client.user_id}
         )
         return response["quota"]
 
-    def upload(self, target, filepath, encrypted=True):
+    def upload(self, target: str | int, filepath: str, encrypted: bool = True) -> dict:
+        """Uploads a file to a target location
+
+        Args:
+            target (str | int): The upolads target id.
+            filepath (str): The files location path.
+            encrypted (bool, optional): Sets wether a file should be encrypted. Defaults to True.
+
+        Returns:
+            File: A file object.
+        """
         filename = os.path.basename(filepath)
 
         if encrypted:
@@ -155,7 +170,16 @@ class Files:
 
         return file
 
-    def download(self, id, directory=""):
+    def download(self, id: str | int, directory: str = "") -> str:
+        """Downloads a file to a local location
+
+        Args:
+            id (str | int): The files id.
+            directory (str, optional): The download dir. Defaults to main.
+
+        Returns:
+            str: The path of the saved file.
+        """
         response = self.client._post(f"file/download?id={id}", data={}, return_all=True)
 
         file_info = self.client.files.file_info(id)
@@ -190,11 +214,27 @@ class Files:
 
         return file_path
 
-    def info(self, id):
+    def info(self, id: str | int) -> dict:
+        """Fetches the info of a file
+
+        Args:
+            id (str | int): The files id.
+
+        Returns:
+            File: A file object.
+        """
         response = self.client._post("file/info", data={"file_id": id})
         return response["file"]
 
-    def delete(self, ids):
+    def delete(self, ids: str | int | list) -> dict:
+        """Deletes specified files
+
+        Args:
+            ids (str | int | list): The file or files ids
+
+        Returns:
+            dict: The success status.
+        """
 
         ids_sent = []
 

@@ -21,7 +21,10 @@ client = stashconnect.Client(
     app_name="maintest",
 )
 
-print(client.files.shares("id")["conversations"][0].last_action)
+# Upload to the personal folder:
+#print(client.files.upload(client.user_id, "setup.py", None))
+
+#print(client.files.info("file"))
 sys.exit()
 
 #members = client.channels.members(target_channel)

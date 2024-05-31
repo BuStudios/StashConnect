@@ -7,6 +7,8 @@ class Tools:
         Args:
             type_id (int | str): The conversation or channel id
         """
+        if type_id == self.client.user_id:
+            return "personal"
 
         conversation_data = {
             "conversation_id": type_id,
