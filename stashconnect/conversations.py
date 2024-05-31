@@ -13,7 +13,6 @@ import Crypto.Util
 
 import base64
 import json
-import time
 
 from .models import Conversation
 
