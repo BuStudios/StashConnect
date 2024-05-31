@@ -280,7 +280,6 @@ class Files:
         self,
         id: str | int,
         folder_id: str | int = 0,
-        type: str = "personal",
         type_id: str | int = None,
     ):
         """Copies a file to a folder.
@@ -296,10 +295,13 @@ class Files:
         """
         if type_id is None:
             type_id = self.client.user_id
+
+        target_type = self.client.tools.get_type(type_id)
+
         data = {
             "file_id": id,
             "folder_id": folder_id,
-            "type": type,
+            "type": target_type,
             "type_id": type_id,
         }
         response = self.client._post("file/copy", data=data)
