@@ -9,7 +9,7 @@ unfinished
 - All code made by [BuStudios](https://github.com/bustudios)
 - Create a pull request to contribute code yourself
 
-## Version 0.7
+## Version 0.7.5
 #### To be added:
 - [x] fix links
 - [ ] returnable file object

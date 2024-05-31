@@ -59,7 +59,7 @@ class Client:
         self.encryption_password = encryption_password
 
         self.device_id = "stashconnect" if device_id is None else device_id
-        self.app_name = "stashconnect" if app_name is None else app_name
+        self.app_name = "stashconnect v.0.7.5" if app_name is None else app_name
 
         self._main_url = "https://api.stashcat.com/"
         self._push_url = "https://push.stashcat.com/"
