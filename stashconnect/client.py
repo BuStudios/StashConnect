@@ -11,8 +11,8 @@ from .crypto_utils import CryptoUtils
 from .conversations import ConversationManager
 from .companies import CompanyManager
 from .channels import ChannelManager
+from .files import FileManager
 
-from .files import Files
 from .tools import Tools
 
 from .models import Message
@@ -49,7 +49,7 @@ class Client:
         self.tools = Tools(self)
         self.settings = Settings(self)
         self.users = UserManager(self)
-        self.files = Files(self)
+        self.files = FileManager(self)
         self.conversations = ConversationManager(self)
         self.companies = CompanyManager(self)
         self.channels = ChannelManager(self)

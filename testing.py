@@ -24,7 +24,7 @@ client = stashconnect.Client(
 # Upload to the personal folder:
 #print(client.files.upload(client.user_id, "setup.py", None))
 
-#print(client.files.info("file"))
+print(client.files.get())
 sys.exit()
 
 #members = client.channels.members(target_channel)

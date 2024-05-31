@@ -14,7 +14,7 @@ from .crypto_utils import CryptoUtils
 from .models import Channel, Conversation
 
 
-class Files:
+class FileManager:
     def __init__(self, client):
         self.client = client
 
@@ -331,3 +331,45 @@ class Files:
         response["conversations"] = conversations
 
         return response
+
+    def get(
+        self,
+        folder_id: str | int = 0,
+        type_id: str | int = None,
+        folder_only: str = "no",
+        offset: int | str = 0,
+        limit: int | str = 75,
+        search: str = None,
+        sorting: str = "created_asc",
+    ) -> dict:
+        """Gets the files and folders in a dir. Defaults to personal
+
+        Args:
+            folder_id (str | int, optional): The folders id. Defaults to 0 (personal).
+            type_id (str | int, optional): The type id. Defaults to None.
+            folder_only (str, optional): Set that only folder should be shown. Defaults to "no".
+            offset (int | str, optional): The response offset. Defaults to 0.
+            limit (int | str, optional): The response limit. Defaults to 75.
+            search (str, optional): The search prompt. Defaults to None.
+            sorting (str, optional): The sorting setting. Defaults to "created_asc".
+
+        Returns:
+            dict: A dictonary containing folder and file objects.
+        """
+        if type_id is None:
+            type_id = self.client.user_id
+
+        target_type = self.client.tools.get_type(type_id)
+        data = {
+            "folder_id": folder_id,
+            "type": target_type,
+            "type_id": type_id,
+            "folder_only": folder_only,
+            "offset": offset,
+            "limit": limit,
+            "search": search,
+            "sorting": sorting,
+        }
+
+        response = self.client._post("folder/get", data=data)
+        return response["content"]
