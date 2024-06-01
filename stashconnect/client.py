@@ -14,8 +14,9 @@ from .channels import ChannelManager
 from .files import FileManager
 
 from .tools import Tools
-
 from .models import Message
+
+from . import __version__
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
@@ -43,7 +44,15 @@ class Client:
         .last_name (str): User's last name.
     """
 
-    def __init__(self, *, email, password, encryption_password=None, device_id=None, app_name=None):
+    def __init__(
+        self,
+        *,
+        email,
+        password,
+        encryption_password=None,
+        device_id=None,
+        app_name=None,
+    ):
 
         self.messages = MessageManager(self)
         self.tools = Tools(self)
@@ -59,7 +68,9 @@ class Client:
         self.encryption_password = encryption_password
 
         self.device_id = "stashconnect" if device_id is None else device_id
-        self.app_name = "stashconnect v.0.7.6" if app_name is None else app_name
+        self.app_name = (
+            f"stashconnect v.{__version__}" if app_name is None else app_name
+        )
 
         self._main_url = "https://api.stashcat.com/"
         self._push_url = "https://push.stashcat.com/"
@@ -279,7 +290,9 @@ class Client:
         self._end_time = None
         self._ping_target = target
 
-        self.sio.emit("started-typing", (self.device_id, self.client_key, target_type, target))
+        self.sio.emit(
+            "started-typing", (self.device_id, self.client_key, target_type, target)
+        )
 
         time.sleep(2)
 

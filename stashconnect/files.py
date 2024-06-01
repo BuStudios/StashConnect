@@ -134,8 +134,12 @@ class FileManager:
 
             response = self.client._post("security/set_file_access_key", data=data)
 
+        self.client.files.store_preview_image(file_id, filepath)
+
+        return file
+
+    def store_preview_image(self, file_id: str | int, filepath: str):
         try:
-            # upload a thumbnail image if the file is a image
             with Image.open(filepath) as image:
                 output_size = 100
 
@@ -163,12 +167,11 @@ class FileManager:
                 "content": str("data:image/jpeg;base64," + image_base64),
             }
 
-            self.client._post("file/storePreviewImage", data=data)
+            response = self.client._post("file/storePreviewImage", data=data)
+            return response["file"]
 
         except Exception:
-            pass
-
-        return file
+            return {"success": False}
 
     def download(self, id: str | int, directory: str = "") -> str:
         """Downloads a file to a local location

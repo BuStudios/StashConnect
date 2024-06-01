@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
+from stashconnect import __version__
 
-VERSION = "0.7.6"
+VERSION = __version__
 DESCRIPTION = "An API wrapper for stashcat and schul.cloud."
 
 setup(
