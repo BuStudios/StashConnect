@@ -1,6 +1,6 @@
-# <img src="https://raw.githubusercontent.com/BuStudios/StashConnect/main/assets/icon.png" height="22"> StashConnect
+# <img src="assets/icon-2.png" height="25"> StashConnect
 
-An API wrapper for [stashcat](https://stashcat.com/) and [schul.cloud](https://schul.cloud).<br>
+**StashConnect** is an API wrapper for [stashcat](https://stashcat.com/) and [schul.cloud](https://schul.cloud).<br>
 ```bash
 pip install stashconnect
 ```
