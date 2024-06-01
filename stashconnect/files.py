@@ -29,7 +29,7 @@ class FileManager:
         )
         return response["quota"]
 
-    def upload(self, target: str | int, filepath: str, encrypted: bool = True) -> dict:
+    def upload(self, target: str | int, filepath: str, encrypted: bool = True) -> File:
         """Uploads a file to a target location
 
         Args:
@@ -138,7 +138,16 @@ class FileManager:
 
         return File(self.client, file)
 
-    def store_preview_image(self, file_id: str | int, filepath: str):
+    def store_preview_image(self, file_id: str | int, filepath: str) -> File | dict:
+        """Stores a preview image for a file
+
+        Args:
+            file_id (str | int): The files id.
+            filepath (str): The images file path.
+
+        Returns:
+            File | dict: A file object or a status: false dict.
+        """
         try:
             with Image.open(filepath) as image:
                 output_size = 100
@@ -217,7 +226,7 @@ class FileManager:
 
         return file_path
 
-    def info(self, id: str | int) -> dict:
+    def info(self, id: str | int) -> File:
         """Fetches the info of a file
 
         Args:
@@ -284,7 +293,7 @@ class FileManager:
         id: str | int,
         folder_id: str | int = 0,
         type_id: str | int = None,
-    ):
+    ) -> File:
         """Copies a file to a folder.
 
         Args:
