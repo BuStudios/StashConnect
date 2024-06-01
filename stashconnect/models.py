@@ -555,3 +555,52 @@ class Channel:
             dict: The success status.
         """
         return self.client.channels.enable_notifications(self.id)
+
+
+class File:
+    def __init__(self, client, data):
+        self.client = client
+        self.id = data["id"]
+
+        try:
+            self.set_attributes(data)
+        except KeyError:
+            data = self.client.files.info(self.id)
+            self.set_attributes(data)
+
+    def set_attributes(self, data):
+        self.name = data["name"]
+
+        self.virtual_folder = data["virtual_folder"]
+        self.folder_type = data["folder_type"]
+        self.type_id = data["type_id"]
+
+        self.size = data["size"]
+        self.size_byte = data["size_byte"]
+        self.size_string = data["size_string"]
+
+        self.width = data["dimensions"]["width"]
+        self.height = data["dimensions"]["height"]
+
+        self.extension = data["ext"]
+        self.mimetype = data["mime"]
+
+        self.base_64 = data["base_64"]
+
+        self.uploaded = data["uploaded"]
+        self.modified = data["modified"]
+
+        self.permission = data["permission"]
+
+        self.owner_id = data["owner_id"]
+        self.owner = User(self.client, data["owner"])
+
+        self.last_download = data["last_download"]
+        self.times_downloaded = data["times_downloaded"]
+
+        self.status = data["status"]
+        self.deleted = data["deleted"]
+        self.encrypted = data["encrypted"]
+
+        self.iv = data["e2e_iv"]
+        self.md5 = data["md5"]

@@ -11,7 +11,7 @@ import io
 import json
 
 from .crypto_utils import CryptoUtils
-from .models import Channel, Conversation
+from .models import Channel, Conversation, File
 
 
 class FileManager:
@@ -136,7 +136,7 @@ class FileManager:
 
         self.client.files.store_preview_image(file_id, filepath)
 
-        return file
+        return File(self.client, file)
 
     def store_preview_image(self, file_id: str | int, filepath: str):
         try:
@@ -168,7 +168,7 @@ class FileManager:
             }
 
             response = self.client._post("file/storePreviewImage", data=data)
-            return response["file"]
+            return File(self.client, response["file"])
 
         except Exception:
             return {"success": False}
@@ -227,7 +227,7 @@ class FileManager:
             File: A file object.
         """
         response = self.client._post("file/info", data={"file_id": id})
-        return response["file"]
+        return File(self.client, response["file"])
 
     def delete(self, ids: str | int | list) -> dict:
         """Deletes specified files
@@ -308,7 +308,7 @@ class FileManager:
             "type_id": type_id,
         }
         response = self.client._post("file/copy", data=data)
-        return response["file"]
+        return File(self.client, response["file"])
 
     def shares(self, id: str | int) -> dict:
         """Get a files shares
