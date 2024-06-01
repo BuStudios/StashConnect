@@ -1,10 +1,10 @@
 # StashConnect
 
-StashConnect is a easy-to-use API wrapper for [stashcat](https://stashcat.com/) and [schul.cloud](https://schul.cloud).
+StashConnect is an easy-to-use API wrapper for [stashcat](https://stashcat.com/) and [schul.cloud](https://schul.cloud).
 
-![PyPI - Downloads](https://img.shields.io/pypi/dm/stashconnect?labelColor=345165&color=77b8e5)
-![PyPI - Version](https://img.shields.io/pypi/v/stashconnect?label=version&labelColor=345165&color=77b8e5)
-![PyPI - Status](https://img.shields.io/pypi/status/stashconnect?labelColor=345165&color=77b8e5)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/stashconnect?labelColor=345165&color=4793c9)
+![PyPI - Version](https://img.shields.io/pypi/v/stashconnect?label=version&labelColor=345165&color=4793c9)
+![PyPI - Status](https://img.shields.io/pypi/status/stashconnect?labelColor=345165&color=44af68)
 
 ## Installation
 
@@ -30,8 +30,9 @@ client.users.change_status("new status")
 ## Features to be added
 
 - [x] fix links
+- [ ] file functions
 - [ ] returnable file object
-- [ ] bot file for easy bot setup
+- [ ] bot method
 
 ## Contributors
 
