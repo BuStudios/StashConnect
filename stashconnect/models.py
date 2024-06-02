@@ -74,36 +74,78 @@ class Message:
             self.longitude = location["longitude"]
             self.latitude = location["latitude"]
 
-    def like(self):
+    def like(self) -> dict:
+        """Likes a message
+
+        Returns:
+            dict: The success status.
+        """
         return self.client.messages.like(self.id)
 
-    def unlike(self):
+    def unlike(self) -> dict:
+        """Unlikes a message
+
+        Returns:
+            dict: The success status.
+        """
         return self.client.messages.unlike(self.id)
 
-    def delete(self):
+    def delete(self) -> dict:
+        """Deletes a message
+
+        Returns:
+            dict: The succes status.
+        """
         return self.client.messages.delete(self.id)
 
-    def flag(self):
+    def flag(self) -> dict:
+        """Flags a message
+
+        Returns:
+            dict: The success status.
+        """
         return self.client.messages.flag(self.id)
 
-    def unflag(self):
+    def unflag(self) -> dict:
+        """Unflags a message
+
+        Returns:
+            dict: The success status.
+        """
         return self.client.messages.unflag(self.id)
 
     def respond(
         self,
         text: str,
         *,
-        files=None,
-        url="",
+        files: str | int | list = None,
+        urls: str | list = "",
         location: bool | tuple | list = None,
         encrypted: bool = True,
         **kwargs,
     ):
+        """Sends a message
+
+        Args:
+            text (str): The text to send.
+            files (str | int | list, optional): Files to send. Defaults to None.
+            urls (str | list, optional): Url's to append to the message. Defaults to "".
+            location (bool | tuple | list, optional): The location of the message. Defaults to None.
+            encrypted (bool, optional): If the message should be encrypted. Defaults to True.
+
+        Info:
+            If the file is str | int you need to give a id.
+            If its a list then you need to give a path.
+            The location needs to be set to lat, lng in a tuple or None.
+
+        Returns:
+            Message: A message object.
+        """
         return self.client.messages.send(
             target=self.type_id,
             text=text,
             files=files,
-            url=url,
+            urls=urls,
             location=location,
             encrypted=encrypted,
             **kwargs,
@@ -175,19 +217,47 @@ class Conversation:
         self.members = [User(self.client, member) for member in data["members"]]
         self.callable = [User(self.client, member) for member in data["callable"]]
 
-    def archive(self):
+    def archive(self) -> dict:
+        """Archives a conversation
+
+        Returns:
+            dict: The success status.
+        """
         return self.client.conversations.archive(self.id)
 
-    def favorite(self):
+    def favorite(self) -> dict:
+        """Favorites a conversation
+
+        Returns:
+            dict: The success status.
+        """
         return self.client.conversations.favorite(self.id)
 
-    def unfavorite(self):
+    def unfavorite(self) -> dict:
+        """Unfavorites a conversation
+
+        Returns:
+            dict: The success status.
+        """
         return self.client.conversations.unfavorite(self.id)
 
     def disable_notifications(self, duration: int | str) -> str:
+        """Disables notifications for a conversation
+
+        Args:
+            duration (int | str): how long the block should last (seconds).
+
+        Returns:
+            str: The end timestamp.
+        """
         return self.client.conversations.disable_notifications(self.id, duration)
 
     def enable_notifications(self) -> dict:
+        """Enables notifications for a conversation
+
+        Returns:
+            dict: The success status.
+        """
         return self.client.conversations.enable_notifications(self.id)
 
 
