@@ -622,3 +622,14 @@ class File:
             File | dict: A file object or a status: false dict.
         """
         self.client.files.store_preview_image(self.id, filepath)
+
+    def download(self, directory: str = "") -> str:
+        """Downloads a file to a local location
+
+        Args:
+            directory (str, optional): The download dir. Defaults to main.
+
+        Returns:
+            str: The path of the saved file.
+        """
+        self.client.files.download(self.id, directory)
