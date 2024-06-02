@@ -564,8 +564,15 @@ class File:
 
         try:
             self.set_attributes(data)
+
+        # happens when key is missing
         except KeyError:
-            data = self.client.files.info(self.id)
+            data = self.client.files._info(self.id)
+            self.set_attributes(data)
+
+        # happens when no owner is found
+        except TypeError:
+            data = self.client.files._info(self.id)
             self.set_attributes(data)
 
     def set_attributes(self, data):

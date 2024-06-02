@@ -226,6 +226,18 @@ class FileManager:
 
         return file_path
 
+    def _info(self, id: str | int) -> dict:
+        """Fetches the info of a file (dict)
+
+        Args:
+            id (str | int): The files id.
+
+        Returns:
+            dict: The files dict.
+        """
+        response = self.client._post("file/info", data={"file_id": id})
+        return response["file"]
+
     def info(self, id: str | int) -> File:
         """Fetches the info of a file
 
@@ -237,6 +249,29 @@ class FileManager:
         """
         response = self.client._post("file/info", data={"file_id": id})
         return File(self.client, response["file"])
+
+    def infos(self, ids: str | int | list) -> list:
+        """Fetches mutliple files
+
+        Args:
+            ids (str | int | list): The files ids.
+
+        Returns:
+            list: A list of files.
+        """
+        ids_sent = []
+
+        if isinstance(ids, str | int):
+            ids_sent = [ids]
+        else:
+            ids_sent = ids
+
+        response = self.client._post(
+            "file/infos", data={"file_ids": json.dumps(ids_sent)}
+        )
+
+        files = [File(self.client, file) for file in response["files"]]
+        return files
 
     def delete(self, ids: str | int | list) -> dict:
         """Deletes specified files

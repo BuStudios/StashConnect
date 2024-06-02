@@ -7,6 +7,6 @@ An API wrapper for [Stashcat](https://stashcat.com/en).
 :license: MIT, see LICENSE.
 """
 
-__version__ = "0.7.9"
+__version__ = "0.8.0"
 
 from .client import *
