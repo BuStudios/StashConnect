@@ -633,3 +633,11 @@ class File:
             str: The path of the saved file.
         """
         self.client.files.download(self.id, directory)
+
+    def delete(self) -> dict:
+        """Deletes specified files
+
+        Returns:
+            dict: The success status.
+        """
+        self.client.files.delete(self.id)
