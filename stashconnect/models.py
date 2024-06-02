@@ -652,3 +652,14 @@ class File:
             dict: The success status.
         """
         self.client.files.move(self.id, folder_id)
+
+    def rename(self, name: str) -> dict:
+        """Renames a file
+
+        Args:
+            name (str): The files new name.
+
+        Returns:
+            dict: The success status
+        """
+        self.client.files.rename(self.id, name)
