@@ -641,3 +641,14 @@ class File:
             dict: The success status.
         """
         self.client.files.delete(self.id)
+
+    def move(self, folder_id: str | int) -> dict:
+        """Moves a file into a specified folder
+
+        Args:
+            folder_id (str | int): The folders id.
+
+        Returns:
+            dict: The success status.
+        """
+        self.client.files.move(self.id, folder_id)
