@@ -29,9 +29,11 @@ client.users.change_status("new status")
 
 ## Features to be added
 
-- [x] fix links
-- [ ] file functions
-- [ ] returnable file object
+- [X] fix links
+- [X] file functions
+- [X] returnable file object
+- [ ] docstrings
+- [ ] account functions
 - [ ] bot method
 
 ## Contributors
