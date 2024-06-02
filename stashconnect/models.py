@@ -36,7 +36,8 @@ class Message:
         self.channel_id = data["channel_id"]
         self.conversation_id = data["conversation_id"]
 
-        self.files = data["files"]
+        self.files = [File(self.client, file) for file in data["files"]]
+
         self.flagged = data["flagged"]
 
         self.liked = data["liked"]
@@ -623,16 +624,17 @@ class File:
         """
         self.client.files.store_preview_image(self.id, filepath)
 
-    def download(self, directory: str = "") -> str:
+    def download(self, directory: str = "", filename: str = None) -> str:
         """Downloads a file to a local location
 
         Args:
             directory (str, optional): The download dir. Defaults to main.
+            filename (str, optional): The new filename. Defaults to the main name.
 
         Returns:
             str: The path of the saved file.
         """
-        self.client.files.download(self.id, directory)
+        self.client.files.download(self.id, directory, filename)
 
     def delete(self) -> dict:
         """Deletes specified files

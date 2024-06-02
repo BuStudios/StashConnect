@@ -182,20 +182,25 @@ class FileManager:
         except Exception:
             return {"success": False}
 
-    def download(self, id: str | int, directory: str = "") -> str:
+    def download(self, id: str | int, directory: str = "", filename: str = None) -> str:
         """Downloads a file to a local location
 
         Args:
             id (str | int): The files id.
             directory (str, optional): The download dir. Defaults to main.
+            filename (str, optional): The new filename. Defaults to the main name.
 
         Returns:
             str: The path of the saved file.
         """
         response = self.client._post(f"file/download?id={id}", data={}, return_all=True)
 
-        file_info = self.client.files.file_info(id)
-        file_path = os.path.join(directory, file_info["name"])
+        if filename is None:
+            file_info = self.client.files._info(id)
+            file_path = os.path.join(directory, file_info["name"])
+        else:
+            file_info = self.client.files._info(id)
+            file_path = os.path.join(directory, filename + "." + file_info["ext"])
 
         with open(file_path, "wb") as file:
 
