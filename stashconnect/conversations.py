@@ -21,20 +21,44 @@ class ConversationManager:
     def __init__(self, client):
         self.client = client
 
-    def archive(self, conversation_id):
+    def archive(self, conversation_id: str | int) -> dict:
+        """Archives a conversation
+
+        Args:
+            conversation_id (str | int): The conversations id.
+
+        Returns:
+            dict: The success status.
+        """
         response = self.client._post(
             "message/archiveConversation", data={"conversation_id": conversation_id}
         )
         return response
 
-    def favorite(self, conversation_id):
+    def favorite(self, conversation_id: str | int) -> dict:
+        """Favorites a conversation
+
+        Args:
+            conversation_id (str | int): The conversations id.
+
+        Returns:
+            dict: The success status.
+        """
         response = self.client._post(
             "message/set_favorite",
             data={"conversation_id": conversation_id, "favorite": True},
         )
         return response
 
-    def unfavorite(self, conversation_id):
+    def unfavorite(self, conversation_id: str | int) -> dict:
+        """Unfavorites a conversation
+
+        Args:
+            conversation_id (str | int): The conversations id.
+
+        Returns:
+            dict: The success status.
+        """
         response = self.client._post(
             "message/set_favorite",
             data={"conversation_id": conversation_id, "favorite": False},
@@ -76,7 +100,15 @@ class ConversationManager:
             data={"type": "conversation", "content_id": conversation_id},
         )
 
-    def create(self, members):
+    def create(self, members: str | int | list) -> Conversation:
+        """Creates a conversation with users
+
+        Args:
+            members (str | int | list): The members of the conversation.
+
+        Returns:
+            Conversation: A conversation object.
+        """
         conversation_key = Crypto.Random.get_random_bytes(32)
         users = []
 
@@ -85,7 +117,7 @@ class ConversationManager:
         encrypted_key = encryptor.encrypt(conversation_key)
 
         # i dont know where the private signing key is located
-        # if anybody knows where it is please tell me :)
+        # if you know where it is please tell me :)
 
         # hash = Crypto.Hash.SHA256.new(encrypted_key)
         # signature = Crypto.Signature.pkcs1_15.new(self.client._private_key).sign(hash)
@@ -133,7 +165,15 @@ class ConversationManager:
 
         return Conversation(self.client, response["conversation"])
 
-    def get(self, conversation_id):
+    def info(self, conversation_id: str | int) -> Conversation:
+        """Fetches the info of a conversation
+
+        Args:
+            conversation_id (str | int): The conversations info.
+
+        Returns:
+            Conversation: A conversation object.
+        """
         response = self.client._post(
             "message/conversation", data={"conversation_id": conversation_id}
         )
