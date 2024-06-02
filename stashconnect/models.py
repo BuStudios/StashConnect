@@ -611,3 +611,14 @@ class File:
 
         self.iv = data["e2e_iv"]
         self.md5 = data["md5"]
+
+    def store_preview_image(self, filepath: str):
+        """Stores a preview image for a file
+
+        Args:
+            filepath (str): The images file path.
+
+        Returns:
+            File | dict: A file object or a status: false dict.
+        """
+        self.client.files.store_preview_image(self.id, filepath)
