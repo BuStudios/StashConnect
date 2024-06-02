@@ -117,7 +117,12 @@ class User:
 
         try:
             self.set_attributes(data)
+
         except KeyError:
+            user_data = self.client.users._info(self.id)
+            self.set_attributes(user_data)
+
+        except TypeError:
             user_data = self.client.users._info(self.id)
             self.set_attributes(user_data)
 
@@ -291,8 +296,13 @@ class Channel:
 
         try:
             self.set_attributes(data)
+
         except KeyError:
-            data = self.client.channels.info(self.id)
+            data = self.client.channels._info(self.id)
+            self.set_attributes(data)
+
+        except TypeError:
+            data = self.client.channels._info(self.id)
             self.set_attributes(data)
 
     def set_attributes(self, data):

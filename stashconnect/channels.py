@@ -257,6 +257,22 @@ class ChannelManager:
         )
         return response
 
+    def _info(self, channel_id: int | str, without_members: bool = True) -> dict:
+        """Gets the info of a channel (dict)
+
+        Args:
+            channel_id (int | str): The channels id.
+            without_members (bool, optional): Returns the members. Defaults to True.
+
+        Returns:
+            dict: The channel info as a dict.
+        """
+        response = self.client._post(
+            "channels/info",
+            data={"channel_id": channel_id, "without_members": without_members},
+        )
+        return response["channels"]
+
     def info(self, channel_id: int | str, without_members: bool = True) -> Channel:
         """Gets the info of a channel
 
