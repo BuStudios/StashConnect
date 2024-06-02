@@ -663,3 +663,11 @@ class File:
             dict: The success status
         """
         self.client.files.rename(self.id, name)
+
+    def shares(self) -> dict:
+        """Get a files shares
+
+        Returns:
+            dict: The files shares as a dict.
+        """
+        self.client.files.shares(self.id)
