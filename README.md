@@ -20,28 +20,34 @@ pip install -U stashconnect
 import stashconnect
 
 client = stashconnect.Client(
-    email="your email", password="you password",
-    encryption_password="you enc password",
+    email="your email", password="your password",
+    encryption_password="encryption password",
 )
 
-client.users.change_status("new status")
+# change account settings
+client.account.change_status("new status")
+client.account.change_password("new", "old")
+
+# upload or download files
+client.files.upload("conversation_id", "hello.png")
+client.files.download("file_id")
+
+client.messages.send("conversation_id", "hello")
 ```
 
 ## Features to be added
 
-- [X] fix links
-- [X] file functions
-- [X] returnable file object
-- [ ] docstrings
+- [x] docstrings
 - [ ] account functions
-- [ ] bot method
+- [ ] documentation
+- [ ] bot class
 
 ## Contributors
 
-- All code made by [BuStudios](https://github.com/bustudios)
+- All code currently written by [BuStudios](https://github.com/bustudios)
 - Create a pull request to contribute code yourself
 
----
+## Disclaimer
 
 StashConnect is not affiliated with Stashcat GmbH or any of its affiliates.
 
