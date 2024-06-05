@@ -75,41 +75,41 @@ class Message:
             self.latitude = location["latitude"]
 
     def like(self) -> dict:
-        """Likes a message
+        """## Likes a message.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.messages.like(self.id)
 
     def unlike(self) -> dict:
-        """Unlikes a message
+        """## Unlikes a message.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.messages.unlike(self.id)
 
     def delete(self) -> dict:
-        """Deletes a message
+        """## Deletes a message.
 
-        Returns:
+        #### Returns:
             dict: The succes status.
         """
         return self.client.messages.delete(self.id)
 
     def flag(self) -> dict:
-        """Flags a message
+        """## Flags a message.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.messages.flag(self.id)
 
     def unflag(self) -> dict:
-        """Unflags a message
+        """## Unflags a message.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.messages.unflag(self.id)
@@ -124,21 +124,21 @@ class Message:
         encrypted: bool = True,
         **kwargs,
     ):
-        """Sends a message
+        """## Sends a message.
 
-        Args:
+        #### Args:
             text (str): The text to send.
             files (str | int | list, optional): Files to send. Defaults to None.
             urls (str | list, optional): Url's to append to the message. Defaults to "".
             location (bool | tuple | list, optional): The location of the message. Defaults to None.
             encrypted (bool, optional): If the message should be encrypted. Defaults to True.
 
-        Info:
+        #### Info:
             If the file is str | int you need to give a id.
             If its a list then you need to give a path.
             The location needs to be set to lat, lng in a tuple or None.
 
-        Returns:
+        #### Returns:
             Message: A message object.
         """
         return self.client.messages.send(
@@ -218,44 +218,44 @@ class Conversation:
         self.callable = [User(self.client, member) for member in data["callable"]]
 
     def archive(self) -> dict:
-        """Archives a conversation
+        """## Archives a conversation.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.conversations.archive(self.id)
 
     def favorite(self) -> dict:
-        """Favorites a conversation
+        """## Favorites a conversation.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.conversations.favorite(self.id)
 
     def unfavorite(self) -> dict:
-        """Unfavorites a conversation
+        """## Unfavorites a conversation.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.conversations.unfavorite(self.id)
 
     def disable_notifications(self, duration: int | str) -> str:
-        """Disables notifications for a conversation
+        """## Disables notifications for a conversation.
 
-        Args:
+        #### Args:
             duration (int | str): how long the block should last (seconds).
 
-        Returns:
+        #### Returns:
             str: The end timestamp.
         """
         return self.client.conversations.disable_notifications(self.id, duration)
 
     def enable_notifications(self) -> dict:
-        """Enables notifications for a conversation
+        """## Enables notifications for a conversation.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.conversations.enable_notifications(self.id)
@@ -303,57 +303,57 @@ class Company:
         self.settings = data["settings"]
 
     def get_settings(self) -> dict:
-        """Gets the settings of a company
+        """## Gets the settings of a company.
 
-        Returns:
+        #### Returns:
             dict: The companies settings.
         """
         return self.client.companies.get_settings(self.id)
 
     def email_templates(self) -> dict:
-        """Gets the email templates of the company
+        """## Gets the email templates of the company.
 
-        Returns:
+        #### Returns:
             dict: Return a dict i think
         """
         return self.client.companies.email_templates(self.id)
 
     def get_ldaps(self) -> dict:
-        """Gets the companies ldaps [untested]
+        """## Gets the companies ldaps [untested].
 
-        Returns:
+        #### Returns:
             dict: [untested]
         """
         return self.client.companies.get_ldaps(self.id)
 
     def delete(self) -> dict:
-        """Deletes the company [dangerous!]
+        """## Deletes the company [dangerous!].
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.companies.delete(self.id)
 
     def quit(self) -> dict:
-        """Leaves a company [dangerous!]
+        """## Leaves a company [dangerous!].
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.companies.quit(self.id)
 
     def list_features(self) -> dict:
-        """Lists company features
+        """## Lists company features.
 
-        Returns:
+        #### Returns:
             dict: Company features
         """
         return self.client.companies.list_features(self.id)
 
     def get_market(self) -> dict:
-        """Gets the companies market
+        """## Gets the companies market.
 
-        Returns:
+        #### Returns:
             dict: The market
         """
         return self.client.companies.get_market(self.id)
@@ -433,9 +433,9 @@ class Channel:
         show_activities: bool = True,
         show_membership_activities: bool = True,
     ):
-        """Edits a channel
+        """## Edits a channel.
 
-        Args:
+        #### Args:
             channel_name (str): The channels name.
             description (str, optional): The channels description. Defaults to "".
             password (str, optional): The channels password. Defaults to None.
@@ -445,7 +445,7 @@ class Channel:
             show_activities (bool, optional): [name]. Defaults to True.
             show_membership_activities (bool, optional): [name]. Defaults to True.
 
-        Returns:
+        #### Returns:
             Channel: A channel object.
         """
 
@@ -463,94 +463,94 @@ class Channel:
         )
 
     def quit(self) -> dict:
-        """Leaves a channel
+        """## Leaves a channel.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.channels.quit(self.id)
 
     def rename(self, channel_name: str) -> dict:
-        """Renames a channel
+        """## Renames a channel.
 
-        Args:
+        #### Args:
             channel_name (str): The new channel name.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.channels.rename(self.id, channel_name)
 
     def edit_description(self, description: str) -> dict:
-        """Edits the description of a channel
+        """## Edits the description of a channel.
 
-        Args:
+        #### Args:
             description (str): The new channel description.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.channels.edit_description(self.id, description)
 
     def delete(self) -> dict:
-        """Deletes a channel (without confirmation!)
+        """## Deletes a channel (without confirmation!).
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.channels.delete(self.id)
 
     def change_permission(self, writable: str):
-        """Sets who can write in the channel
+        """## Sets who can write in the channel.
 
-        Args:
+        #### Args:
             writable (str): Sets who can write in the channel.
 
-        Returns:
+        #### Returns:
             Channel: A channel object.
         """
         return self.client.channels.change_permission(self.id, writable)
 
     def remove_user(self, user_id: int | str):
-        """Removes the user from the channel
+        """## Removes the user from the channel.
 
-        Args:
+        #### Args:
             user_id (int | str): The users id.
 
-        Returns:
+        #### Returns:
             Channel: A channel object.
         """
         return self.client.channels.remove_user(self.id, user_id)
 
     def add_manager_status(self, user_id: int | str):
-        """Adds a moderation status
+        """## Adds a moderation status.
 
-        Args:
+        #### Args:
             user_id (int | str): The users id.
 
-        Returns:
+        #### Returns:
             Channel: A channel object.
         """
         return self.client.channels.add_manager_status(self.id, user_id)
 
     def remove_manager_status(self, user_id: int | str):
-        """Removes a moderation status
+        """## Removes a moderation status.
 
-        Args:
+        #### Args:
             user_id (int | str): The users id.
 
-        Returns:
+        #### Returns:
             Channel: A channel object.
         """
         return self.client.channels.remove_manager_status(self.id, user_id)
 
     def edit_password(self, password: str) -> dict:
-        """Edits the password of the channel
+        """## Edits the password of the channel.
 
-        Args:
+        #### Args:
             password (str): The new password.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.channels.edit_password(self.id, password)
@@ -561,14 +561,14 @@ class Channel:
         text: str = "",
         expiry: int | str = None,
     ) -> dict:
-        """Creates an invite for a channel
+        """## Creates an invite for a channel.
 
-        Args:
+        #### Args:
             members (int | str | list | tuple): Members to invite as a list or string.
             text (str, optional): The text invited users will become. Defaults to "".
             expiry (int | str, optional): Expiry time as a unix timestamp. Defaults to None.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.channels.invite(self.id, members, text, expiry)
@@ -576,14 +576,14 @@ class Channel:
     def members(
         self, *, search: str | int = None, limit: int | str = 40, offset: int | str = 0
     ) -> Generator[User, None, None]:
-        """Lists the members if a channel as a generator
+        """## Lists the members if a channel as a generator.
 
-        Args:
+        #### Args:
             search (str | int, optional): The search keyword that is used. Defaults to None.
             limit (int | str, optional): Limit of answer. Defaults to 40.
             offset (int | str, optional): Offset of answer. Defaults to 0.
 
-        Yields:
+        #### Yields:
             Generator[User, None, None]: A generator object with a User object
             (use: for member in members).
         """
@@ -592,47 +592,47 @@ class Channel:
         )
 
     def join(self, *, password: str | int = ""):
-        """Joins a channel
+        """## Joins a channel.
 
-        Args:
+        #### Args:
             password (str | int, optional): The password. Defaults to "".
 
-        Returns:
+        #### Returns:
             Channel: A channel object.
         """
         return self.client.channels.join(self.id, password=password)
 
     def favorite(self) -> dict:
-        """Favorites a channel
+        """## Favorites a channel.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.channels.favorite(self.id)
 
     def unfavorite(self) -> dict:
-        """Unfavorites a channel
+        """## Unfavorites a channel.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.channels.unfavorite(self.id)
 
     def disable_notifications(self, duration: int | str) -> dict:
-        """Disables notifications for a channel
+        """## Disables notifications for a channel.
 
-        Args:
+        #### Args:
             duration (int | str): how long the block should last (seconds).
 
-        Returns:
+        #### Returns:
             dict: The end timestamp.
         """
         return self.client.channels.disable_notifications(self.id, duration)
 
     def enable_notifications(self) -> dict:
-        """Enables notifications for a channel
+        """## Enables notifications for a channel.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client.channels.enable_notifications(self.id)
@@ -694,62 +694,62 @@ class File:
         self.md5 = data["md5"]
 
     def store_preview_image(self, filepath: str):
-        """Stores a preview image for a file
+        """## Stores a preview image for a file.
 
-        Args:
+        #### Args:
             filepath (str): The images file path.
 
-        Returns:
+        #### Returns:
             File | dict: A file object or a status: false dict.
         """
         self.client.files.store_preview_image(self.id, filepath)
 
     def download(self, directory: str = "", filename: str = None) -> str:
-        """Downloads a file to a local location
+        """## Downloads a file to a local location.
 
-        Args:
+        #### Args:
             directory (str, optional): The download dir. Defaults to main.
             filename (str, optional): The new filename. Defaults to the main name.
 
-        Returns:
+        #### Returns:
             str: The path of the saved file.
         """
         self.client.files.download(self.id, directory, filename)
 
     def delete(self) -> dict:
-        """Deletes specified files
+        """## Deletes specified files.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         self.client.files.delete(self.id)
 
     def move(self, folder_id: str | int) -> dict:
-        """Moves a file into a specified folder
+        """## Moves a file into a specified folder.
 
-        Args:
+        #### Args:
             folder_id (str | int): The folders id.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         self.client.files.move(self.id, folder_id)
 
     def rename(self, name: str) -> dict:
-        """Renames a file
+        """## Renames a file.
 
-        Args:
+        #### Args:
             name (str): The files new name.
 
-        Returns:
+        #### Returns:
             dict: The success status
         """
         self.client.files.rename(self.id, name)
 
     def shares(self) -> dict:
-        """Get a files shares
+        """## Get a files shares.
 
-        Returns:
+        #### Returns:
             dict: The files shares as a dict.
         """
         self.client.files.shares(self.id)

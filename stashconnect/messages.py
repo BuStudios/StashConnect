@@ -32,9 +32,9 @@ class MessageManager:
         encrypted: bool = True,
         **kwargs,
     ) -> Message:
-        """Sends a message
+        """## Sends a message.
 
-        Args:
+        #### Args:
             target (str | int): The messages target location.
             text (str): The text to send.
             files (str | int | list, optional): Files to send. Defaults to None.
@@ -42,12 +42,12 @@ class MessageManager:
             location (bool | tuple | list, optional): The location of the message. Defaults to None.
             encrypted (bool, optional): If the message should be encrypted. Defaults to True.
 
-        Info:
-            If the file is str | int you need to give a id.
-            If its a list then you need to give a path.
-            The location needs to be set to lat, lng in a tuple or None.
+        #### Info:
+            :If the file is str | int you need to give a id.
+            :If its a list then you need to give a path.
+            :The location needs to be set to lat, lng in a tuple or None.
 
-        Returns:
+        #### Returns:
             Message: A message object.
         """
         target_type = self.client.tools.get_type(target)
@@ -132,15 +132,15 @@ class MessageManager:
         return Message(self.client, data)
 
     def decode(self, target: str, text: bytes, iv: bytes, key: bytes = None) -> str:
-        """Decode a encrypted message
+        """## Decode a encrypted message.
 
-        Args:
+        #### Args:
             target (str): The types id.
             text (bytes): The encrypted text.
             iv (bytes): The iv of the text.
             key (bytes, optional): The conversation key. Defaults to None.
 
-        Returns:
+        #### Returns:
             str: The decrypted key.
         """
         target_type = self.client.tools.get_type(target)
@@ -164,45 +164,45 @@ class MessageManager:
                 return text
 
     def like(self, message_id: str | int) -> dict:
-        """Likes a message
+        """## Likes a message.
 
-        Args:
+        #### Args:
             message_id (str | int): The messages id.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client._post("message/like", data={"message_id": message_id})
 
     def unlike(self, message_id: str | int) -> dict:
-        """Unlikes a message
+        """## Unlikes a message.
 
-        Args:
+        #### Args:
             message_id (str | int): The messages id.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client._post("message/unlike", data={"message_id": message_id})
 
     def delete(self, message_id: str | int) -> dict:
-        """Deletes a message
+        """## Deletes a message.
 
-        Args:
+        #### Args:
             message_id (str | int): The messages id.
 
-        Returns:
+        #### Returns:
             dict: The succes status.
         """
         return self.client._post("message/delete", data={"message_id": message_id})
 
     def infos(self, message_ids: str | int | list) -> dict:
-        """Gets the infos of messages
+        """## Gets the infos of messages.
 
-        Args:
+        #### Args:
             message_ids (str | int | list): The message ids.
 
-        Returns:
+        #### Returns:
             dict: The message infos
         """
         if isinstance(message_ids, str | int):
@@ -217,14 +217,14 @@ class MessageManager:
     def get_messages(
         self, type_id: str | int, limit: int = 30, offset: int = 0
     ) -> Generator[Message, None, None]:
-        """Gets the messages of a channel or conversation
+        """## Gets the messages of a channel or conversation.
 
-        Args:
+        #### Args:
             type_id (str | int): The types id
             limit (int, optional): The responses limit. Defaults to 30.
             offset (int, optional): The responses offset. Defaults to 0.
 
-        Yields:
+        #### Yields:
             Generator[Message, None, None]: Message objects.
         """
         target_type = self.client.tools.get_type(type_id)
@@ -248,14 +248,14 @@ class MessageManager:
     def get_flagged(
         self, type_id: str | int, limit: int = 100, offset: int = 0
     ) -> Generator[Message, None, None]:
-        """Gets the flagged messages of a channel
+        """## Gets the flagged messages of a channel.
 
-        Args:
+        #### Args:
             type_id (str | int): The types id.
             limit (int, optional): The responses limit. Defaults to 100.
             offset (int, optional): The responses offset. Defaults to 0.
 
-        Yields:
+        #### Yields:
             Generator[Message, None, None]: Message objects.
         """
         target_type = self.client.tools.get_type(type_id)
@@ -277,24 +277,24 @@ class MessageManager:
             yield Message(self.client, message)
 
     def flag(self, message_id: str | int) -> dict:
-        """Flags a message
+        """## Flags a message.
 
-        Args:
+        #### Args:
             message_id (str | int): The messages id.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         response = self.client._post("message/flag", data={"message_id": message_id})
         return response
 
     def unflag(self, message_id: str | int) -> dict:
-        """Unflags a message
+        """## Unflags a message.
 
-        Args:
+        #### Args:
             message_id (str | int): The messages id.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         response = self.client._post("message/unflag", data={"message_id": message_id})

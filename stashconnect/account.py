@@ -3,42 +3,44 @@ import requests
 import io
 import base64
 
+from .models import User
+
 
 class AccountManager:
     def __init__(self, client):
         self.client = client
 
     def change_status(self, status: str) -> dict:
-        """Changes the users status
+        """## Changes the users status.
 
-        Args:
+        #### Args:
             status (str): The new status
 
-        Returns:
+        #### Returns:
             dict: The new status.
         """
         response = self.client._post("account/change_status", data={"status": status})
         return response
 
     def change_email(self, email: str) -> dict:
-        """Changes the users email
+        """## Changes the users email.
 
-        Args:
+        #### Args:
             email (str): The new email.
 
-        Returns:
+        #### Returns:
             dict: The new email.
         """
         response = self.client._post("/account/change_email", data={"email": email})
         return response
 
     def resend_validation_email(self, email: str) -> str:
-        """Resends a validation email
+        """## Resends a validation email.
 
-        Args:
+        #### Args:
             email (str): The used email.
 
-        Returns:
+        #### Returns:
             str: The success status.
         """
         response = self.client._post(
@@ -47,13 +49,13 @@ class AccountManager:
         return response
 
     def change_password(self, new_password: str, old_password: str) -> dict:
-        """Changes a users password
+        """## Changes a users password.
 
-        Args:
+        #### Args:
             new_password (str): The new password.
             old_password (str): The old password.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         data = {"new_password": new_password, "old_password": old_password}
@@ -61,31 +63,31 @@ class AccountManager:
         return response
 
     def settings(self) -> dict:
-        """Gets the users settings
+        """## Gets the users settings.
 
-        Returns:
+        #### Returns:
             dict: The settings
         """
         response = self.client._post("/account/settings", data={})
         return response["settings"]
 
     def active_devices(self) -> dict:
-        """Gets a users active devices
+        """## Gets a users active devices.
 
-        Returns:
+        #### Returns:
             dict: The active devices.
         """
         response = self.client._post("/account/list_active_devices", data={})
         return response["devices"]
 
     def notifications(self, limit: int = 20, offset: int = 0) -> dict:
-        """Gets a users notifications
+        """## Gets a users notifications.
 
-        Args:
+        #### Args:
             limit (int, optional): The response limit. Defaults to 20.
             offset (int, optional): The response offset. Defaults to 0.
 
-        Returns:
+        #### Returns:
             dict: The notifications.
         """
         data = {"limit": limit, "offset": offset}
@@ -93,33 +95,41 @@ class AccountManager:
         return response["notifications"]
 
     def notification_count(self) -> int:
-        """Gets the notification count
+        """## Gets the notification count.
 
-        Returns:
+        #### Returns:
             int: The notification count.
         """
         response = self.client._post("notifications/count", data={})
         return int(response["count"])
 
     def location(self) -> dict:
-        """Gets the users location information
+        """## Gets the users location information.
 
-        Returns:
+        #### Returns:
             dict: The information.
         """
         response = self.client._post("/location/get", data={})
         return response["location"]
 
     def reset_profile_picture(self) -> dict:
-        """Resets the users profile picture
+        """## Resets the users profile picture.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         response = self.client._post("account/reset_profile_image", data={})
         return response
 
-    def change_profile_picture(self, url: str):
+    def change_profile_picture(self, url: str) -> User:
+        """## Changes the users profile picture.
+
+        #### Args:
+            url (str): A image url.
+
+        #### Returns:
+            User: A user object.
+        """
         response = requests.get(url)
         response.raise_for_status()
 
@@ -145,4 +155,5 @@ class AccountManager:
                 "account/store_profile_image",
                 data={"imgBase64": f"data:image/png;base64,{image_base64}"},
             )
-            return response
+
+            return User(self.client, response["user"])

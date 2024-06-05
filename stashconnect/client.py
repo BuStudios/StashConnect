@@ -30,9 +30,9 @@ headers = {
 
 
 class Client:
-    """Represents a client connection to Stashcat API.
+    """## Represents a client connection to Stashcat API.
 
-    Attributes:
+    #### Attributes:
         .email (str): The user's email used for authentication.
         .password (str): The user's password.
         .device_id (str): The device_id used to log in, defaults to "stashconnect123".

@@ -19,9 +19,9 @@ class FileManager:
         self.client = client
 
     def quota(self) -> dict:
-        """Gets the users quota
+        """## Gets the users quota.
 
-        Returns:
+        #### Returns:
             dict: The users quota.
         """
         response = self.client._post(
@@ -30,14 +30,14 @@ class FileManager:
         return response["quota"]
 
     def upload(self, target: str | int, filepath: str, encrypted: bool = True) -> File:
-        """Uploads a file to a target location
+        """## Uploads a file to a target location.
 
-        Args:
+        #### Args:
             target (str | int): The upolads target id.
             filepath (str): The files location path.
             encrypted (bool, optional): Sets wether a file should be encrypted. Defaults to True.
 
-        Returns:
+        #### Returns:
             File: A file object.
         """
         filename = os.path.basename(filepath)
@@ -139,13 +139,13 @@ class FileManager:
         return File(self.client, file)
 
     def store_preview_image(self, file_id: str | int, filepath: str) -> File | dict:
-        """Stores a preview image for a file
+        """## Stores a preview image for a file.
 
-        Args:
+        #### Args:
             file_id (str | int): The files id.
             filepath (str): The images file path.
 
-        Returns:
+        #### Returns:
             File | dict: A file object or a status: false dict.
         """
         try:
@@ -183,14 +183,14 @@ class FileManager:
             return {"success": False}
 
     def download(self, id: str | int, directory: str = "", filename: str = None) -> str:
-        """Downloads a file to a local location
+        """## Downloads a file to a local location.
 
-        Args:
+        #### Args:
             id (str | int): The files id.
             directory (str, optional): The download dir. Defaults to main.
             filename (str, optional): The new filename. Defaults to the main name.
 
-        Returns:
+        #### Returns:
             str: The path of the saved file.
         """
         response = self.client._post(f"file/download?id={id}", data={}, return_all=True)
@@ -232,36 +232,36 @@ class FileManager:
         return file_path
 
     def _info(self, id: str | int) -> dict:
-        """Fetches the info of a file (dict)
+        """## Fetches the info of a file (dict).
 
-        Args:
+        #### Args:
             id (str | int): The files id.
 
-        Returns:
+        #### Returns:
             dict: The files dict.
         """
         response = self.client._post("file/info", data={"file_id": id})
         return response["file"]
 
     def info(self, id: str | int) -> File:
-        """Fetches the info of a file
+        """## Fetches the info of a file.
 
-        Args:
+        #### Args:
             id (str | int): The files id.
 
-        Returns:
+        #### Returns:
             File: A file object.
         """
         response = self.client._post("file/info", data={"file_id": id})
         return File(self.client, response["file"])
 
     def infos(self, ids: str | int | list) -> list:
-        """Fetches mutliple files
+        """## Fetches mutliple files.
 
-        Args:
+        #### Args:
             ids (str | int | list): The files ids.
 
-        Returns:
+        #### Returns:
             list: A list of files.
         """
         ids_sent = []
@@ -279,12 +279,12 @@ class FileManager:
         return files
 
     def delete(self, ids: str | int | list) -> dict:
-        """Deletes specified files
+        """## Deletes specified files.
 
-        Args:
+        #### Args:
             ids (str | int | list): The file or files ids
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
 
@@ -301,13 +301,13 @@ class FileManager:
         return response
 
     def move(self, id: str | int, folder_id: str | int) -> dict:
-        """Moves a file into a specified folder
+        """## Moves a file into a specified folder.
 
-        Args:
+        #### Args:
             id (str | int): The files id.
             folder_id (str | int): The folders id.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         data = {"file_id": id, "parent_id": folder_id}
@@ -315,13 +315,13 @@ class FileManager:
         return response
 
     def rename(self, id: str | int, name: str) -> dict:
-        """Renames a file
+        """## Renames a file.
 
-        Args:
+        #### Args:
             id (str | int): The files id.
             name (str): The files new name.
 
-        Returns:
+        #### Returns:
             dict: The success status
         """
         data = {"file_id": id, "name": name}
@@ -334,15 +334,15 @@ class FileManager:
         folder_id: str | int = 0,
         type_id: str | int = None,
     ) -> File:
-        """Copies a file to a folder.
+        """## Copies a file to a folder.
 
-        Args:
+        #### Args:
             id (str | int): The files id.
             folder_id (str | int, optional): The new folders id. Defaults to main.
             type (str, optional): The destinations type. Defaults to "personal".
             type_id (str | int, optional): The destinations type id. Defaults to client.user_id.
 
-        Returns:
+        #### Returns:
             File: A file object.
         """
         if type_id is None:
@@ -360,12 +360,12 @@ class FileManager:
         return File(self.client, response["file"])
 
     def shares(self, id: str | int) -> dict:
-        """Get a files shares
+        """## Get a files shares.
 
-        Args:
+        #### Args:
             id (str | int): The files id.
 
-        Returns:
+        #### Returns:
             dict: The files shares as a dict.
         """
         data = {"file_id": id}
@@ -394,18 +394,18 @@ class FileManager:
         search: str = None,
         sorting: str = "created_asc",
     ) -> dict:
-        """Gets the files and folders in a dir. Defaults to personal
+        """## Gets the files and folders in a dir.
 
-        Args:
+        #### Args:
             folder_id (str | int, optional): The folders id. Defaults to 0 (personal).
             type_id (str | int, optional): The type id. Defaults to None.
-            folder_only (str, optional): Set that only folder should be shown. Defaults to "no".
+            folder_only (str, optional): Folder only response. Defaults to "no".
             offset (int | str, optional): The response offset. Defaults to 0.
             limit (int | str, optional): The response limit. Defaults to 75.
             search (str, optional): The search prompt. Defaults to None.
             sorting (str, optional): The sorting setting. Defaults to "created_asc".
 
-        Returns:
+        #### Returns:
             dict: A dictonary containing folder and file objects.
         """
         if type_id is None:

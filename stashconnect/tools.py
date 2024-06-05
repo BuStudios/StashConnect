@@ -3,8 +3,9 @@ class Tools:
         self.client = client
 
     def get_type(self, type_id):
-        """Returns type (conversation or channel)
-        Args:
+        """## Returns a location type.
+
+        #### Args:
             type_id (int | str): The conversation or channel id
         """
         if type_id == self.client.user_id:

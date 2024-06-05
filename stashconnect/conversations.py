@@ -22,12 +22,12 @@ class ConversationManager:
         self.client = client
 
     def archive(self, conversation_id: str | int) -> dict:
-        """Archives a conversation
+        """## Archives a conversation.
 
-        Args:
+        #### Args:
             conversation_id (str | int): The conversations id.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         response = self.client._post(
@@ -36,12 +36,12 @@ class ConversationManager:
         return response
 
     def favorite(self, conversation_id: str | int) -> dict:
-        """Favorites a conversation
+        """## Favorites a conversation.
 
-        Args:
+        #### Args:
             conversation_id (str | int): The conversations id.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         response = self.client._post(
@@ -51,12 +51,12 @@ class ConversationManager:
         return response
 
     def unfavorite(self, conversation_id: str | int) -> dict:
-        """Unfavorites a conversation
+        """## Unfavorites a conversation.
 
-        Args:
+        #### Args:
             conversation_id (str | int): The conversations id.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         response = self.client._post(
@@ -68,13 +68,13 @@ class ConversationManager:
     def disable_notifications(
         self, conversation_id: int | str, duration: int | str
     ) -> str:
-        """Disables notifications for a conversation
+        """## Disables notifications for a conversation.
 
-        Args:
+        #### Args:
             conversation_id (int | str): The conversations id.
             duration (int | str): how long the block should last (seconds).
 
-        Returns:
+        #### Returns:
             str: The end timestamp.
         """
         return self.client._post(
@@ -87,12 +87,12 @@ class ConversationManager:
         )
 
     def enable_notifications(self, conversation_id: int | str) -> dict:
-        """Enables notifications for a conversation
+        """## Enables notifications for a conversation.
 
-        Args:
+        #### Args:
             conversation_id (int | str): The conversations id.
 
-        Returns:
+        #### Returns:
             dict: The success status.
         """
         return self.client._post(
@@ -101,12 +101,12 @@ class ConversationManager:
         )
 
     def create(self, members: str | int | list) -> Conversation:
-        """Creates a conversation with users
+        """## Creates a conversation with users.
 
-        Args:
+        #### Args:
             members (str | int | list): The members of the conversation.
 
-        Returns:
+        #### Returns:
             Conversation: A conversation object.
         """
         conversation_key = Crypto.Random.get_random_bytes(32)
@@ -166,12 +166,12 @@ class ConversationManager:
         return Conversation(self.client, response["conversation"])
 
     def info(self, conversation_id: str | int) -> Conversation:
-        """Fetches the info of a conversation
+        """## Fetches the info of a conversation.
 
-        Args:
+        #### Args:
             conversation_id (str | int): The conversations info.
 
-        Returns:
+        #### Returns:
             Conversation: A conversation object.
         """
         response = self.client._post(
