@@ -5,7 +5,7 @@ import threading
 import socketio
 
 from .messages import MessageManager
-from .settings import Settings
+from .account import AccountManager
 from .users import UserManager
 from .crypto_utils import CryptoUtils
 from .conversations import ConversationManager
@@ -56,7 +56,7 @@ class Client:
 
         self.messages = MessageManager(self)
         self.tools = Tools(self)
-        self.settings = Settings(self)
+        self.account = AccountManager(self)
         self.users = UserManager(self)
         self.files = FileManager(self)
         self.conversations = ConversationManager(self)
