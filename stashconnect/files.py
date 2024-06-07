@@ -231,6 +231,43 @@ class FileManager:
 
         return file_path
 
+    def download_bytes(self, id: str | int) -> bytes:
+        """## Downloads a file and returns its content as bytes.
+
+        #### Args:
+            id (str | int): The file's id.
+
+        #### Returns:
+            str: The path of the saved file.
+        """
+        response = self.client._post(f"file/download?id={id}", data={}, return_all=True)
+        file_info = self.client.files._info(id)
+
+        if file_info["encrypted"]:
+            if self.client._private_key is None:
+                print(
+                    "Could not download encrypted content as no encryption password was provided"
+                )
+                return
+
+            key = CryptoUtils.decrypt_aes(
+                bytes.fromhex(file_info["keys"][0]["key"]),
+                self.client.get_conversation_key(
+                    file_info["keys"][0]["chat_id"],
+                    file_info["keys"][0]["type"],
+                    key=file_info["keys"][0]["chat_key"],
+                ),
+                bytes.fromhex(file_info["keys"][0]["iv"]),
+            )
+            decrypted = CryptoUtils.decrypt_aes(
+                response.content,
+                key,
+                bytes.fromhex(file_info["e2e_iv"]),
+            )
+            return decrypted
+        else:
+            return response.content
+
     def _info(self, id: str | int) -> dict:
         """## Fetches the info of a file (dict).
 

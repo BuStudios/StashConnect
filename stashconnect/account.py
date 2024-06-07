@@ -80,6 +80,20 @@ class AccountManager:
         response = self.client._post("/account/list_active_devices", data={})
         return response["devices"]
 
+    def remove_device(self, device_id: str | int) -> dict:
+        """## Deactivates an active device.
+
+        #### Args:
+            device_id (str | int): The device id.
+
+        #### Returns:
+            dict: The success status.
+        """
+        response = self.client._post(
+            "account/deactivate_device", data={"device_to_remove": device_id}
+        )
+        return response
+
     def notifications(self, limit: int = 20, offset: int = 0) -> dict:
         """## Gets a users notifications.
 
@@ -157,3 +171,15 @@ class AccountManager:
             )
 
             return User(self.client, response["user"])
+
+    def statistics(self, company_id: str | int) -> dict:
+        """## Gets company statistics.
+
+        #### Args:
+            company_id (str | int): The companies id.
+
+        #### Returns:
+            dict: The companies statistics
+        """
+        response = self.client._post("manage/accounts", data={"company_id": company_id})
+        return response
