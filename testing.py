@@ -21,6 +21,9 @@ client = stashconnect.Client(
     app_name="maintest",
 )
 
+print(client.auth.verify_login())
+sys.exit()
+
 # Upload to the personal folder:
 #print(client.files.upload(client.user_id, "setup.py", None))
 

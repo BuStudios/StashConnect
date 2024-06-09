@@ -12,6 +12,7 @@ from .conversations import ConversationManager
 from .companies import CompanyManager
 from .channels import ChannelManager
 from .files import FileManager
+from .authentication import AuthManager
 
 from .tools import Tools
 from .models import Message
@@ -62,6 +63,7 @@ class Client:
         self.conversations = ConversationManager(self)
         self.companies = CompanyManager(self)
         self.channels = ChannelManager(self)
+        self.auth = AuthManager(self)
 
         self.email = email
         self.password = password
@@ -94,16 +96,7 @@ class Client:
             self.get_private_key(encryption_password=self.encryption_password)
 
     def _login(self):
-
-        data = {
-            "email": self.email,
-            "password": self.password,
-            "app_name": self.app_name,
-            "encrypted": "true",
-            "callable": "true",
-        }
-
-        response = self._post("auth/login", data=data, auth=False)
+        response = self.auth._login(self.email, self.password, self.app_name)
 
         self.client_key = response["client_key"]
         self.socket_id = response["userinfo"]["socket_id"]
@@ -147,13 +140,6 @@ class Client:
 
         else:
             return response
-
-    def verify_login(self):
-
-        data = {"app_name": self.app_name, "encrypted": True, "callable": True}
-
-        response = self._post("/auth/check", data=data)
-        return response
 
     def get_private_key(self, *, encryption_password: str) -> None:
 
