@@ -21,19 +21,22 @@ client = stashconnect.Client(
     app_name="maintest",
 )
 
-print(client.auth.verify_login())
+file = client.files.upload(target, "setup.py", encrypted=False)
+print(file.download_bytes())
+
+# print(client.auth.verify_login())
 sys.exit()
 
 # Upload to the personal folder:
-#print(client.files.upload(client.user_id, "setup.py", None))
+# print(client.files.upload(client.user_id, "setup.py", None))
 
 file = client.files.upload(target, "LICENSE", False)
 print(file.name)
 client.files.store_preview_image(file.id, "assets/icon-3.png")
 sys.exit()
 
-#members = client.channels.members(target_channel)
-#for member in members:
+# members = client.channels.members(target_channel)
+# for member in members:
 #    print(member.first_name)
 
 print(client.companies.list_features(company_id))

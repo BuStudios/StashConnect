@@ -702,7 +702,7 @@ class File:
         #### Returns:
             File | dict: A file object or a status: false dict.
         """
-        self.client.files.store_preview_image(self.id, filepath)
+        return self.client.files.store_preview_image(self.id, filepath)
 
     def download(self, directory: str = "", filename: str = None) -> str:
         """## Downloads a file to a local location.
@@ -714,7 +714,15 @@ class File:
         #### Returns:
             str: The path of the saved file.
         """
-        self.client.files.download(self.id, directory, filename)
+        return self.client.files.download(self.id, directory, filename)
+
+    def download_bytes(self) -> bytes:
+        """## Downloads a file and returns its content as bytes.
+
+        #### Returns:
+            str: The path of the saved file.
+        """
+        return self.client.files.download_bytes(self.id)
 
     def delete(self) -> dict:
         """## Deletes specified files.
@@ -722,7 +730,7 @@ class File:
         #### Returns:
             dict: The success status.
         """
-        self.client.files.delete(self.id)
+        return self.client.files.delete(self.id)
 
     def move(self, folder_id: str | int) -> dict:
         """## Moves a file into a specified folder.
@@ -733,7 +741,7 @@ class File:
         #### Returns:
             dict: The success status.
         """
-        self.client.files.move(self.id, folder_id)
+        return self.client.files.move(self.id, folder_id)
 
     def rename(self, name: str) -> dict:
         """## Renames a file.
@@ -744,7 +752,7 @@ class File:
         #### Returns:
             dict: The success status
         """
-        self.client.files.rename(self.id, name)
+        return self.client.files.rename(self.id, name)
 
     def shares(self) -> dict:
         """## Get a files shares.
@@ -752,4 +760,4 @@ class File:
         #### Returns:
             dict: The files shares as a dict.
         """
-        self.client.files.shares(self.id)
+        return self.client.files.shares(self.id)
