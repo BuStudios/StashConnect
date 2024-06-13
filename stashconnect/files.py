@@ -29,13 +29,20 @@ class FileManager:
         )
         return response["quota"]
 
-    def upload(self, target: str | int, filepath: str, encrypted: bool = True) -> File:
+    def upload(
+        self,
+        target: str | int,
+        filepath: str,
+        encrypted: bool = True,
+        preview: bool = True,
+    ) -> File:
         """## Uploads a file to a target location.
 
         #### Args:
             target (str | int): The upolads target id.
             filepath (str): The files location path.
-            encrypted (bool, optional): Sets wether a file should be encrypted. Defaults to True.
+            encrypted (bool, optional): Sets whether a file should be encrypted. Defaults to True.
+            preview (bool, optional): Sets whether a preview image should be set. Defaults to True.
 
         #### Returns:
             File: A file object.
@@ -134,7 +141,8 @@ class FileManager:
 
             response = self.client._post("security/set_file_access_key", data=data)
 
-        self.client.files.store_preview_image(file_id, filepath)
+        if preview:
+            self.client.files.store_preview_image(file_id, filepath)
 
         return File(self.client, file)
 

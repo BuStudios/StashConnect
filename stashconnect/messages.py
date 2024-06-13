@@ -73,7 +73,7 @@ class MessageManager:
                 files_sent = [files]
 
             for file in files:
-                file = self.client.upload_file(target, file, encrypted)
+                file = self.client.files.upload(target, file, encrypted)
                 files_sent.append(int(file.id))
 
         if isinstance(urls, str):
@@ -101,7 +101,7 @@ class MessageManager:
 
         if location is True:
 
-            location = self.client.get_location()["location"]
+            location = self.client.account.location()
 
             if encrypted:
                 data["latitude"] = CryptoUtils.encrypt_aes(
