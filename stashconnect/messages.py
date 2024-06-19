@@ -26,6 +26,7 @@ class MessageManager:
         target: str | int,
         text: str,
         *,
+        markdown: bool = True,
         files: str | int | list = None,
         urls: str | list = "",
         location: bool | tuple | list = None,
@@ -37,6 +38,7 @@ class MessageManager:
         #### Args:
             target (str | int): The messages target location.
             text (str): The text to send.
+            markdown (bool): Add markdown support. Defaults to True.
             files (str | int | list, optional): Files to send. Defaults to None.
             urls (str | list, optional): Url's to append to the message. Defaults to "".
             location (bool | tuple | list, optional): The location of the message. Defaults to None.
@@ -96,6 +98,9 @@ class MessageManager:
         if encrypted:
             data["iv"] = iv.hex()
             data["text"] = text.hex()
+
+        if markdown:
+            data["metainfo"] = json.dumps({"v": 1, "style": "md"})
 
         data.update(kwargs)
 

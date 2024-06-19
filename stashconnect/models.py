@@ -118,6 +118,7 @@ class Message:
         self,
         text: str,
         *,
+        markdown: bool = True,
         files: str | int | list = None,
         urls: str | list = "",
         location: bool | tuple | list = None,
@@ -128,15 +129,16 @@ class Message:
 
         #### Args:
             text (str): The text to send.
+            markdown (bool): Add markdown support. Defaults to True.
             files (str | int | list, optional): Files to send. Defaults to None.
             urls (str | list, optional): Url's to append to the message. Defaults to "".
             location (bool | tuple | list, optional): The location of the message. Defaults to None.
             encrypted (bool, optional): If the message should be encrypted. Defaults to True.
 
         #### Info:
-            If the file is str | int you need to give a id.
-            If its a list then you need to give a path.
-            The location needs to be set to lat, lng in a tuple or None.
+            :If the file is str | int you need to give a id.
+            :If its a list then you need to give a path.
+            :The location needs to be set to lat, lng in a tuple or None.
 
         #### Returns:
             Message: A message object.
@@ -144,6 +146,7 @@ class Message:
         return self.client.messages.send(
             target=self.type_id,
             text=text,
+            markdown=markdown,
             files=files,
             urls=urls,
             location=location,
