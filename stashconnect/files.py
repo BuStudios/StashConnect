@@ -6,8 +6,8 @@ import os
 import mimetypes
 import uuid
 from PIL import Image
+from io import BytesIO
 import base64
-import io
 import json
 
 from .crypto_utils import CryptoUtils
@@ -32,7 +32,8 @@ class FileManager:
     def upload(
         self,
         target: str | int,
-        filepath: str,
+        file_input: str | BytesIO | bytes,
+        filename: str = "stashconnect_file",
         encrypted: bool = True,
         preview: bool = True,
     ) -> File:
@@ -40,14 +41,34 @@ class FileManager:
 
         #### Args:
             target (str | int): The upolads target id.
-            filepath (str): The files location path.
+            filepath (str | BytesIO | bytes): The files location path or a file-like object or bytes.
+            filename(str): Only needed for bytes and BytesIO. Defaults to "file".
             encrypted (bool, optional): Sets whether a file should be encrypted. Defaults to True.
             preview (bool, optional): Sets whether a preview image should be set. Defaults to True.
 
         #### Returns:
             File: A file object.
         """
-        filename = os.path.basename(filepath)
+        if isinstance(file_input, BytesIO):
+            # if file_input is a file-like object
+            file_content = file_input.read()
+            filename = getattr(file_input, "name", filename)
+
+        elif isinstance(file_input, bytes):
+            # if the file_input is bytes
+            file_content = file_input
+            filename = filename
+
+        else:
+            # if the file_input is a filepath
+            if filename != "stashconnect_file":
+                extension = os.path.splitext(file_input)[1]
+                filename += extension
+            else:
+                filename = os.path.basename(file_input)
+
+            with open(file_input, "rb") as file:
+                file_content = file.read()
 
         if encrypted:
             if self.client._private_key is None:
@@ -61,21 +82,21 @@ class FileManager:
             file_key = Crypto.Random.get_random_bytes(32)
 
         # guess content type from extension
-        content_type = mimetypes.guess_type(filepath)[0]
+        content_type = mimetypes.guess_type(filename)[0]
         if not content_type:
             content_type = "application/octet-stream"
 
         max_chunk_size = 5 * 1024 * 1024  # limit chunk upload size to 5MB
         upload_identifier = str(uuid.uuid4())  # the uploads id
 
-        # open file in binary mode
-        with open(filepath, "rb") as file:
-            file_content = file.read()
-
         try:
-            with Image.open(filepath) as image:
-                image_width = image.width
-                image_height = image.height
+            if isinstance(file_input, BytesIO | bytes):
+                image = Image.open(BytesIO(file_content))
+            else:
+                image = Image.open(file_input)
+
+            image_width = image.width
+            image_height = image.height
         except Exception:
             image_width = None
             image_height = None
@@ -142,7 +163,7 @@ class FileManager:
             response = self.client._post("security/set_file_access_key", data=data)
 
         if preview:
-            self.client.files.store_preview_image(file_id, filepath)
+            self.client.files.store_preview_image(file_id, file_input)
 
         return File(self.client, file)
 
@@ -174,7 +195,7 @@ class FileManager:
                 right, bottom = left + output_size, top + output_size
 
                 image = image.crop((left, top, right, bottom))
-                buffered = io.BytesIO()
+                buffered = BytesIO()
                 image.save(buffered, format="JPEG")
 
                 image_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")

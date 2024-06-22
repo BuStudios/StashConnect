@@ -45,9 +45,7 @@ class MessageManager:
             encrypted (bool, optional): If the message should be encrypted. Defaults to True.
 
         #### Info:
-            :If the file is str | int you need to give a id.
-            :If its a list then you need to give a path.
-            :The location needs to be set to lat, lng in a tuple or None.
+            :The location needs to be set to (lat, lng) in a tuple or None.
 
         #### Returns:
             Message: A message object.
@@ -72,11 +70,24 @@ class MessageManager:
         if files is not None:
 
             if isinstance(files, str | int):
-                files_sent = [files]
+                files = [files]
 
             for file in files:
-                file = self.client.files.upload(target, file, encrypted)
-                files_sent.append(int(file.id))
+                if isinstance(file, str):
+                    if file.isnumeric():
+                        files_sent.append(int(file))
+                    else:
+                        file = self.client.files.upload(
+                            target, file, encrypted=encrypted
+                        )
+                        files_sent.append(int(file.id))
+
+                elif isinstance(file, int):
+                    files_sent.append(int(file))
+
+                else:
+                    file = self.client.files.upload(target, file, encrypted=encrypted)
+                    files_sent.append(int(file.id))
 
         if isinstance(urls, str):
             sent_urls = [urls]
