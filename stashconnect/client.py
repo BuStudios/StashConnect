@@ -270,6 +270,15 @@ class Client:
             thread.start()
 
     def ws_latency(self, target):
+        """Gets the websockets latency (currently broken).
+
+        Args:
+            target (int|str): A conversation to use. (Use the messages destination chat)
+
+        Returns:
+            int: The websockets latency.
+            str: Error.
+        """
         target_type = self.tools.get_type(target)
 
         start_time = time.perf_counter()
@@ -284,7 +293,7 @@ class Client:
 
         if self._end_time is None:
             self._latency_ws = None
-            return "[Error]"
+            return "-"
         else:
             self._latency_ws = (round((self._end_time - start_time) * 100000)) / 100
             return self._latency_ws
