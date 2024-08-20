@@ -33,6 +33,11 @@ client.files.upload("conversation_id", "hello.png")
 client.files.download("file_id")
 
 client.messages.send("conversation_id", "hello")
+
+# get the last 30 messages of a chat
+last_messages = client.messages.get_messages("channel_id/conversation_id")
+for message in last_messages:
+    print(message.content)
 ```
 
 ## Features to be added

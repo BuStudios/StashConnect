@@ -164,12 +164,18 @@ class User:
             self.set_attributes(data)
 
         except KeyError:
-            user_data = self.client.users._info(self.id)
-            self.set_attributes(user_data)
+            try:
+                user_data = self.client.users._info(self.id)
+                self.set_attributes(user_data)
+            except Exception as e:
+                print("could not fetch a users information - most likely due to missing permissions: ", e)
 
         except TypeError:
-            user_data = self.client.users._info(self.id)
-            self.set_attributes(user_data)
+            try:
+                user_data = self.client.users._info(self.id)
+                self.set_attributes(user_data)
+            except Exception as e:
+                print("could not fetch a users information - most likely due to missing permissions: ", e)
 
     def set_attributes(self, data):
         self.first_name = data["first_name"]
