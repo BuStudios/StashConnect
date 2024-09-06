@@ -19,9 +19,18 @@ pip install -U stashconnect
 ```python
 import stashconnect
 
+# without proxy / cert
+client = stashconnect.Client(
+    email="your email", password="your password",
+    encryption_password="encryption password"
+)
+
+# with proxy & cert
 client = stashconnect.Client(
     email="your email", password="your password",
     encryption_password="encryption password",
+    proxy = proxies, 
+    cert_path = 'path/to/CA.pem'
 )
 
 # change account settings
@@ -39,6 +48,7 @@ last_messages = client.messages.get_messages("channel_id/conversation_id")
 for message in last_messages:
     print(message.content)
 ```
+
 
 ## Features to be added
 
