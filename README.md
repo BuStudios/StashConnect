@@ -26,6 +26,11 @@ client = stashconnect.Client(
 )
 
 # with proxy & cert
+proxies = {
+  'http': 'http://1.2.3.4:8080',
+  'https': 'http://5.6.7.8:8443',
+}
+
 client = stashconnect.Client(
     email="your email", password="your password",
     encryption_password="encryption password",
