@@ -50,6 +50,8 @@ class Client:
         *,
         email,
         password,
+        proxy=None,
+        cert_path=None,
         encryption_password=None,
         device_id=None,
         app_name=None,
@@ -68,6 +70,7 @@ class Client:
         self.email = email
         self.password = password
         self.encryption_password = encryption_password
+        self.proxy = proxy
 
         self.device_id = "stashconnect" if device_id is None else device_id
         self.app_name = (
@@ -80,6 +83,10 @@ class Client:
         self._headers = headers
         self._session = requests.Session()
         self._session.headers.update(self._headers)
+        if proxy is not None: 
+            self._session.proxies.update(proxy)
+        if cert_path is not None: 
+            self._session.verify = cert_path
 
         self._login()
 
