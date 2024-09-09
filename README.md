@@ -64,7 +64,7 @@ for message in last_messages:
 
 ## Contributors
 
-- All code currently written by [BuStudios](https://github.com/bustudios)
+- Most code written by [BuStudios](https://github.com/bustudios)
 - Create a pull request to contribute code yourself
 
 ## Disclaimer
