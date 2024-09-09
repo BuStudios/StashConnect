@@ -83,8 +83,10 @@ class Client:
         self._headers = headers
         self._session = requests.Session()
         self._session.headers.update(self._headers)
-        if proxy: self._session.proxies.update(proxy)
-        if cert_path: self._session.verify = cert_path
+        if proxy is not None: 
+            self._session.proxies.update(proxy)
+        if cert_path is not None: 
+            self._session.verify = cert_path
 
         self._login()
 
