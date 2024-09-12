@@ -50,6 +50,11 @@ class Message:
 
     def _decrypt_location(self, location):
 
+        if location.get("encrypted") is None or location.get("iv") is None:
+            self.longitude = location["longitude"]
+            self.latitude = location["latitude"]
+            return
+        
         if location["encrypted"]:
 
             if self.client._private_key is None:
@@ -58,6 +63,7 @@ class Message:
                 )
                 self.longitude = location["longitude"]
                 self.latitude = location["latitude"]
+                return
 
             self.longitude = CryptoUtils.decrypt_aes(
                 bytes.fromhex(location["longitude"]),
