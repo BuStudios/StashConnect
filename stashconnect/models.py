@@ -50,6 +50,11 @@ class Message:
 
     def _decrypt_location(self, location):
 
+        if location is None:
+            self.longitude = None
+            self.latitude = None
+            return
+
         if location.get("encrypted") is None or location.get("iv") is None:
             self.longitude = location["longitude"]
             self.latitude = location["latitude"]
