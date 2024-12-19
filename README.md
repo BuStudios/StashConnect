@@ -34,8 +34,15 @@ proxies = {
 client = stashconnect.Client(
     email="your email", password="your password",
     encryption_password="encryption password",
-    proxy = proxies, 
+    proxy = proxies,
     cert_path = 'path/to/CA.pem'
+)
+
+# with self-hosted server
+client = stashconnect.Client(
+    email="your email", password="your password",
+    encryption_password="encryption password",
+    base_url="private url"
 )
 
 # change account settings

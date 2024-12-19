@@ -50,6 +50,7 @@ class Client:
         *,
         email,
         password,
+        base_url="stashcat.com",
         proxy=None,
         cert_path=None,
         encryption_password=None,
@@ -77,15 +78,15 @@ class Client:
             f"stashconnect v.{__version__}" if app_name is None else app_name
         )
 
-        self._main_url = "https://api.stashcat.com/"
-        self._push_url = "https://push.stashcat.com/"
+        self._main_url = f"https://api.{base_url}/"
+        self._push_url = f"https://push.{base_url}/"
 
         self._headers = headers
         self._session = requests.Session()
         self._session.headers.update(self._headers)
-        if proxy is not None: 
+        if proxy is not None:
             self._session.proxies.update(proxy)
-        if cert_path is not None: 
+        if cert_path is not None:
             self._session.verify = cert_path
 
         self._login()
